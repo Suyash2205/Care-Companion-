@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Care Companion</string>
+    <string name="common_logout">Logout</string>
+
+    <string name="guardian_back">Back</string>
+    <string name="guardian_add_profile_title">Add profile</string>
+    <string name="guardian_cancel">Cancel</string>
+    <string name="guardian_save_next">Save &amp; continue</string>
+    <string name="guardian_personal_info">Personal information</string>
+    <string name="guardian_photo_preview">Photo preview</string>
+    <string name="guardian_full_name">Full name</string>
+    <string name="guardian_upload_photo">Upload photo</string>
+    <string name="guardian_choose_avatar">Choose avatar</string>
+    <string name="guardian_remove_photo">Remove photo</string>
+    <string name="guardian_contact_info">Contact information</string>
+    <string name="guardian_primary_phone_label">Primary phone</string>
+    <string name="guardian_primary_phone">Phone number</string>
+    <string name="guardian_otp_demo">Demo: use any code</string>
+    <string name="guardian_get_otp">Get OTP</string>
+    <string name="guardian_emergency_section">Emergency contacts</string>
+    <string name="guardian_field_name">Name</string>
+    <string name="guardian_emergency_name">Emergency contact name</string>
+    <string name="guardian_field_phone">Phone</string>
+    <string name="guardian_emergency_phone">Emergency phone</string>
+    <string name="guardian_import_contacts">Import from contacts</string>
+    <string name="guardian_pick_avatar_title">Pick an avatar</string>
+    <string name="guardian_photo_added">Photo updated</string>
+    <string name="guardian_contact_imported">Contact imported</string>
+    <string name="guardian_contact_no_phone">No phone number on this contact</string>
+    <string name="guardian_contacts_permission">Contacts permission is required to import</string>
+    <string name="guardian_unnamed_profile">Unnamed profile</string>
+</resources>
