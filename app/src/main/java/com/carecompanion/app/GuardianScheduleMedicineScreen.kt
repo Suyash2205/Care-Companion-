@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.carecompanion.app.ui.theme.CareGreen
 
 private val MealOptions = listOf("Breakfast", "Lunch", "Dinner")
 private val TimePresets = listOf("7:00 AM", "8:00 AM", "12:00 PM", "2:00 PM", "7:00 PM", "9:00 PM")
@@ -64,7 +65,7 @@ fun GuardianScheduleMedicineScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.linearGradient(listOf(Color(0xFF6D28D9), Color(0xFFA78BFA))))
+                    .background(ScheduleGrad)
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 18.dp)
             ) {
@@ -105,7 +106,7 @@ fun GuardianScheduleMedicineScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.Medication, contentDescription = null, tint = CareGreen, modifier = Modifier.size(20.dp))
                             Text("Select Medicine", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GuardianTextPrimary)
                         }
                         if (medicines.isEmpty()) {
@@ -122,11 +123,11 @@ fun GuardianScheduleMedicineScreen(
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(
-                                            if (isSelected) Color(0xFFF3F0FF) else Color(0xFFF8FAFC)
+                                            if (isSelected) Color(0xFFF1F8F2) else Color(0xFFF8FAF8)
                                         )
                                         .border(
                                             width = if (isSelected) 2.dp else 1.dp,
-                                            color = if (isSelected) Color(0xFF6D28D9) else Color(0xFFE2E8F0),
+                                            color = if (isSelected) CareGreen else Color(0xFFE0E4E0),
                                             shape = RoundedCornerShape(12.dp)
                                         )
                                         .clickable { selectedMedicineId = med.id }
@@ -138,7 +139,7 @@ fun GuardianScheduleMedicineScreen(
                                         modifier = Modifier
                                             .size(40.dp)
                                             .background(
-                                                if (isSelected) Color(0xFF6D28D9) else Color(0xFFE2E8F0),
+                                                if (isSelected) CareGreen else Color(0xFFE0E4E0),
                                                 CircleShape
                                             ),
                                         contentAlignment = Alignment.Center
@@ -155,7 +156,7 @@ fun GuardianScheduleMedicineScreen(
                                             med.name,
                                             fontWeight = FontWeight.SemiBold,
                                             fontSize = 15.sp,
-                                            color = if (isSelected) Color(0xFF6D28D9) else GuardianTextPrimary
+                                            color = if (isSelected) CareGreen else GuardianTextPrimary
                                         )
                                         val detail = listOfNotNull(
                                             med.dosage.takeIf { it.isNotBlank() },
@@ -166,7 +167,7 @@ fun GuardianScheduleMedicineScreen(
                                         }
                                     }
                                     if (isSelected) {
-                                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(22.dp))
+                                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = CareGreen, modifier = Modifier.size(22.dp))
                                     }
                                 }
                             }
@@ -183,7 +184,7 @@ fun GuardianScheduleMedicineScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Outlined.Restaurant, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.Restaurant, contentDescription = null, tint = CareGreen, modifier = Modifier.size(20.dp))
                             Text("When to Take", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GuardianTextPrimary)
                         }
                         Text("Select one or more meals:", fontSize = 12.sp, color = GuardianTextSub)
@@ -197,9 +198,9 @@ fun GuardianScheduleMedicineScreen(
                                     },
                                     label = { Text(meal, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal, fontSize = 13.sp) },
                                     colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = Color(0xFF6D28D9),
+                                        selectedContainerColor = CareGreen,
                                         selectedLabelColor = Color.White,
-                                        containerColor = Color(0xFFF1F5F9),
+                                        containerColor = Color(0xFFF1F8F2),
                                         labelColor = GuardianTextSub
                                     ),
                                     shape = RoundedCornerShape(10.dp)
@@ -214,7 +215,7 @@ fun GuardianScheduleMedicineScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(if (selected) Color(0xFF6D28D9) else Color(0xFFF1F5F9))
+                                        .background(if (selected) CareGreen else Color(0xFFF1F8F2))
                                         .clickable { mealTiming = timing }
                                         .padding(horizontal = 16.dp, vertical = 10.dp)
                                 ) {
@@ -244,13 +245,13 @@ fun GuardianScheduleMedicineScreen(
                         Box(
                             modifier = Modifier
                                 .size(44.dp)
-                                .background(if (withWater) Color(0xFFEFF6FF) else Color(0xFFF1F5F9), CircleShape),
+                                .background(if (withWater) Color(0xFFEAF6EC) else Color(0xFFF1F8F2), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Outlined.LocalDrink,
                                 contentDescription = null,
-                                tint = if (withWater) Color(0xFF3B82F6) else GuardianTextSub,
+                                tint = if (withWater) CareGreen else GuardianTextSub,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -262,7 +263,7 @@ fun GuardianScheduleMedicineScreen(
                         Switch(
                             checked = withWater,
                             onCheckedChange = { withWater = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color(0xFF3B82F6))
+                            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CareGreen)
                         )
                     }
                 }
@@ -276,7 +277,7 @@ fun GuardianScheduleMedicineScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = CareGreen, modifier = Modifier.size(20.dp))
                             Text("Time", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GuardianTextPrimary)
                         }
                         Text("Quick select:", fontSize = 12.sp, color = GuardianTextSub)
@@ -289,7 +290,7 @@ fun GuardianScheduleMedicineScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(if (selected) Color(0xFF6D28D9) else Color(0xFFF1F5F9))
+                                        .background(if (selected) CareGreen else Color(0xFFF1F8F2))
                                         .clickable { customTime = preset }
                                         .padding(horizontal = 14.dp, vertical = 8.dp)
                                 ) {

@@ -85,7 +85,7 @@ fun GuardianDailyScheduleScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddSchedule,
-                containerColor = Color(0xFF6D28D9),
+                containerColor = CareGreen,
                 contentColor = Color.White,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp)
             ) {
@@ -289,7 +289,7 @@ private fun GenericReminderCard(
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .background(if (reminder.enabled) Color(0xFFDCFCE7) else Color(0xFFF1F5F9), CircleShape),
+                    .background(if (reminder.enabled) Color(0xFFEAF6EC) else Color(0xFFF2F2F2), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(reminder.icon, contentDescription = null, tint = if (reminder.enabled) CareGreen else GuardianTextSub, modifier = Modifier.size(22.dp))
@@ -330,10 +330,10 @@ private fun ScheduledMedicineCard(
                 Box(
                     modifier = Modifier
                         .size(44.dp)
-                        .background(Brush.linearGradient(listOf(Color(0xFFEDE9FE), Color(0xFFC4B5FD))), CircleShape),
+                        .background(Brush.linearGradient(listOf(Color(0xFFEAF6EC), Color(0xFFCAE7D2))), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(22.dp))
+                    Icon(Icons.Outlined.Medication, contentDescription = null, tint = CareGreen, modifier = Modifier.size(22.dp))
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(medicine.name, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = GuardianTextPrimary)
@@ -342,7 +342,7 @@ private fun ScheduledMedicineCard(
                 }
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = if (medicine.isActive) Color(0xFFDCFCE7) else Color(0xFFF1F5F9)
+                    color = if (medicine.isActive) Color(0xFFEAF6EC) else Color(0xFFF2F2F2)
                 ) {
                     Text(
                         if (medicine.isActive) "ACTIVE" else "PAUSED",
@@ -380,7 +380,7 @@ private fun ScheduleSlotRow(schedule: MedicineSchedule, onToggle: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(if (schedule.enabled) Color(0xFFF5F3FF) else Color(0xFFFAFAFA))
+            .background(if (schedule.enabled) Color(0xFFF1F8F2) else Color(0xFFFAFAFA))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -395,14 +395,14 @@ private fun ScheduleSlotRow(schedule: MedicineSchedule, onToggle: () -> Unit) {
                 )
                 if (schedule.withWater) {
                     Text("·", fontSize = 12.sp, color = GuardianTextSub)
-                    Text("With water", fontSize = 12.sp, color = Color(0xFF3B82F6))
+                    Text("With water", fontSize = 12.sp, color = CareGreen)
                 }
             }
         }
         Switch(
             checked = schedule.enabled,
             onCheckedChange = { onToggle() },
-            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color(0xFF6D28D9))
+            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CareGreen)
         )
     }
 }
@@ -427,10 +427,10 @@ private fun ActivityReminderCard(
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .background(if (activity.enabled) Color(0xFFFFF7ED) else Color(0xFFF1F5F9), CircleShape),
+                    .background(if (activity.enabled) Color(0xFFEAF6EC) else Color(0xFFF2F2F2), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(activity.icon, contentDescription = null, tint = if (activity.enabled) Color(0xFFF97316) else GuardianTextSub, modifier = Modifier.size(22.dp))
+                Icon(activity.icon, contentDescription = null, tint = if (activity.enabled) CareGreen else GuardianTextSub, modifier = Modifier.size(22.dp))
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(activity.label, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = GuardianTextPrimary)
@@ -439,7 +439,7 @@ private fun ActivityReminderCard(
             Switch(
                 checked = activity.enabled,
                 onCheckedChange = { onToggle() },
-                colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color(0xFFF97316))
+                colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CareGreen)
             )
         }
     }

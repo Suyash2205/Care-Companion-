@@ -62,7 +62,7 @@ fun GuardianManageElderScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.linearGradient(listOf(Color(0xFF0F172A), Color(0xFF1E3A8A))))
+                    .background(Brush.linearGradient(listOf(Color(0xFF5A9670), Color(0xFF4B8B62))))
                     .statusBarsPadding()
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
@@ -84,7 +84,7 @@ fun GuardianManageElderScreen(
                         }
                         Spacer(Modifier.width(12.dp))
                         Text("Manage Care", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.weight(1f))
-                        TextButton(onClick = onSwitchProfiles, colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF93C5FD))) {
+                        TextButton(onClick = onSwitchProfiles, colors = ButtonDefaults.textButtonColors(contentColor = Color.White.copy(alpha = 0.9f))) {
                             Icon(Icons.Outlined.SwitchAccount, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("Switch", fontSize = 13.sp)
@@ -226,7 +226,7 @@ fun GuardianManageElderScreen(
                             Text("2", modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
-                    HorizontalDivider(color = Color(0xFFF1F5F9))
+            HorizontalDivider(color = Color(0xFFEEEEEE))
                     AlertSummaryRow(
                         text = "${profile.name} missed 8:00 AM medicine",
                         time = "1h ago",

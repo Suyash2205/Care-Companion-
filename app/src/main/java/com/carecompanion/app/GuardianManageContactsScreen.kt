@@ -106,7 +106,7 @@ fun GuardianManageContactsScreen(
                     StatChip(
                         count = contacts.size.toString(),
                         label = "Contacts",
-                        color = Color(0xFF0369A1),
+                        color = CareGreen,
                         modifier = Modifier.weight(1f)
                     )
                     StatChip(
@@ -132,7 +132,7 @@ fun GuardianManageContactsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Icon(Icons.Outlined.PersonAdd, contentDescription = null, tint = Color(0xFFCBD5E1), modifier = Modifier.size(52.dp))
+                                Icon(Icons.Outlined.PersonAdd, contentDescription = null, tint = Color(0xFFC2CCC2), modifier = Modifier.size(52.dp))
                                 Text("No contacts yet", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = GuardianTextPrimary)
                                 Text("Tap the button below to add emergency contacts.", fontSize = 13.sp, color = GuardianTextSub, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                             }
@@ -243,7 +243,7 @@ private fun ContactCard(
                     .size(52.dp)
                     .clip(CircleShape)
                     .background(
-                        Brush.radialGradient(listOf(Color(0xFF38BDF8), Color(0xFF0369A1)))
+                        Brush.radialGradient(listOf(Color(0xFFBFE2CA), Color(0xFF4B8B62)))
                     ),
                 contentAlignment = Alignment.Center
             ) {

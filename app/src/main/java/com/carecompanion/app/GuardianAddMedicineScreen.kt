@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.carecompanion.app.ui.theme.CareGreen
 import java.util.UUID
 
 private val FormOptions = listOf("Tablet", "Capsule", "Syrup", "Drops", "Injection")
@@ -83,7 +84,7 @@ fun GuardianAddMedicineScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.linearGradient(listOf(Color(0xFF4338CA), Color(0xFF818CF8))))
+                    .background(MedicinesGrad)
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 18.dp)
             ) {
@@ -159,9 +160,9 @@ fun GuardianAddMedicineScreen(
                                     onClick = { selectedForm = form },
                                     label = { Text(form, fontWeight = if (selectedForm == form) FontWeight.Bold else FontWeight.Normal) },
                                     colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = Color(0xFF4338CA),
+                                        selectedContainerColor = CareGreen,
                                         selectedLabelColor = Color.White,
-                                        containerColor = Color(0xFFF1F5F9),
+                                        containerColor = Color(0xFFF1F8F2),
                                         labelColor = GuardianTextSub
                                     ),
                                     shape = RoundedCornerShape(10.dp)
@@ -180,7 +181,7 @@ fun GuardianAddMedicineScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.PhotoCamera, contentDescription = null, tint = Color(0xFF4338CA), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.PhotoCamera, contentDescription = null, tint = CareGreen, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(8.dp))
                             Text("Medicine Images", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GuardianTextPrimary)
                         }

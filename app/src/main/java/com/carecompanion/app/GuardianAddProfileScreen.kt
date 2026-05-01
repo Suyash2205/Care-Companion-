@@ -86,7 +86,7 @@ private val PageBg = Color(0xFFF5F6F4)
 private val CardStroke = Color(0xFFE8EBE9)
 private val TextPrimary = Color(0xFF1C1C1C)
 private val TextMuted = Color(0xFF6B7280)
-private val AccentLink = Color(0xFF2563EB)
+private val AccentLink = CareGreen
 
 private data class AvatarOption(val icon: ImageVector, val bg: Color)
 
@@ -321,8 +321,8 @@ fun GuardianAddProfileScreen(
                             modifier = Modifier
                                 .size(108.dp)
                                 .clip(RoundedCornerShape(18.dp))
-                                .background(Color(0xFFF0F7FF))
-                                .border(1.dp, Color(0xFFDCE8F5), RoundedCornerShape(18.dp)),
+                                .background(Color(0xFFF1F8F2))
+                                .border(1.dp, Color(0xFFE0E4E0), RoundedCornerShape(18.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             val picked = photoUri
@@ -338,7 +338,7 @@ fun GuardianAddProfileScreen(
                                     imageVector = avatarOptions[avatarIndex].icon,
                                     contentDescription = null,
                                     modifier = Modifier.size(52.dp),
-                                    tint = Color(0xFF3B82F6)
+                                    tint = CareGreen
                                 )
                             }
                         }
@@ -444,7 +444,7 @@ fun GuardianAddProfileScreen(
                         Icon(
                             Icons.Outlined.Call,
                             contentDescription = null,
-                            tint = Color(0xFF2563EB),
+                                tint = CareGreen,
                             modifier = Modifier.size(22.dp)
                         )
                         Spacer(Modifier.width(8.dp))

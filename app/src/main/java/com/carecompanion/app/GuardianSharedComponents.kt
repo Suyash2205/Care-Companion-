@@ -24,15 +24,15 @@ import androidx.compose.ui.unit.sp
 import com.carecompanion.app.ui.theme.CareGreen
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
-val GuardianBg          = Color(0xFFF0F4FF)
-val GuardianPrimary     = Color(0xFF1D4ED8)
-val GuardianTextPrimary = Color(0xFF0F172A)
-val GuardianTextSub     = Color(0xFF64748B)
+val GuardianBg          = Color(0xFFF4F6F4)
+val GuardianPrimary     = CareGreen
+val GuardianTextPrimary = Color(0xFF1C1C1C)
+val GuardianTextSub     = Color(0xFF666666)
 
-val ContactsGrad   = Brush.linearGradient(listOf(Color(0xFF0369A1), Color(0xFF38BDF8)))
-val MedicinesGrad  = Brush.linearGradient(listOf(Color(0xFF4338CA), Color(0xFF818CF8)))
-val ScheduleGrad   = Brush.linearGradient(listOf(Color(0xFF6D28D9), Color(0xFFA78BFA)))
-val SosGrad        = Brush.linearGradient(listOf(Color(0xFFB91C1C), Color(0xFFF87171)))
+val ContactsGrad   = Brush.linearGradient(listOf(Color(0xFF4B8B62), CareGreen))
+val MedicinesGrad  = Brush.linearGradient(listOf(Color(0xFF558F6A), Color(0xFF3F7E58)))
+val ScheduleGrad   = Brush.linearGradient(listOf(Color(0xFF5A9670), Color(0xFF4B8B62)))
+val SosGrad        = Brush.linearGradient(listOf(Color(0xFFF24141), Color(0xFFD62323)))
 
 enum class BottomTab { Home, Alerts, Settings }
 
@@ -67,11 +67,11 @@ private fun BottomNavItem(
     active: Boolean,
     onClick: () -> Unit
 ) {
-    val tint = if (active) GuardianPrimary else Color(0xFF94A3B8)
+    val tint = if (active) GuardianPrimary else Color(0xFF8A8A8A)
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(14.dp))
-            .background(if (active) Color(0xFFEFF6FF) else Color.Transparent)
+            .background(if (active) CareGreen.copy(alpha = 0.10f) else Color.Transparent)
             .clickable(onClick = onClick)
             .padding(horizontal = 22.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
@@ -91,7 +91,7 @@ private fun BottomNavItem(
 fun GradientPageHeader(
     title: String,
     subtitle: String = "",
-    gradient: Brush = Brush.linearGradient(listOf(GuardianPrimary, Color(0xFF3B82F6))),
+    gradient: Brush = Brush.linearGradient(listOf(Color(0xFF4B8B62), GuardianPrimary)),
     onBack: () -> Unit,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -140,7 +140,7 @@ fun ElderStatusCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(Brush.linearGradient(listOf(Color(0xFF1565C0), Color(0xFF0288D1))))
+            .background(Brush.linearGradient(listOf(Color(0xFF5A9670), Color(0xFF4B8B62))))
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -225,10 +225,10 @@ fun GuardianTextField(
         shape = RoundedCornerShape(14.dp),
         keyboardOptions = keyboardOptions,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = GuardianPrimary,
+            focusedBorderColor = CareGreen.copy(alpha = 0.55f),
             focusedLabelColor = GuardianPrimary,
             focusedLeadingIconColor = GuardianPrimary,
-            unfocusedBorderColor = Color(0xFFCBD5E1),
+            unfocusedBorderColor = Color(0xFFE0E4E0),
             unfocusedLabelColor = GuardianTextSub,
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
@@ -243,13 +243,13 @@ fun GradientButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    gradient: Brush = Brush.linearGradient(listOf(GuardianPrimary, Color(0xFF3B82F6))),
+    gradient: Brush = Brush.linearGradient(listOf(Color(0xFF4B8B62), GuardianPrimary)),
     enabled: Boolean = true
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(if (enabled) gradient else Brush.linearGradient(listOf(Color(0xFFCBD5E1), Color(0xFFCBD5E1))))
+            .background(if (enabled) gradient else Brush.linearGradient(listOf(Color(0xFFCDD5CD), Color(0xFFCDD5CD))))
             .clickable(enabled = enabled, onClick = onClick)
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
@@ -271,7 +271,7 @@ fun ImagePickerCard(
         modifier = modifier
             .aspectRatio(0.85f)
             .clip(RoundedCornerShape(16.dp))
-            .background(if (imageUri == null) Color(0xFFF1F5F9) else Color.Transparent)
+            .background(if (imageUri == null) Color(0xFFF1F8F2) else Color.Transparent)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -294,7 +294,7 @@ fun ImagePickerCard(
                 modifier = Modifier
                     .size(44.dp)
                     .background(
-                        if (imageUri == null) Color(0xFFE2E8F0) else Color.White.copy(alpha = 0.25f),
+                        if (imageUri == null) Color(0xFFE3EEE6) else Color.White.copy(alpha = 0.25f),
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center

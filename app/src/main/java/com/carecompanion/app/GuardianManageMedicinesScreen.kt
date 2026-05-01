@@ -103,7 +103,7 @@ fun GuardianManageMedicinesScreen(
                     MedStatChip(
                         count = localMeds.size.toString(),
                         label = "Total",
-                        color = Color(0xFF4338CA),
+                        color = CareGreen,
                         modifier = Modifier.weight(1f)
                     )
                     MedStatChip(
@@ -115,7 +115,7 @@ fun GuardianManageMedicinesScreen(
                     MedStatChip(
                         count = localMeds.count { !it.isActive }.toString(),
                         label = "Inactive",
-                        color = Color(0xFF94A3B8),
+                        color = Color(0xFF999999),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -137,7 +137,7 @@ fun GuardianManageMedicinesScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFFCBD5E1), modifier = Modifier.size(52.dp))
+                            Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFFC2CCC2), modifier = Modifier.size(52.dp))
                             Text("No medicines added", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = GuardianTextPrimary)
                             Text("Tap the button below to add medicines.", fontSize = 13.sp, color = GuardianTextSub, textAlign = TextAlign.Center)
                         }
@@ -220,6 +220,7 @@ private fun MedicineCard(
                         .background(
                             if (medicine.pillImageUri == null)
                                 Brush.linearGradient(listOf(Color(0xFFEDE9FE), Color(0xFFC4B5FD)))
+                            
                             else Brush.linearGradient(listOf(Color.LightGray, Color.Gray))
                         ),
                     contentAlignment = Alignment.Center
@@ -232,7 +233,7 @@ private fun MedicineCard(
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFF6D28D9), modifier = Modifier.size(28.dp))
+                        Icon(Icons.Outlined.Medication, contentDescription = null, tint = CareGreen, modifier = Modifier.size(28.dp))
                     }
                 }
 
@@ -244,7 +245,7 @@ private fun MedicineCard(
                         Text(medicine.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = GuardianTextPrimary, modifier = Modifier.weight(1f))
                         Surface(
                             shape = RoundedCornerShape(20.dp),
-                            color = if (medicine.isActive) Color(0xFFDCFCE7) else Color(0xFFF1F5F9)
+                            color = if (medicine.isActive) Color(0xFFEAF6EC) else Color(0xFFF2F2F2)
                         ) {
                             Text(
                                 if (medicine.isActive) "ACTIVE" else "INACTIVE",
@@ -279,7 +280,7 @@ private fun MedicineCard(
                             modifier = Modifier
                                 .size(56.dp, 40.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFF1F5F9))
+                                .background(Color(0xFFF1F8F2))
                         ) {
                             UriBitmapImage(uri = uri, contentDescription = "Front", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                         }
@@ -289,7 +290,7 @@ private fun MedicineCard(
                             modifier = Modifier
                                 .size(56.dp, 40.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFF1F5F9))
+                                .background(Color(0xFFF1F8F2))
                         ) {
                             UriBitmapImage(uri = uri, contentDescription = "Back", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                         }
@@ -303,12 +304,12 @@ private fun MedicineCard(
                 HorizontalDivider(color = Color(0xFFF1F5F9))
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
                     medicine.schedules.filter { it.enabled }.take(3).forEach { sched ->
-                        Surface(shape = RoundedCornerShape(8.dp), color = Color(0xFFEDE9FE)) {
+                        Surface(shape = RoundedCornerShape(8.dp), color = Color(0xFFF1F8F2)) {
                             Text(
                                 "${sched.label} · ${sched.time}",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 fontSize = 11.sp,
-                                color = Color(0xFF6D28D9),
+                                color = CareGreen,
                                 fontWeight = FontWeight.Medium
                             )
                         }

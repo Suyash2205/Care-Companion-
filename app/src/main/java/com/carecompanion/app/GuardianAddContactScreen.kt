@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.carecompanion.app.ui.theme.CareGreen
 
 @Composable
 fun GuardianAddContactScreen(
@@ -87,7 +88,7 @@ fun GuardianAddContactScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.linearGradient(listOf(Color(0xFF0369A1), Color(0xFF38BDF8))))
+                    .background(ContactsGrad)
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 18.dp)
             ) {
@@ -127,7 +128,7 @@ fun GuardianAddContactScreen(
                             .clip(CircleShape)
                             .background(
                                 if (photoUri == null)
-                                    Brush.radialGradient(listOf(Color(0xFFBAE6FD), Color(0xFF0EA5E9)))
+                                    Brush.radialGradient(listOf(Color(0xFFDDF2E2), Color(0xFF4B8B62)))
                                 else Brush.radialGradient(listOf(Color.LightGray, Color.Gray))
                             )
                             .clickable {
@@ -212,7 +213,7 @@ fun GuardianAddContactScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = GuardianPrimary),
-                    border = androidx.compose.foundation.BorderStroke(1.5.dp, GuardianPrimary)
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, CareGreen.copy(alpha = 0.7f))
                 ) {
                     Icon(Icons.Outlined.Contacts, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))

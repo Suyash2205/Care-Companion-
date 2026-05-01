@@ -65,7 +65,7 @@ fun GuardianWellnessSosScreen(
             // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back", tint = Color(0xFF374151))
+                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back", tint = Color(0xFF404040))
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -77,7 +77,7 @@ fun GuardianWellnessSosScreen(
                     Text(
                         profile.name,
                         fontSize = 13.sp,
-                        color = Color(0xFF6B7280)
+                        color = Color(0xFF666666)
                     )
                 }
                 Box(
@@ -135,7 +135,7 @@ fun GuardianWellnessSosScreen(
                                 modifier = Modifier
                                     .size(52.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF87CEEB), CircleShape),
+                                .background(Color(0xFFEAF6EC), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (profile.photoUri != null) {
@@ -149,7 +149,7 @@ fun GuardianWellnessSosScreen(
                                     Icon(
                                         profile.icon,
                                         contentDescription = null,
-                                        tint = Color(0xFF5B3A8A),
+                                        tint = Color(0xFF4B8B62),
                                         modifier = Modifier.size(28.dp)
                                     )
                                 }
@@ -184,11 +184,7 @@ fun GuardianWellnessSosScreen(
                                 .fillMaxWidth()
                                 .height(160.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(Color(0xFFD1FAE5), Color(0xFFBFDBFE))
-                                    )
-                                ),
+                                .background(Brush.linearGradient(colors = listOf(Color(0xFFEAF6EC), Color(0xFFF1F8F2)))),
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -244,7 +240,7 @@ fun GuardianWellnessSosScreen(
                                 onClick = {},
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EA0FF))
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4B8B62))
                             ) {
                                 Icon(Icons.Outlined.Map, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(6.dp))
@@ -256,7 +252,7 @@ fun GuardianWellnessSosScreen(
                             onClick = { alertDismissed = true },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF374151))
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF404040))
                         ) {
                             Icon(Icons.Outlined.Close, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
@@ -270,15 +266,15 @@ fun GuardianWellnessSosScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFED7AA))
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5EDE7))
                 ) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(Icons.Outlined.Info, contentDescription = null, tint = Color(0xFFF97316), modifier = Modifier.size(18.dp))
-                            Text("Incident Protocol", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF92400E))
+                            Icon(Icons.Outlined.Info, contentDescription = null, tint = CareGreen, modifier = Modifier.size(18.dp))
+                            Text("Incident Protocol", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF3F5C45))
                         }
                         listOf(
                             "Primary emergency contacts have been notified via SMS.",
@@ -286,8 +282,8 @@ fun GuardianWellnessSosScreen(
                             "Alert has been logged with timestamp."
                         ).forEach { bullet ->
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text("•", color = Color(0xFFF97316), fontSize = 13.sp)
-                                Text(bullet, fontSize = 13.sp, color = Color(0xFF78350F))
+                                Text("•", color = CareGreen, fontSize = 13.sp)
+                                Text(bullet, fontSize = 13.sp, color = Color(0xFF4A4A4A))
                             }
                         }
                     }
@@ -321,12 +317,7 @@ fun GuardianWellnessSosScreen(
                             )
                         }
                         Text("All Clear", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF111827))
-                        Text(
-                            "No active SOS alerts for ${profile.name}.",
-                            fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
+                        Text("No active SOS alerts for ${profile.name}.", fontSize = 14.sp, color = Color(0xFF666666), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                     }
                 }
 

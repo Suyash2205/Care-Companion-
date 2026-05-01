@@ -90,7 +90,7 @@ fun GuardianHomeScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onLogout) {
-                    Text(stringResource(R.string.common_logout), color = Color(0xFF2D6DCF))
+                    Text(stringResource(R.string.common_logout), color = Color(0xFFB42318))
                 }
             }
             Text(
@@ -166,7 +166,7 @@ fun GuardianHomeScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .background(Color(0xFFF2F7FF), RoundedCornerShape(10.dp))
+                                    .background(Color(0xFFEAF6EC), RoundedCornerShape(10.dp))
                                     .clickable(onClick = onAddProfile)
                                     .padding(horizontal = 10.dp, vertical = 8.dp)
                             ) {
@@ -174,11 +174,11 @@ fun GuardianHomeScreen(
                                     Icon(
                                         imageVector = Icons.Outlined.PersonAdd,
                                         contentDescription = "Add Profile",
-                                        tint = Color(0xFF2D6DCF),
+                                        tint = CareGreen,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("Add Profile", color = Color(0xFF2D6DCF), fontSize = 14.sp)
+                                    Text("Add Profile", color = CareGreen, fontSize = 14.sp)
                                 }
                             }
                         }
