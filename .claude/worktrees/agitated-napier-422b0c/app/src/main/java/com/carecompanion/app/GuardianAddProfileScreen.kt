@@ -33,7 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocalHospital
@@ -266,7 +266,7 @@ fun GuardianAddProfileScreen(
                             .border(1.dp, CardStroke, CircleShape)
                     ) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            Icons.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.guardian_back),
                             tint = TextPrimary,
                             modifier = Modifier.size(22.dp)

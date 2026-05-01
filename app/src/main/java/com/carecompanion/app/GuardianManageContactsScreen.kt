@@ -1,56 +1,33 @@
 package com.carecompanion.app
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.LocalPharmacy
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carecompanion.app.ui.theme.CareGreen
@@ -61,190 +38,281 @@ fun GuardianManageContactsScreen(
     initialContacts: List<ManagedContact>,
     onBack: () -> Unit,
     onSaveContacts: (List<ManagedContact>) -> Unit,
+    onAddContact: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
-    val contacts = remember(initialContacts) { mutableStateListOf<ManagedContact>().apply { addAll(initialContacts) } }
-    var showAddDialog by remember { mutableStateOf(false) }
-    var newName by remember { mutableStateOf("") }
-    var newPhone by remember { mutableStateOf("") }
+    val contacts = remember(initialContacts) {
+        mutableStateListOf<ManagedContact>().apply { addAll(initialContacts) }
+    }
+    var confirmDeleteIndex by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().statusBarsPadding(),
-        containerColor = Color(0xFFF5F6F4),
+        modifier = Modifier.fillMaxSize(),
+        containerColor = GuardianBg,
         bottomBar = {
-            Surface(
-                color = Color.White,
-                border = BorderStroke(1.dp, Color(0xFFE8EBE9))
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(onClick = onBack) { Text("Back") }
-                    Button(
-                        onClick = { onSaveContacts(contacts.toList()) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CareGreen)
-                    ) { Text("Save Contacts") }
-                    TextButton(onClick = onLogout) { Text("Logout", color = Color(0xFFB42318)) }
-                }
-            }
+            GuardianBottomBar(
+                activeTab = BottomTab.Home,
+                onHome = onBack,
+                onAlerts = {}
+            )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.White,
-                    border = BorderStroke(1.dp, Color(0xFFE8EBE9)),
-                    modifier = Modifier.size(38.dp).clickable(onClick = onBack)
-                ) { Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Outlined.ArrowBack, contentDescription = "Back", tint = Color(0xFF2A2A2A))
-                } }
-                Spacer(Modifier.width(10.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Contacts", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text(profile.name, color = Color(0xFF6B7280), fontSize = 13.sp)
+            // ── Header ───────────────────────────────────────────────────────
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(ContactsGrad)
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 18.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.18f))
+                                .clickable(onClick = onBack),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(20.dp))
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Contacts", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(profile.name, fontSize = 13.sp, color = Color.White.copy(alpha = 0.8f))
+                        }
+                        IconButton(onClick = onLogout) {
+                            Icon(Icons.Outlined.Logout, contentDescription = "Logout", tint = Color.White.copy(alpha = 0.8f))
+                        }
+                    }
                 }
-                TextButton(onClick = onLogout) { Text("Logout", color = Color(0xFFB42318)) }
             }
 
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFF2EA0FF))
-            ) {
-                if (contacts.isEmpty()) {
+            // ── Stats bar ────────────────────────────────────────────────────
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatChip(
+                        count = contacts.size.toString(),
+                        label = "Contacts",
+                        color = Color(0xFF0369A1),
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatChip(
+                        count = "2",
+                        label = "Alerts",
+                        color = Color(0xFFB91C1C),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // ── Contact list ─────────────────────────────────────────────────
+            if (contacts.isEmpty()) {
+                item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().padding(22.dp),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
-                        Text("No contacts yet. Add one.", color = Color(0xFF6B7280))
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        itemsIndexed(contacts) { index, c ->
-                            ContactRow(c)
-                            if (index != contacts.lastIndex) {
-                                androidx.compose.material3.HorizontalDivider(color = Color(0xFFEFEFEF))
+                        Surface(shape = RoundedCornerShape(20.dp), color = Color.White, shadowElevation = 2.dp, modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.padding(40.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Icon(Icons.Outlined.PersonAdd, contentDescription = null, tint = Color(0xFFCBD5E1), modifier = Modifier.size(52.dp))
+                                Text("No contacts yet", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = GuardianTextPrimary)
+                                Text("Tap the button below to add emergency contacts.", fontSize = 13.sp, color = GuardianTextSub, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                             }
                         }
                     }
                 }
+            } else {
+                itemsIndexed(contacts) { index, contact ->
+                    ContactCard(
+                        contact = contact,
+                        onDelete = {
+                            confirmDeleteIndex = index
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
             }
 
-            Button(
-                onClick = { showAddDialog = true },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EA0FF))
-            ) {
-                Icon(Icons.Outlined.Add, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text("Add New Contact", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+            // ── Add button ───────────────────────────────────────────────────
+            item {
+                Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    GradientButton(
+                        text = "+ Add New Contact",
+                        onClick = onAddContact,
+                        gradient = ContactsGrad,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
-            AlertsMiniCard(profile.name)
+            // ── Alerts section ────────────────────────────────────────────────
+            item {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color.White,
+                    shadowElevation = 2.dp
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(Icons.Outlined.NotificationsActive, contentDescription = null, tint = Color(0xFFB91C1C), modifier = Modifier.size(18.dp))
+                            Text("Alerts", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GuardianTextPrimary)
+                        }
+                        AlertRow(
+                            icon = Icons.Outlined.LocalPharmacy,
+                            text = "${profile.name} missed her 8:00 am medicine",
+                            iconBg = Color(0xFFFFF7ED),
+                            iconTint = Color(0xFFF97316)
+                        )
+                        AlertRow(
+                            icon = Icons.Outlined.Warning,
+                            text = "SOS Triggered · 10:32 AM · Khar",
+                            iconBg = Color(0xFFFEF2F2),
+                            iconTint = Color(0xFFDC2626)
+                        )
+                    }
+                }
+            }
         }
     }
 
-    if (showAddDialog) {
+    // ── Delete confirm dialog ────────────────────────────────────────────────
+    confirmDeleteIndex?.let { idx ->
         AlertDialog(
-            onDismissRequest = { showAddDialog = false },
-            title = { Text("Add Contact") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedTextField(
-                        value = newName,
-                        onValueChange = { newName = it },
-                        singleLine = true,
-                        label = { Text("Name") }
-                    )
-                    OutlinedTextField(
-                        value = newPhone,
-                        onValueChange = { newPhone = it },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        label = { Text("Phone") }
-                    )
-                }
-            },
+            onDismissRequest = { confirmDeleteIndex = null },
+            title = { Text("Remove contact?") },
+            text = { Text("Remove ${contacts.getOrNull(idx)?.name} from the list?") },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (newName.isNotBlank() && newPhone.isNotBlank()) {
-                            contacts.add(ManagedContact(newName.trim(), newPhone.trim()))
-                            onSaveContacts(contacts.toList())
-                        }
-                        newName = ""
-                        newPhone = ""
-                        showAddDialog = false
-                    }
-                ) { Text("Add") }
+                        contacts.removeAt(idx)
+                        onSaveContacts(contacts.toList())
+                        confirmDeleteIndex = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626))
+                ) { Text("Remove") }
             },
             dismissButton = {
-                TextButton(onClick = { showAddDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { confirmDeleteIndex = null }) { Text("Cancel") }
             }
         )
     }
 }
 
 @Composable
-private fun ContactRow(contact: ManagedContact) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+private fun ContactCard(
+    contact: ManagedContact,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White,
+        shadowElevation = 2.dp
     ) {
-        Box(
-            modifier = Modifier.size(42.dp).background(Color(0xFFF3F4F6), CircleShape),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Icon(Icons.Outlined.Person, contentDescription = null, tint = Color(0xFF4B5563))
-        }
-        Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(contact.name, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
-            Text(contact.phone, fontSize = 14.sp, color = Color(0xFF6B7280))
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.radialGradient(listOf(Color(0xFF38BDF8), Color(0xFF0369A1)))
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (contact.photoUri != null) {
+                    UriBitmapImage(
+                        uri = contact.photoUri,
+                        contentDescription = contact.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        contact.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(contact.name, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = GuardianTextPrimary)
+                Spacer(Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(Icons.Outlined.Phone, contentDescription = null, tint = GuardianTextSub, modifier = Modifier.size(12.dp))
+                    Text(contact.phone, fontSize = 13.sp, color = GuardianTextSub)
+                }
+            }
+            Row {
+                IconButton(onClick = {}, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Outlined.Call, contentDescription = "Call", tint = CareGreen, modifier = Modifier.size(20.dp))
+                }
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = Color(0xFFDC2626), modifier = Modifier.size(18.dp))
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun AlertsMiniCard(name: String) {
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE8EBE9))
-    ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Alerts", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            AlertMiniRow(
-                icon = Icons.Outlined.Warning,
-                text = "$name missed her 8:00 am medicine",
-                iconTint = Color(0xFFF5A623)
-            )
-            AlertMiniRow(
-                icon = Icons.Outlined.Warning,
-                text = "SOS Triggered 10:32 AM Khar",
-                iconTint = Color(0xFFD0021B)
-            )
+private fun StatChip(count: String, label: String, color: Color, modifier: Modifier = Modifier) {
+    Surface(modifier = modifier, shape = RoundedCornerShape(14.dp), color = Color.White, shadowElevation = 2.dp) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(count, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
+            Text(label, fontSize = 12.sp, color = GuardianTextSub)
         }
     }
 }
 
 @Composable
-private fun AlertMiniRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String, iconTint: Color) {
+private fun AlertRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String,
+    iconBg: Color,
+    iconTint: Color
+) {
     Row(
-        modifier = Modifier.fillMaxWidth().background(Color(0xFFFAFAFA), RoundedCornerShape(12.dp)).padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0xFFFAFAFA))
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(8.dp))
-        Text(text, modifier = Modifier.weight(1f), fontSize = 13.sp)
-        Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = Color(0xFF9CA3AF))
+        Box(modifier = Modifier.size(34.dp).background(iconBg, CircleShape), contentAlignment = Alignment.Center) {
+            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
+        }
+        Text(text, modifier = Modifier.weight(1f), fontSize = 13.sp, color = GuardianTextPrimary)
+        Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = GuardianTextSub, modifier = Modifier.size(18.dp))
     }
 }
-

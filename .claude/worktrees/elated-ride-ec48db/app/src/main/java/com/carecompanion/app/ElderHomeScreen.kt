@@ -22,7 +22,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -722,7 +721,7 @@ fun MedicinesScreen(
                     .background(Color.White)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    imageVector = Icons.Outlined.ArrowBack,
                     contentDescription = tr(lang, "elder_back"),
                     tint = Color(0xFF404040)
                 )
@@ -1187,7 +1186,7 @@ private fun ContactListScreen(
                     .background(Color.White)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    imageVector = Icons.Outlined.ArrowBack,
                     contentDescription = tr(lang, "elder_back"),
                     tint = Color(0xFF404040)
                 )
@@ -1283,7 +1282,7 @@ private fun EntertainmentListScreen(
                     .background(Color.White)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    imageVector = Icons.Outlined.ArrowBack,
                     contentDescription = tr(lang, "elder_back"),
                     tint = Color(0xFF404040)
                 )

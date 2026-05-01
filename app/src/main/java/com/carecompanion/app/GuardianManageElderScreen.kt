@@ -1,44 +1,27 @@
 package com.carecompanion.app
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Medication
-import androidx.compose.material.icons.outlined.MonitorHeart
-import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.SwitchAccount
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -53,29 +36,20 @@ fun GuardianManageElderScreen(
     onBack: () -> Unit,
     onSwitchProfiles: () -> Unit,
     onLogout: () -> Unit,
-    onOpenContacts: () -> Unit = {}
+    onOpenContacts: () -> Unit = {},
+    onOpenMedicines: () -> Unit = {},
+    onOpenDailySchedule: () -> Unit = {},
+    onOpenWellnessSos: () -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize().statusBarsPadding(),
-        containerColor = Color(0xFFF5F6F4),
+        modifier = Modifier.fillMaxSize(),
+        containerColor = GuardianBg,
         bottomBar = {
-            Surface(
-                color = Color.White,
-                border = BorderStroke(1.dp, Color(0xFFE8EBE9))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = onBack) { Text("Back") }
-                    TextButton(onClick = onSwitchProfiles) { Text("Switch profile", color = Color(0xFF2D6DCF)) }
-                    TextButton(onClick = onLogout) { Text("Logout", color = Color(0xFFB42318)) }
-                }
-            }
+            GuardianBottomBar(
+                activeTab = BottomTab.Home,
+                onHome = onBack,
+                onAlerts = onOpenWellnessSos
+            )
         }
     ) { innerPadding ->
         Column(
@@ -83,181 +57,248 @@ fun GuardianManageElderScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Manage care",
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = Color(0xFF1C1C1C)
-            )
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            // ── Hero header ────────────────────────────────────────────────────
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Brush.linearGradient(listOf(Color(0xFF0F172A), Color(0xFF1E3A8A))))
+                    .statusBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                Row(
-                    modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(88.dp)
-                            .clip(CircleShape)
-                            .background(profile.bg, CircleShape),
-                        contentAlignment = Alignment.Center
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    // Top row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (profile.photoUri != null) {
-                            UriBitmapImage(
-                                uri = profile.photoUri,
-                                contentDescription = profile.name,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Icon(
-                                imageVector = profile.icon,
-                                contentDescription = null,
-                                tint = Color(0xFF424242),
-                                modifier = Modifier.size(44.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.12f))
+                                .clickable(onClick = onBack),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(18.dp))
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Text("Manage Care", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.weight(1f))
+                        TextButton(onClick = onSwitchProfiles, colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF93C5FD))) {
+                            Icon(Icons.Outlined.SwitchAccount, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Switch", fontSize = 13.sp)
+                        }
+                        TextButton(onClick = onLogout, colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFF87171))) {
+                            Text("Logout", fontSize = 13.sp)
+                        }
+                    }
+
+                    // Profile card in hero
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.White.copy(alpha = 0.08f))
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (profile.photoUri != null) {
+                                UriBitmapImage(
+                                    uri = profile.photoUri,
+                                    contentDescription = profile.name,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(profile.icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(38.dp))
+                            }
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(profile.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Spacer(Modifier.height(4.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Box(modifier = Modifier.size(7.dp).background(Color(0xFF22C55E), CircleShape))
+                                Text("At Home · 15 mins ago", fontSize = 13.sp, color = Color.White.copy(alpha = 0.75f))
+                            }
+                        }
+                        Surface(shape = RoundedCornerShape(20.dp), color = CareGreen) {
+                            Text(
+                                "SAFE",
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+                                fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White
                             )
                         }
                     }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = profile.name,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF1F1F1F)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Elder profile",
-                            fontSize = 14.sp,
-                            color = Color(0xFF6B6B6B)
-                        )
-                    }
                 }
             }
 
+            Spacer(Modifier.height(20.dp))
+
+            // ── Section label ──────────────────────────────────────────────────
             Text(
-                text = "Quick actions",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF2E2E2E)
+                "QUICK ACTIONS",
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = GuardianTextSub,
+                letterSpacing = 1.sp
             )
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    ManageActionTile(
+
+            Spacer(Modifier.height(8.dp))
+
+            // ── 2×2 action grid ────────────────────────────────────────────────
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    ActionTile(
                         title = "Contacts",
-                        subtitle = "Call list & SMS",
+                        subtitle = "Emergency list & calls",
                         icon = Icons.Outlined.Call,
+                        gradient = ContactsGrad,
                         modifier = Modifier.weight(1f),
                         onClick = onOpenContacts
                     )
-                    ManageActionTile(
+                    ActionTile(
                         title = "Medicines",
-                        subtitle = "Coming soon",
+                        subtitle = "Add & manage meds",
                         icon = Icons.Outlined.Medication,
+                        gradient = MedicinesGrad,
                         modifier = Modifier.weight(1f),
-                        onClick = { }
+                        onClick = onOpenMedicines
                     )
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    ManageActionTile(
-                        title = "Vitals",
-                        subtitle = "Coming soon",
-                        icon = Icons.Outlined.MonitorHeart,
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    ActionTile(
+                        title = "Schedule",
+                        subtitle = "Timings & reminders",
+                        icon = Icons.Outlined.Schedule,
+                        gradient = ScheduleGrad,
                         modifier = Modifier.weight(1f),
-                        onClick = { }
+                        onClick = onOpenDailySchedule
                     )
-                    ManageActionTile(
+                    ActionTile(
                         title = "Wellness",
-                        subtitle = "Tips & goals",
+                        subtitle = "SOS & tracking",
                         icon = Icons.Outlined.FavoriteBorder,
+                        gradient = SosGrad,
                         modifier = Modifier.weight(1f),
-                        onClick = { }
+                        onClick = onOpenWellnessSos
                     )
                 }
             }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E6)),
-                border = BorderStroke(1.dp, Color(0xFFFFE0A3))
-            ) {
-                Row(
-                    modifier = Modifier.padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Warning,
-                        contentDescription = null,
-                        tint = Color(0xFFB54708)
-                    )
-                    Column {
-                        Text(
-                            text = "Alerts",
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF7A3E00)
-                        )
-                        Text(
-                            text = "No urgent alerts right now.",
-                            fontSize = 13.sp,
-                            color = Color(0xFF8A5A2A)
-                        )
-                    }
-                }
-            }
+            Spacer(Modifier.height(20.dp))
 
-            Button(
-                onClick = onOpenContacts,
+            // ── Alerts card ────────────────────────────────────────────────────
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = CareGreen)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(18.dp),
+                color = Color.White,
+                shadowElevation = 3.dp
             ) {
-                Text("Open contacts", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(Icons.Outlined.NotificationsActive, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(18.dp))
+                            Text("Recent Alerts", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = GuardianTextPrimary)
+                        }
+                        Surface(shape = CircleShape, color = Color(0xFFDC2626)) {
+                            Text("2", modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        }
+                    }
+                    HorizontalDivider(color = Color(0xFFF1F5F9))
+                    AlertSummaryRow(
+                        text = "${profile.name} missed 8:00 AM medicine",
+                        time = "1h ago",
+                        color = Color(0xFFF97316)
+                    )
+                    AlertSummaryRow(
+                        text = "SOS triggered · Mira Road, Mumbai",
+                        time = "2h ago",
+                        color = Color(0xFFDC2626)
+                    )
+                }
             }
+
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
-private fun ManageActionTile(
+private fun ActionTile(
     title: String,
     subtitle: String,
     icon: ImageVector,
+    gradient: Brush,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Card(
+    Box(
         modifier = modifier
-            .height(100.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, Color(0xFFE8EBE9))
+            .height(120.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(gradient)
+            .clickable(onClick = onClick)
+            .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(icon, contentDescription = null, tint = CareGreen, modifier = Modifier.size(26.dp))
-            Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Color(0xFF1F1F1F))
-            Text(subtitle, fontSize = 12.sp, color = Color(0xFF777777))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.White.copy(alpha = 0.2f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+            }
+            Column {
+                Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color.White)
+                Text(subtitle, fontSize = 11.sp, color = Color.White.copy(alpha = 0.8f))
+            }
         }
+        Icon(
+            Icons.AutoMirrored.Outlined.ArrowForward,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.6f),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(18.dp)
+        )
+    }
+}
+
+@Composable
+private fun AlertSummaryRow(text: String, time: String, color: Color) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(modifier = Modifier.size(8.dp).background(color, CircleShape))
+        Text(text, modifier = Modifier.weight(1f), fontSize = 13.sp, color = GuardianTextPrimary)
+        Text(time, fontSize = 11.sp, color = GuardianTextSub)
     }
 }

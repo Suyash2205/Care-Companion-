@@ -1,0 +1,24 @@
+# Gradle / Android
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local machine
+local.properties
+*.iml
+.idea/
+.DS_Store
+
+# Native / caches
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# Release artifacts (APKs are large; build CI instead)
+*.apk
+*.aab
+app/release/
+
+# Captures
+captures/
