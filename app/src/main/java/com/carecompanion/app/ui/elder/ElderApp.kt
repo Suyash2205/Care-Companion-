@@ -1,25 +1,24 @@
 package com.carecompanion.app.ui.elder
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.carecompanion.app.ElderHomeScreen
-import com.carecompanion.app.ManagedContact
 
-/** Elder experience entry point, backed by real data. The rich home per the
- *  approved mockup is layered on top of the existing elder screen. */
+/** Elder experience entry point, backed by real data (see [ElderExperience]). */
 @Composable
-fun ElderApp(onLogout: () -> Unit, vm: ElderHomeViewModel = hiltViewModel()) {
-    val ui by vm.ui.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.load() }
-
-    val contacts = ui.contacts.map { ManagedContact(it.name, it.phone, null) }
-    ElderHomeScreen(
-        elderName = ui.elder?.name ?: "…",
-        onSosPressed = {},
-        onLogout = onLogout,
-        elderContacts = contacts,
-    )
+fun ElderApp(onLogout: () -> Unit) {
+    val permLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
+    LaunchedEffect(Unit) {
+        val perms = buildList {
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
+            add(Manifest.permission.SEND_SMS)
+            add(Manifest.permission.CALL_PHONE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        permLauncher.launch(perms.toTypedArray())
+    }
+    ElderExperience(onLogout = onLogout)
 }
