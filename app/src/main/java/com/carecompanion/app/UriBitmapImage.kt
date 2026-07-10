@@ -33,9 +33,14 @@ fun UriBitmapImage(
     LaunchedEffect(uri) {
         bitmap = withContext(Dispatchers.IO) {
             runCatching {
-                context.contentResolver.openInputStream(uri)?.use { stream ->
-                    BitmapFactory.decodeStream(stream)
-                }
+                // Decode bounds first, then downsample to ~1024px to avoid OOM on large photos.
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+                var sample = 1
+                val maxDim = maxOf(bounds.outWidth, bounds.outHeight)
+                while (maxDim / sample > 1024) sample *= 2
+                val opts = BitmapFactory.Options().apply { inSampleSize = sample }
+                context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
             }.getOrNull()
         }
     }

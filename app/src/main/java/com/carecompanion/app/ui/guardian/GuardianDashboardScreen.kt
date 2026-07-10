@@ -51,6 +51,13 @@ fun GuardianDashboardScreen(
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
+    // live-poll the alert feed while the dashboard is open
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(20_000)
+            vm.refreshAlerts()
+        }
+    }
 
     Scaffold(
         containerColor = GuardianBg,

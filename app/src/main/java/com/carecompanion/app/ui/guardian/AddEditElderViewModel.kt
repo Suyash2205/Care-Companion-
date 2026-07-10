@@ -135,7 +135,7 @@ class AddEditElderViewModel @Inject constructor(
                 val elderId = elder.id!!
                 // upload photo if a new one was picked
                 val finalElder = s.photoUri?.let { uri ->
-                    val bytes = appContext.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    val bytes = com.carecompanion.app.data.ImageUtil.readScaledJpeg(appContext, uri)
                     if (bytes != null) {
                         val url = storage.upload(StorageRepository.BUCKET_PHOTOS, elderId, bytes)
                         elderRepo.updateElderFields(elderId, mapOf("photo_url" to url)) ?: elder

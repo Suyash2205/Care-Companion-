@@ -49,4 +49,11 @@ class GuardianDashboardViewModel @Inject constructor(
     }
 
     fun selectElder(id: String) { _ui.value = _ui.value.copy(selectedElderId = id) }
+
+    /** Lightweight refresh of just the alert feed (used for live polling). */
+    fun refreshAlerts() {
+        viewModelScope.launch {
+            runCatching { alertsRepo.list() }.onSuccess { _ui.value = _ui.value.copy(alerts = it) }
+        }
+    }
 }

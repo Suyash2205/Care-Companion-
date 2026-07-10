@@ -54,11 +54,17 @@ fun GuardianVitalsScreen(onBack: () -> Unit, vm: VitalsViewModel = hiltViewModel
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
                         TextButton(onClick = {
                             val file = vm.buildPdf(context)
-                            scope.launch {
-                                snackbar.showSnackbar(
-                                    if (file != null) "PDF saved: ${file.absolutePath}" else "Could not create PDF"
+                            if (file != null) {
+                                val uri = androidx.core.content.FileProvider.getUriForFile(
+                                    context, "${context.packageName}.fileprovider", file
                                 )
-                            }
+                                val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                    type = "application/pdf"
+                                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(android.content.Intent.createChooser(share, "Share Vitals Report"))
+                            } else scope.launch { snackbar.showSnackbar("Could not create PDF") }
                         }) { Text("Export PDF", color = CareGreen, fontWeight = FontWeight.Bold) }
                     }
 

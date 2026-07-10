@@ -113,7 +113,7 @@ class MedicinesViewModel @Inject constructor(
     }
 
     private suspend fun uploadMed(uri: Uri): String? {
-        val bytes = appContext.contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: return null
+        val bytes = com.carecompanion.app.data.ImageUtil.readScaledJpeg(appContext, uri) ?: return null
         return storage.upload(StorageRepository.BUCKET_MEDICINE, elderId, bytes)
     }
 }
