@@ -44,6 +44,7 @@ class ElderHomeViewModel @Inject constructor(
     private val elderRepo: ElderRepository,
     private val care: CareRepository,
     private val adherence: AdherenceRepository,
+    private val outbox: com.carecompanion.app.data.repo.OutboxStore,
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(ElderUiState())
@@ -52,6 +53,7 @@ class ElderHomeViewModel @Inject constructor(
     fun load() {
         _ui.value = _ui.value.copy(loading = true)
         viewModelScope.launch {
+            runCatching { outbox.flush() }   // retry any offline-queued adherence writes
             try {
                 val elder = elderRepo.listElders().firstOrNull { it.isActive }
                 if (elder?.id == null) { _ui.value = ElderUiState(false, error = "No profile linked yet"); return@launch }
@@ -79,8 +81,9 @@ class ElderHomeViewModel @Inject constructor(
         return scheds.filter { (it.days and todayBit) != 0 && medById.containsKey(it.medicineId) }
             .sortedBy { it.time }
             .map { sched ->
-                val due = "${today}T${sched.time}:00+00"
-                val log = logs.firstOrNull { it.source == "schedule" && it.sourceId == sched.id && it.dueAt.startsWith("${today}T${sched.time}") }
+                val due = "${today}T${sched.time}:00${offsetStr()}"
+                // match an existing log by occurrence, not by the exact dueAt string (tz-robust)
+                val log = logs.firstOrNull { it.source == "schedule" && it.sourceId == sched.id && it.occurrenceDate == today }
                 Dose(medById[sched.medicineId]!!, sched, due, today, log?.status ?: "pending")
             }
     }
@@ -103,23 +106,20 @@ class ElderHomeViewModel @Inject constructor(
     }
 
     fun recordDose(dose: Dose, taken: Boolean) {
+        val elderId = _ui.value.elder?.id ?: return
+        val newStatus = if (taken) "taken" else "skipped"
+        // optimistic UI update — the tap is never lost even offline
+        _ui.value = _ui.value.copy(doses = _ui.value.doses.map {
+            if (it.schedule.id == dose.schedule.id && it.dueAt == dose.dueAt) it.copy(status = newStatus) else it
+        })
+        val log = AdherenceLogDto(
+            elderId = elderId, source = "schedule", sourceId = dose.schedule.id!!,
+            occurrenceDate = dose.occurrenceDate, dueAt = dose.dueAt,
+            status = newStatus, respondedAt = nowIso(),
+        )
         viewModelScope.launch {
-            val elderId = _ui.value.elder?.id ?: return@launch
-            runCatching {
-                adherence.record(
-                    AdherenceLogDto(
-                        elderId = elderId, source = "schedule", sourceId = dose.schedule.id!!,
-                        occurrenceDate = dose.occurrenceDate, dueAt = dose.dueAt,
-                        status = if (taken) "taken" else "skipped",
-                        respondedAt = nowIso(),
-                    )
-                )
-            }.onSuccess {
-                _ui.value = _ui.value.copy(doses = _ui.value.doses.map {
-                    if (it.schedule.id == dose.schedule.id && it.dueAt == dose.dueAt)
-                        it.copy(status = if (taken) "taken" else "skipped") else it
-                })
-            }
+            runCatching { adherence.record(log) }
+                .onFailure { outbox.enqueue(log) }   // offline → queue for later flush
         }
     }
 
@@ -130,10 +130,18 @@ class ElderHomeViewModel @Inject constructor(
 
     private fun nowIso(): String {
         val c = Calendar.getInstance()
-        return "%04d-%02d-%02dT%02d:%02d:%02d+00".format(
+        return "%04d-%02d-%02dT%02d:%02d:%02d%s".format(
             c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH),
-            c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND)
+            c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), offsetStr()
         )
+    }
+
+    /** Device UTC offset as "+HH:MM" so due_at instants match the server (IST) scan. */
+    private fun offsetStr(): String {
+        val offsetMin = Calendar.getInstance().let { (it.get(Calendar.ZONE_OFFSET) + it.get(Calendar.DST_OFFSET)) / 60000 }
+        val sign = if (offsetMin >= 0) "+" else "-"
+        val a = kotlin.math.abs(offsetMin)
+        return "%s%02d:%02d".format(sign, a / 60, a % 60)
     }
 
     /** Monday=0 … Sunday=6 for bitmask. */

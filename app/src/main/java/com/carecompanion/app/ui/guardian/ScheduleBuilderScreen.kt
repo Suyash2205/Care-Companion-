@@ -7,6 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,6 +37,15 @@ fun ScheduleBuilderScreen(medicineId: String, onDone: () -> Unit, onBack: () -> 
     var time by remember { mutableStateOf("08:00") }
     var withWater by remember { mutableStateOf(true) }
     var meal by remember { mutableStateOf("after") }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    if (showTimePicker) {
+        TimePickerDialogCC(
+            initial = time,
+            onDismiss = { showTimePicker = false },
+            onConfirm = { picked -> time = picked; showTimePicker = false },
+        )
+    }
 
     Scaffold(containerColor = GuardianBg, bottomBar = {
         Surface(color = Color.White, shadowElevation = 12.dp) {
@@ -95,7 +106,11 @@ fun ScheduleBuilderScreen(medicineId: String, onDone: () -> Unit, onBack: () -> 
                         }
                     }
                     Spacer(Modifier.height(10.dp))
-                    GuardianTextField(value = time, onValueChange = { time = it }, label = "Time (HH:MM 24-hour)")
+                    OutlinedButton(onClick = { showTimePicker = true }, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(12.dp)) {
+                        Icon(Icons.Outlined.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Pick time — $time", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
                 CardSection("Water") {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -120,3 +135,21 @@ private fun CardSection(title: String, content: @Composable ColumnScope.() -> Un
 }
 
 private fun Modifier.horizontalScrollWrap(): Modifier = this
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimePickerDialogCC(initial: String, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    val h = initial.split(":").getOrNull(0)?.toIntOrNull() ?: 8
+    val m = initial.split(":").getOrNull(1)?.toIntOrNull() ?: 0
+    val state = rememberTimePickerState(initialHour = h, initialMinute = m, is24Hour = true)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = { onConfirm("%02d:%02d".format(state.hour, state.minute)) }) {
+                Text("OK", color = CareGreen, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        text = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { TimePicker(state = state) } },
+    )
+}
