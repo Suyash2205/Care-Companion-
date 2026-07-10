@@ -1,28 +1,109 @@
 package com.carecompanion.app.reminder
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.Calendar
+
+/** One armed reminder occurrence. */
+data class DoseAlarm(
+    val key: String,        // stable per schedule occurrence
+    val timeMillis: Long,   // when to fire (today)
+    val title: String,
+    val body: String,
+)
 
 /**
- * Schedules and handles exact alarms for medicine schedules + activity reminders.
- * Real scheduling logic lands in the reminder-engine phase; the entry points exist
- * now so the manifest receivers resolve and callers can be wired incrementally.
+ * Arms exact alarms for today's medicine doses. Alarms are (re)armed whenever the
+ * elder opens the app; the set is persisted to SharedPreferences so [rescheduleAll]
+ * can re-arm the remainder after a reboot — no Room/WorkManager needed for v1.
  */
 object ReminderScheduler {
 
-    const val EXTRA_KIND = "kind"          // schedule | reminder
-    const val EXTRA_SOURCE_ID = "source_id"
     const val EXTRA_TITLE = "title"
     const val EXTRA_BODY = "body"
+    private const val PREFS = "cc_reminders"
+    private const val KEY_DOSES = "today_doses"
 
-    fun handleFire(context: Context, intent: Intent) {
-        val title = intent.getStringExtra(EXTRA_TITLE) ?: "Reminder"
-        val body = intent.getStringExtra(EXTRA_BODY) ?: ""
-        val id = (intent.getStringExtra(EXTRA_SOURCE_ID) ?: title).hashCode()
-        com.carecompanion.app.notify.Notifications.showReminder(context, id, title, body)
+    /** Arm alarms for the future doses in [doses] (past times are skipped). */
+    fun scheduleDoses(context: Context, doses: List<DoseAlarm>) {
+        val now = System.currentTimeMillis()
+        val future = doses.filter { it.timeMillis > now }
+        persist(context, future)
+        val am = context.getSystemService(AlarmManager::class.java) ?: return
+        future.forEach { arm(context, am, it) }
     }
 
+    private fun arm(context: Context, am: AlarmManager, d: DoseAlarm) {
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            action = "com.carecompanion.app.DOSE." + d.key
+            putExtra(EXTRA_TITLE, d.title)
+            putExtra(EXTRA_BODY, d.body)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, d.key.hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()
+        try {
+            if (canExact) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, d.timeMillis, pi)
+            else am.setWindow(AlarmManager.RTC_WAKEUP, d.timeMillis, 10 * 60 * 1000L, pi)
+        } catch (_: SecurityException) {
+            am.setWindow(AlarmManager.RTC_WAKEUP, d.timeMillis, 10 * 60 * 1000L, pi)
+        }
+    }
+
+    fun handleFire(context: Context, intent: Intent) {
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: "Medicine reminder"
+        val body = intent.getStringExtra(EXTRA_BODY) ?: "It's time to take your medicine."
+        com.carecompanion.app.notify.Notifications.showReminder(context, title.hashCode(), title, body)
+    }
+
+    /** Re-arm the persisted, still-future doses (called on boot). */
     fun rescheduleAll(context: Context) {
-        // TODO(reminder-phase): reload today's schedules/reminders from Room and re-arm alarms.
+        val doses = load(context)
+        scheduleDoses(context, doses)
+    }
+
+    // ── persistence ──────────────────────────────────────────────────────────
+    private fun persist(context: Context, doses: List<DoseAlarm>) {
+        val arr = JSONArray()
+        doses.forEach {
+            arr.put(JSONObject().put("key", it.key).put("t", it.timeMillis).put("title", it.title).put("body", it.body))
+        }
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putString(KEY_DOSES, arr.toString()).putLong("saved_day", dayStamp()).apply()
+    }
+
+    private fun load(context: Context): List<DoseAlarm> {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        if (prefs.getLong("saved_day", -1) != dayStamp()) return emptyList()  // stale (previous day)
+        val raw = prefs.getString(KEY_DOSES, null) ?: return emptyList()
+        return runCatching {
+            val arr = JSONArray(raw)
+            (0 until arr.length()).map {
+                val o = arr.getJSONObject(it)
+                DoseAlarm(o.getString("key"), o.getLong("t"), o.getString("title"), o.getString("body"))
+            }
+        }.getOrDefault(emptyList())
+    }
+
+    private fun dayStamp(): Long {
+        val c = Calendar.getInstance()
+        return c.get(Calendar.YEAR) * 1000L + c.get(Calendar.DAY_OF_YEAR)
+    }
+
+    /** Build the fire-time (millis today) for an "HH:MM" schedule. */
+    fun timeMillisToday(hhmm: String): Long {
+        val parts = hhmm.split(":")
+        val h = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, h); set(Calendar.MINUTE, m); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
     }
 }

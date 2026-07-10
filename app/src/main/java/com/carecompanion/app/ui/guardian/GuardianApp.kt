@@ -67,14 +67,13 @@ fun GuardianApp(onLogout: () -> Unit) {
             )
         }
 
-        composable(Routes.REMINDERS, elderArg) { Placeholder("Reminders", onBack = { nav.popBackStack() }) }
-        composable(Routes.VITALS, elderArg) { Placeholder("Vitals", onBack = { nav.popBackStack() }) }
-        composable(Routes.ADD_VITAL, elderArg) { Placeholder("Add Vital", onBack = { nav.popBackStack() }) }
-        composable(Routes.ADHERENCE, elderArg) { Placeholder("Adherence", onBack = { nav.popBackStack() }) }
+        composable(Routes.REMINDERS, elderArg) { GuardianRemindersScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.VITALS, elderArg) { GuardianVitalsScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.ADHERENCE, elderArg) { GuardianAdherenceScreen(onBack = { nav.popBackStack() }) }
         composable(Routes.SOS, elderArg) { GuardianSosScreen(onBack = { nav.popBackStack() }) }
         composable(Routes.SOS_SETTINGS, elderArg) { Placeholder("SOS Settings", onBack = { nav.popBackStack() }) }
-        composable(Routes.FAMILY, elderArg) { Placeholder("Family Members", onBack = { nav.popBackStack() }) }
-        composable(Routes.OTT, elderArg) { Placeholder("Videos & Apps", onBack = { nav.popBackStack() }) }
-        composable(Routes.WHEELCHAIR, elderArg) { Placeholder("Wheelchair Assistance", onBack = { nav.popBackStack() }) }
+        composable(Routes.FAMILY, elderArg) { GuardianFamilyScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.OTT, elderArg) { GuardianOttScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.WHEELCHAIR, elderArg) { GuardianWheelchairScreen(onBack = { nav.popBackStack() }) }
     }
 }

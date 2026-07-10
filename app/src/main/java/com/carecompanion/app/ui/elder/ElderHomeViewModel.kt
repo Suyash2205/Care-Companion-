@@ -1,12 +1,16 @@
 package com.carecompanion.app.ui.elder
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.carecompanion.app.data.model.*
 import com.carecompanion.app.data.repo.AdherenceRepository
 import com.carecompanion.app.data.repo.CareRepository
 import com.carecompanion.app.data.repo.ElderRepository
+import com.carecompanion.app.reminder.DoseAlarm
+import com.carecompanion.app.reminder.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +40,7 @@ data class ElderUiState(
 
 @HiltViewModel
 class ElderHomeViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val elderRepo: ElderRepository,
     private val care: CareRepository,
     private val adherence: AdherenceRepository,
@@ -59,6 +64,7 @@ class ElderHomeViewModel @Inject constructor(
                 val logs = runCatching { adherence.forDate(eid, today) }.getOrDefault(emptyList())
                 val doses = buildDoses(meds, scheds, today, logs)
                 _ui.value = ElderUiState(false, elder, doses, contacts, ott)
+                armAlarms(doses)
             } catch (e: Exception) {
                 _ui.value = _ui.value.copy(loading = false, error = e.message)
             }
@@ -77,6 +83,23 @@ class ElderHomeViewModel @Inject constructor(
                 val log = logs.firstOrNull { it.source == "schedule" && it.sourceId == sched.id && it.dueAt.startsWith("${today}T${sched.time}") }
                 Dose(medById[sched.medicineId]!!, sched, due, today, log?.status ?: "pending")
             }
+    }
+
+    /** Arm on-device notifications for today's still-pending doses. */
+    private fun armAlarms(doses: List<Dose>) {
+        val alarms = doses.filter { it.status == "pending" }.map { d ->
+            val chips = listOfNotNull(
+                d.medicine.dosage.ifBlank { null }, d.schedule.label,
+                d.medicine.withLiquid?.let { "with $it" }
+            ).joinToString(" · ")
+            DoseAlarm(
+                key = "${d.schedule.id}-${d.dueAt}",
+                timeMillis = ReminderScheduler.timeMillisToday(d.schedule.time),
+                title = "Time for ${d.medicine.name}",
+                body = chips.ifBlank { "It's time to take your medicine." },
+            )
+        }
+        runCatching { ReminderScheduler.scheduleDoses(appContext, alarms) }
     }
 
     fun recordDose(dose: Dose, taken: Boolean) {

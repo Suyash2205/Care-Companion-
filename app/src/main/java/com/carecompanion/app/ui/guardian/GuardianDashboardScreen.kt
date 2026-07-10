@@ -188,12 +188,14 @@ private fun QuickActions(elderId: String, onOpen: (String) -> Unit) {
     val actions = listOf(
         Action("Contacts", "Emergency & calls", Icons.Outlined.Call, ContactsGrad, Routes.elder(Routes.CONTACTS, elderId)),
         Action("Medicines", "Add & manage meds", Icons.Outlined.Medication, MedicinesGrad, Routes.elder(Routes.MEDICINES, elderId)),
-        Action("Schedule", "Timings & reminders", Icons.Outlined.Schedule, ScheduleGrad, Routes.elder(Routes.SCHEDULE, elderId)),
+        Action("Schedule", "Timings & doses", Icons.Outlined.Schedule, ScheduleGrad, Routes.elder(Routes.SCHEDULE, elderId)),
         Action("Reminders", "Water · walk · vitals", Icons.Outlined.NotificationsActive, ScheduleGrad, Routes.elder(Routes.REMINDERS, elderId)),
         Action("Vitals", "BP · sugar · PDF", Icons.Outlined.FavoriteBorder, MedicinesGrad, Routes.elder(Routes.VITALS, elderId)),
         Action("Adherence", "Taken & missed", Icons.Outlined.Schedule, ContactsGrad, Routes.elder(Routes.ADHERENCE, elderId)),
         Action("Videos", "OTT shortcuts", Icons.Outlined.Add, ScheduleGrad, Routes.elder(Routes.OTT, elderId)),
-        Action("SOS & Family", "Alerts & members", Icons.Outlined.Warning, SosGrad, Routes.elder(Routes.SOS, elderId)),
+        Action("Wheelchair", "Assistance & services", Icons.Outlined.Call, ContactsGrad, Routes.elder(Routes.WHEELCHAIR, elderId)),
+        Action("Family", "Members & access", Icons.Outlined.Add, MedicinesGrad, Routes.elder(Routes.FAMILY, elderId)),
+        Action("SOS Alerts", "Emergency monitor", Icons.Outlined.Warning, SosGrad, Routes.elder(Routes.SOS, elderId)),
     )
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         actions.chunked(2).forEach { row ->
