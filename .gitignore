@@ -22,3 +22,23 @@ app/release/
 
 # Captures
 captures/
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+design-system/node_modules/
+design-system/dist/
+.envrc
+
+# Secrets / local config
+app/google-services.json
+.supabase/
+supabase/.temp/
+local.properties
+
+.gradle/
+build/
+app/build/
+*.iml
+.idea/

@@ -1,0 +1,176 @@
+<!-- @dsCard group="Screens · Guardian" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adherence</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-medicines:linear-gradient(135deg,#558f6a,#3f7e58);--cc-grad-schedule:linear-gradient(135deg,#5a9670,#4b8b62);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font);color:var(--cc-text)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);display:flex;flex-direction:column}
+.header{background:var(--cc-grad-medicines);color:#fff;padding:0 20px 22px}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 2px 10px;font-size:14px;font-weight:600}
+.statusbar .dots{display:flex;gap:5px}
+.statusbar .dots span{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
+.header-row{display:flex;align-items:center;gap:14px;margin-top:8px}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
+.header-title{font-size:20px;font-weight:700}
+.header-sub{font-size:13px;color:rgba(255,255,255,.8);margin-top:2px}
+.content{flex:1;padding:16px 20px 16px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--cc-surface);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);padding:16px}
+.summary{display:flex;align-items:center;gap:22px}
+.ring{width:96px;height:96px;border-radius:50%;border:9px solid var(--cc-green);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
+.ring .pct{font-size:24px;font-weight:700}
+.ring .cap{font-size:11px;color:var(--cc-text-sub);text-align:center;line-height:1.15}
+.mini-stats{display:flex;flex-direction:column;gap:9px}
+.mini{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600}
+.mini .m-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.mini .num{font-weight:700}
+.week-strip{display:flex;justify-content:space-between}
+.day-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+.day-name{font-size:11px;font-weight:600;color:var(--cc-text-faint)}
+.day-sq{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.day-sq.ok{background:var(--cc-green);color:#fff}
+.day-sq.miss{background:var(--cc-danger-tint);color:var(--cc-danger)}
+.day-sq.today{background:var(--cc-surface);border:2px dashed var(--cc-green);color:var(--cc-green)}
+.day-sq.future{background:var(--cc-surface-dim);color:var(--cc-text-faint)}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--cc-text-faint);margin-top:2px}
+.med-card{background:var(--cc-surface);border-radius:var(--cc-radius-md);box-shadow:var(--cc-shadow-card);padding:13px 16px;display:flex;flex-direction:column;gap:8px}
+.med-head{display:flex;align-items:center;justify-content:space-between}
+.med-name{font-size:14.5px;font-weight:700}
+.med-count{font-size:12.5px;font-weight:600;color:var(--cc-text-sub)}
+.perfect{font-size:10.5px;font-weight:700;background:var(--cc-pastel-green);color:var(--cc-pastel-green-fg);border-radius:999px;padding:3px 9px;margin-left:8px}
+.dose-dots{display:flex;gap:5px}
+.dose-dots span{width:8px;height:8px;border-radius:50%;background:var(--cc-green)}
+.dose-dots span.r{background:var(--cc-danger)}
+.two-col{display:flex}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0}
+.col + .col{border-left:1px solid var(--cc-border)}
+.col .c-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.col .c-value{font-size:16px;font-weight:700}
+.col .c-label{font-size:11.5px;color:var(--cc-text-sub)}
+.bottomnav{background:var(--cc-surface);border-top:1px solid var(--cc-border);display:flex;padding:10px 0 18px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--cc-text-faint)}
+.nav-item.active{color:var(--cc-green)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="header">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="dots"><span></span><span></span><span></span></span>
+    </div>
+    <div class="header-row">
+      <div class="back-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </div>
+      <div>
+        <div class="header-title">Adherence</div>
+        <div class="header-sub">Sunita &middot; This week</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card summary">
+      <div class="ring">
+        <div class="pct">86%</div>
+        <div class="cap">taken<br>on time</div>
+      </div>
+      <div class="mini-stats">
+        <div class="mini"><span class="m-dot" style="background:var(--cc-success)"></span><span class="num">24</span>&nbsp;Taken</div>
+        <div class="mini"><span class="m-dot" style="background:var(--cc-danger)"></span><span class="num">3</span>&nbsp;Missed</div>
+        <div class="mini"><span class="m-dot" style="background:#e08a00"></span><span class="num">1</span>&nbsp;Skipped</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="week-strip">
+        <div class="day-col"><span class="day-name">Mon</span>
+          <div class="day-sq ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="day-col"><span class="day-name">Tue</span>
+          <div class="day-sq ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="day-col"><span class="day-name">Wed</span>
+          <div class="day-sq miss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+        <div class="day-col"><span class="day-name">Thu</span>
+          <div class="day-sq ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="day-col"><span class="day-name">Fri</span>
+          <div class="day-sq today">&middot;</div></div>
+        <div class="day-col"><span class="day-name">Sat</span>
+          <div class="day-sq future"></div></div>
+        <div class="day-col"><span class="day-name">Sun</span>
+          <div class="day-sq future"></div></div>
+      </div>
+    </div>
+
+    <div class="section-label">BY MEDICINE</div>
+
+    <div class="med-card">
+      <div class="med-head">
+        <span class="med-name">Metformin 500mg</span>
+        <span class="med-count">12/14 doses</span>
+      </div>
+      <div class="dose-dots">
+        <span></span><span></span><span></span><span></span><span class="r"></span><span></span><span></span><span></span><span></span><span class="r"></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="med-card">
+      <div class="med-head">
+        <span class="med-name">Amlodipine 5mg</span>
+        <span class="med-count">7/7 doses<span class="perfect">Perfect ✨</span></span>
+      </div>
+      <div class="dose-dots">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="med-card">
+      <div class="med-head">
+        <span class="med-name">Telmisartan 40mg</span>
+        <span class="med-count">5/7 doses</span>
+      </div>
+      <div class="dose-dots">
+        <span></span><span class="r"></span><span></span><span></span><span class="r"></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="section-label">REMINDERS</div>
+    <div class="card two-col" style="padding:10px 16px">
+      <div class="col">
+        <div class="c-icon" style="background:var(--cc-pastel-teal);color:var(--cc-pastel-teal-fg)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        </div>
+        <div class="c-value">82%</div>
+        <div class="c-label">Water</div>
+      </div>
+      <div class="col">
+        <div class="c-icon" style="background:var(--cc-pastel-green);color:var(--cc-pastel-green-fg)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 8l-3 4 3 3v5"/><path d="M10 12l-3 2-2 6"/><path d="M13 11l4 1 3 4"/></svg>
+        </div>
+        <div class="c-value">5/7 days</div>
+        <div class="c-label">Walk</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottomnav">
+    <div class="nav-item active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alerts
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </div>
+  </div>
+</div>
+</body>
+</html>

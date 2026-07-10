@@ -1,0 +1,9 @@
+{
+  "projectId": "7e37c7c1-b751-4ee0-b961-a960460865ec",
+  "pkg": "carecompanion-design-system",
+  "globalName": "CareCompanionDS",
+  "shape": "package",
+  "buildCmd": "npm run build",
+  "cssEntry": "src/styles.css",
+  "readmeHeader": ".design-sync/conventions.md"
+}

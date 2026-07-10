@@ -1,0 +1,90 @@
+<!-- @dsCard group="Screens · Elder" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-pink:#fce4ec;--cc-pastel-pink-fg:#ad1457;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font);color:var(--cc-text)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 6px;color:#3a3a3a;font-size:15px;font-weight:600}
+.statusbar .dots{display:flex;gap:6px;align-items:center}
+.statusbar .dot{width:9px;height:9px;border-radius:50%;background:#3a3a3a}
+.statusbar .batt{width:22px;height:11px;border:1.8px solid #3a3a3a;border-radius:3px;position:relative}
+.statusbar .batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:#3a3a3a;border-radius:1px}
+.header{display:flex;align-items:center;gap:14px;padding:16px 20px 8px}
+.backbtn{width:52px;height:52px;border-radius:50%;background:var(--cc-surface);box-shadow:var(--cc-shadow-card);display:flex;align-items:center;justify-content:center;color:var(--cc-text);flex:none}
+h1{font-size:28px;font-weight:700;margin:0;line-height:1.2}
+.content{padding:10px 20px 28px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--cc-surface);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);padding:20px}
+.cardtitle{font-size:22px;font-weight:700;margin:0 0 16px}
+.sizes{display:flex;gap:14px}
+.sizeopt{width:64px;height:64px;border-radius:var(--cc-radius-md);border:2.5px solid var(--cc-border);background:var(--cc-surface);display:flex;align-items:center;justify-content:center;font-weight:700}
+.sizeopt.selected{border-color:var(--cc-green);background:var(--cc-green-tint)}
+.preview{margin-top:16px;padding:14px 16px;background:var(--cc-surface-dim);border-radius:var(--cc-radius-md);font-size:24px;line-height:1.35}
+.langgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lang{height:72px;border-radius:var(--cc-radius-md);border:2.5px solid var(--cc-border);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}
+.lang.selected{border-color:var(--cc-green);background:var(--cc-green-tint)}
+.togglerow{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.togglelabel{font-size:22px;font-weight:700}
+.toggle{width:64px;height:36px;border-radius:999px;background:var(--cc-green);position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.logout{height:72px;background:var(--cc-surface);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);display:flex;align-items:center;justify-content:center;gap:12px;color:var(--cc-danger);font-size:22px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="batt"></span>
+    </span>
+  </div>
+
+  <div class="header">
+    <div class="backbtn">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </div>
+    <h1>Settings</h1>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <h2 class="cardtitle">Text Size</h2>
+      <div class="sizes">
+        <div class="sizeopt" style="font-size:18px">A</div>
+        <div class="sizeopt selected" style="font-size:24px">A</div>
+        <div class="sizeopt" style="font-size:32px">A</div>
+      </div>
+      <div class="preview">Sunita, this is how text will look</div>
+    </div>
+
+    <div class="card">
+      <h2 class="cardtitle">Language</h2>
+      <div class="langgrid">
+        <div class="lang selected">English</div>
+        <div class="lang">हिन्दी</div>
+        <div class="lang">मराठी</div>
+        <div class="lang">ગુજરાતી</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="togglerow">
+        <div class="togglelabel">High Contrast</div>
+        <div class="toggle"></div>
+      </div>
+    </div>
+
+    <div class="logout">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log Out
+    </div>
+  </div>
+</div>
+</body>
+</html>

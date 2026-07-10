@@ -1,0 +1,106 @@
+<!-- @dsCard group="Screens · Elder" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elder Home — CareCompanion</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-shadow-sos:0 8px 24px rgba(211,47,47,.35);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column;font-family:var(--cc-font)}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 6px;color:#4a4a4a;font-size:15px;font-weight:600}
+.statusbar .dots{display:flex;align-items:center;gap:7px}
+.statusbar .dot{width:9px;height:9px;border-radius:50%;background:#4a4a4a}
+.statusbar .batt{width:24px;height:12px;border:1.8px solid #4a4a4a;border-radius:3px;position:relative}
+.statusbar .batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:#4a4a4a;border-radius:1px}
+.content{flex:1;padding:12px 20px 28px;display:flex;flex-direction:column;gap:18px}
+.greet-row{display:flex;justify-content:space-between;align-items:flex-start;padding-top:6px}
+.greet small{display:block;font-size:19px;color:var(--cc-text-sub);margin-bottom:2px}
+.greet h1{font-size:34px;font-weight:800;color:var(--cc-text);line-height:1.1}
+.status-pill{display:flex;align-items:center;gap:8px;background:var(--cc-green-tint);color:var(--cc-green-dark);font-size:16px;font-weight:700;padding:10px 16px;border-radius:999px;margin-top:8px}
+.status-pill .pip{width:10px;height:10px;border-radius:50%;background:var(--cc-green)}
+.sos{width:100%;height:130px;border:none;border-radius:var(--cc-radius-3xl);background:var(--cc-grad-sos);box-shadow:var(--cc-shadow-sos);color:#fff;display:flex;align-items:center;justify-content:center;gap:18px;cursor:pointer}
+.sos .sos-txt{text-align:left}
+.sos .sos-txt b{display:block;font-size:44px;font-weight:900;letter-spacing:3px;line-height:1}
+.sos .sos-txt span{display:block;font-size:18px;font-weight:500;opacity:.95;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tile{background:var(--cc-surface);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);min-height:150px;padding:18px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-decoration:none;color:var(--cc-text);position:relative}
+.icn{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center}
+.icn svg{width:38px;height:38px}
+.icn.green{background:var(--cc-pastel-green);color:var(--cc-pastel-green-fg)}
+.icn.blue{background:var(--cc-pastel-blue);color:var(--cc-pastel-blue-fg)}
+.icn.red{background:var(--cc-pastel-red);color:var(--cc-pastel-red-fg)}
+.icn.purple{background:var(--cc-pastel-purple);color:var(--cc-pastel-purple-fg)}
+.icn.teal{background:var(--cc-pastel-teal);color:var(--cc-pastel-teal-fg)}
+.tile .label{font-size:22px;font-weight:600}
+.badge{position:absolute;top:14px;right:14px;background:var(--cc-pastel-amber);color:var(--cc-pastel-amber-fg);font-size:15px;font-weight:700;padding:6px 12px;border-radius:999px}
+.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:96px;gap:18px}
+.wide .txt .label{display:block}
+.wide .txt .sub{font-size:18px;color:var(--cc-text-sub);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="batt"></span>
+    </span>
+  </div>
+  <div class="content">
+    <div class="greet-row">
+      <div class="greet">
+        <small>Namaste 🙏</small>
+        <h1>Sunita</h1>
+      </div>
+      <div class="status-pill"><span class="pip"></span>At home</div>
+    </div>
+
+    <button class="sos">
+      <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="sos-txt"><b>SOS</b><span>Press and hold for emergency</span></span>
+    </button>
+
+    <div class="grid">
+      <a class="tile" href="#">
+        <span class="icn green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>
+        </span>
+        <span class="label">Medicines</span>
+        <span class="badge">2 due today</span>
+      </a>
+      <a class="tile" href="#">
+        <span class="icn blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+        <span class="label">Contacts</span>
+      </a>
+      <a class="tile" href="#">
+        <span class="icn red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+        <span class="label">Vitals</span>
+      </a>
+      <a class="tile" href="#">
+        <span class="icn purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        </span>
+        <span class="label">Videos</span>
+      </a>
+      <a class="tile wide" href="#">
+        <span class="icn teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </span>
+        <span class="txt">
+          <span class="label">Reminders</span>
+          <span class="sub">Water · 2:00 PM next</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

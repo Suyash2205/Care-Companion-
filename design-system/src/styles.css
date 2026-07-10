@@ -1,0 +1,594 @@
+/* CareCompanion design tokens — transcribed from the Android app's Compose theme */
+:root {
+  /* Brand */
+  --cc-green: #2e8540;
+  --cc-green-dark: #1f5c2d;
+  --cc-green-tint: #eaf6ec;
+  --cc-green-tint-strong: #f1f8f2;
+
+  /* Surfaces */
+  --cc-bg: #f4f6f4;
+  --cc-surface: #ffffff;
+  --cc-surface-dim: #f8f8f8;
+  --cc-border: #e0e4e0;
+
+  /* Text */
+  --cc-text: #1c1c1c;
+  --cc-text-sub: #666666;
+  --cc-text-faint: #8a8a8a;
+
+  /* Status */
+  --cc-danger: #d32f2f;
+  --cc-danger-dark: #b42318;
+  --cc-danger-tint: #fdecec;
+  --cc-success: #2e7d32;
+  --cc-success-tint: #eaf6ec;
+  --cc-info: #4c8bd9;
+
+  /* Gradients (guardian headers, buttons, SOS) */
+  --cc-grad-primary: linear-gradient(135deg, #4b8b62, #2e8540);
+  --cc-grad-contacts: linear-gradient(135deg, #4b8b62, #2e8540);
+  --cc-grad-medicines: linear-gradient(135deg, #558f6a, #3f7e58);
+  --cc-grad-schedule: linear-gradient(135deg, #5a9670, #4b8b62);
+  --cc-grad-sos: linear-gradient(90deg, #f24141, #d62323);
+
+  /* Pastel icon-tile accents */
+  --cc-pastel-blue: #e3f2fd;
+  --cc-pastel-blue-fg: #1565c0;
+  --cc-pastel-purple: #f3e5f5;
+  --cc-pastel-purple-fg: #6a1b9a;
+  --cc-pastel-green: #e8f5e9;
+  --cc-pastel-green-fg: #2e7d32;
+  --cc-pastel-amber: #fff8e1;
+  --cc-pastel-amber-fg: #6b4d00;
+  --cc-pastel-red: #ffebee;
+  --cc-pastel-red-fg: #c62828;
+  --cc-pastel-pink: #fce4ec;
+  --cc-pastel-pink-fg: #ad1457;
+  --cc-pastel-teal: #e0f2f1;
+  --cc-pastel-teal-fg: #00695c;
+
+  /* Radii */
+  --cc-radius-sm: 10px;
+  --cc-radius-md: 14px;
+  --cc-radius-lg: 16px;
+  --cc-radius-xl: 20px;
+  --cc-radius-2xl: 22px;
+  --cc-radius-3xl: 24px;
+
+  /* Elevation */
+  --cc-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --cc-shadow-raised: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --cc-shadow-sos: 0 8px 24px rgba(211, 47, 47, 0.35);
+
+  /* Type */
+  --cc-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --cc-font-display: Georgia, "Times New Roman", serif;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+.cc-root,
+[class^="cc-"],
+[class*=" cc-"] {
+  font-family: var(--cc-font);
+  box-sizing: border-box;
+}
+
+/* ── Button ───────────────────────────────────────────────────────── */
+.cc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: var(--cc-radius-lg);
+  background: var(--cc-grad-primary);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.cc-btn:hover { filter: brightness(1.05); }
+.cc-btn:active { transform: scale(0.98); }
+.cc-btn--danger { background: var(--cc-grad-sos); }
+.cc-btn--info { background: var(--cc-info); }
+.cc-btn--solid { background: var(--cc-green); }
+.cc-btn--outline {
+  background: #fff;
+  color: var(--cc-green);
+  border: 1.5px solid var(--cc-green);
+  font-weight: 600;
+}
+.cc-btn--ghost {
+  background: var(--cc-green-tint);
+  color: var(--cc-green);
+  font-weight: 600;
+}
+.cc-btn--lg { font-size: 18px; padding: 16px 26px; border-radius: var(--cc-radius-md); }
+.cc-btn--xl { font-size: 22px; padding: 18px 30px; border-radius: var(--cc-radius-md); }
+.cc-btn--full { display: flex; width: 100%; }
+.cc-btn:disabled {
+  background: #cdd5cd;
+  color: #fff;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* ── SOS button ───────────────────────────────────────────────────── */
+.cc-sos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 140px;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--cc-radius-2xl);
+  background: var(--cc-grad-sos);
+  box-shadow: var(--cc-shadow-sos);
+  color: #fff;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.cc-sos:active { transform: scale(0.98); box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3); }
+.cc-sos__main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: 5px;
+}
+.cc-sos__icon { width: 34px; height: 34px; }
+.cc-sos__hint {
+  position: absolute;
+  bottom: 11px;
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.92;
+  letter-spacing: normal;
+}
+
+/* ── TextField ────────────────────────────────────────────────────── */
+.cc-field { position: relative; display: block; width: 100%; }
+.cc-field__input {
+  width: 100%;
+  font-family: var(--cc-font);
+  font-size: 16px;
+  color: var(--cc-text);
+  background: #fff;
+  border: 1.5px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+  padding: 16px 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.cc-field--with-icon .cc-field__input { padding-left: 44px; }
+.cc-field__input:focus { border-color: rgba(46, 133, 64, 0.55); }
+.cc-field__label {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  padding: 0 4px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--cc-text-sub);
+}
+.cc-field__input:focus ~ .cc-field__label { color: var(--cc-green); }
+.cc-field__icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--cc-text-sub);
+  display: inline-flex;
+}
+.cc-field__input:focus ~ .cc-field__icon { color: var(--cc-green); }
+
+/* ── SectionHeader ────────────────────────────────────────────────── */
+.cc-section-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cc-text-sub);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 2px 0;
+}
+
+/* ── GradientPageHeader ───────────────────────────────────────────── */
+.cc-page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  background: var(--cc-grad-primary);
+  color: #fff;
+}
+.cc-page-header--medicines { background: var(--cc-grad-medicines); }
+.cc-page-header--schedule { background: var(--cc-grad-schedule); }
+.cc-page-header--sos { background: var(--cc-grad-sos); }
+.cc-page-header__back {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.cc-page-header__titles { flex: 1; min-width: 0; }
+.cc-page-header__title { font-size: 20px; font-weight: 700; margin: 0; }
+.cc-page-header__subtitle { font-size: 13px; opacity: 0.8; margin: 0; }
+.cc-page-header__actions { display: flex; gap: 8px; }
+
+/* ── Card ─────────────────────────────────────────────────────────── */
+.cc-card {
+  background: var(--cc-surface);
+  border-radius: var(--cc-radius-xl);
+  box-shadow: var(--cc-shadow-card);
+  padding: 16px;
+}
+
+/* ── StatusPill ───────────────────────────────────────────────────── */
+.cc-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--cc-green-tint-strong);
+  color: #3f5c45;
+  border-radius: 30px;
+  padding: 6px 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.cc-status-pill--sm { font-size: 12px; padding: 5px 10px; gap: 4px; }
+.cc-status-pill--badge {
+  background: var(--cc-green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.cc-status-pill--alert {
+  background: var(--cc-danger-tint);
+  color: var(--cc-danger);
+}
+.cc-status-pill__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cc-green);
+  flex: none;
+}
+.cc-status-pill--sm .cc-status-pill__dot { width: 6px; height: 6px; }
+.cc-status-pill--badge .cc-status-pill__dot { background: #fff; }
+.cc-status-pill--alert .cc-status-pill__dot { background: var(--cc-danger); }
+
+/* ── ElderStatusCard ──────────────────────────────────────────────── */
+.cc-elder-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--cc-radius-xl);
+  background: var(--cc-grad-schedule);
+  color: #fff;
+}
+.cc-elder-status__avatar {
+  flex: none;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  overflow: hidden;
+}
+.cc-elder-status__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-elder-status__body { flex: 1; min-width: 0; }
+.cc-elder-status__name { font-size: 17px; font-weight: 700; margin: 0; }
+.cc-elder-status__meta { font-size: 12px; opacity: 0.8; margin: 0; }
+
+/* ── AvatarCard (elder home) ──────────────────────────────────────── */
+.cc-avatar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--cc-surface);
+  border-radius: var(--cc-radius-3xl);
+  box-shadow: var(--cc-shadow-raised);
+  padding: 24px 16px;
+}
+.cc-avatar-card__oval {
+  width: 138px;
+  height: 162px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #64b5f6, #1976d2);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  color: #fff;
+  font-size: 84px;
+  line-height: 1;
+}
+.cc-avatar-card__oval img { width: 100%; height: 100%; object-fit: cover; }
+.cc-avatar-card__name {
+  font-size: 34px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* ── ActionCard ───────────────────────────────────────────────────── */
+.cc-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--cc-surface);
+  border: none;
+  border-radius: var(--cc-radius-xl);
+  box-shadow: var(--cc-shadow-card);
+  padding: 20px 12px;
+  min-height: 170px;
+  cursor: pointer;
+  width: 100%;
+}
+.cc-action-card__tile {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--cc-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+.cc-action-card__tile svg { width: 44px; height: 44px; }
+.cc-action-card__label {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2f2f2f;
+}
+.cc-action-card__hint { font-size: 14px; color: #888; }
+.cc-action-card--tone-blue .cc-action-card__tile { background: var(--cc-pastel-blue); color: var(--cc-pastel-blue-fg); }
+.cc-action-card--tone-purple .cc-action-card__tile { background: var(--cc-pastel-purple); color: var(--cc-pastel-purple-fg); }
+.cc-action-card--tone-green .cc-action-card__tile { background: var(--cc-pastel-green); color: var(--cc-pastel-green-fg); }
+.cc-action-card--tone-amber .cc-action-card__tile { background: var(--cc-pastel-amber); color: var(--cc-pastel-amber-fg); }
+.cc-action-card--tone-red .cc-action-card__tile { background: var(--cc-pastel-red); color: var(--cc-pastel-red-fg); }
+.cc-action-card--tone-teal .cc-action-card__tile { background: var(--cc-pastel-teal); color: var(--cc-pastel-teal-fg); }
+.cc-action-card--tone-neutral .cc-action-card__tile { background: #ededed; color: #2f2f2f; }
+
+/* ── ContactCard ──────────────────────────────────────────────────── */
+.cc-contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fbfbfb;
+  border-radius: 18px;
+  box-shadow: var(--cc-shadow-card);
+  padding: 10px;
+  min-height: 182px;
+}
+.cc-contact-card__avatar {
+  height: 102px;
+  border-radius: var(--cc-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #3d3d3d;
+  overflow: hidden;
+}
+.cc-contact-card__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-contact-card__row { display: flex; align-items: center; gap: 6px; margin-top: auto; }
+.cc-contact-card__call {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--cc-pastel-green);
+  color: var(--cc-green);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.cc-contact-card__call svg { width: 20px; height: 20px; }
+.cc-contact-card__name {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e1e1e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── MedicineListItem ─────────────────────────────────────────────── */
+.cc-med-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--cc-surface-dim);
+  border-radius: var(--cc-radius-md);
+  padding: 10px 12px;
+}
+.cc-med-item__tile {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--cc-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.cc-med-item__tile svg { width: 24px; height: 24px; }
+.cc-med-item--tone-amber .cc-med-item__tile { background: var(--cc-pastel-amber); color: var(--cc-pastel-amber-fg); }
+.cc-med-item--tone-blue .cc-med-item__tile { background: var(--cc-pastel-blue); color: var(--cc-pastel-blue-fg); }
+.cc-med-item--tone-purple .cc-med-item__tile { background: var(--cc-pastel-purple); color: var(--cc-pastel-purple-fg); }
+.cc-med-item--tone-green .cc-med-item__tile { background: var(--cc-pastel-green); color: var(--cc-pastel-green-fg); }
+.cc-med-item__name { flex: 1; font-size: 18px; color: #2e2e2e; }
+.cc-med-item__qty { font-size: 16px; color: var(--cc-text-sub); }
+
+/* ── Chip ─────────────────────────────────────────────────────────── */
+.cc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--cc-border);
+  background: #fff;
+  color: var(--cc-text);
+  border-radius: var(--cc-radius-sm);
+  padding: 8px 14px;
+  font-size: 18px;
+  font-family: var(--cc-font);
+  cursor: default;
+}
+.cc-chip--selectable { cursor: pointer; }
+.cc-chip--success { background: var(--cc-success-tint); color: var(--cc-success); border-color: transparent; font-weight: 600; }
+.cc-chip--success.cc-chip--selected { background: var(--cc-success); color: #fff; }
+.cc-chip--danger { background: var(--cc-danger-tint); color: var(--cc-danger); border-color: transparent; font-weight: 600; }
+.cc-chip--danger.cc-chip--selected { background: var(--cc-danger); color: #fff; }
+
+/* ── BottomNav ────────────────────────────────────────────────────── */
+.cc-bottom-nav {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  padding: 6px 12px;
+}
+.cc-bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  border-radius: var(--cc-radius-md);
+  padding: 8px 22px;
+  color: var(--cc-text-faint);
+  font-size: 10px;
+  font-family: var(--cc-font);
+  cursor: pointer;
+}
+.cc-bottom-nav__item svg, .cc-bottom-nav__item .cc-bottom-nav__icon { width: 22px; height: 22px; font-size: 20px; }
+.cc-bottom-nav__item--active {
+  color: var(--cc-green);
+  background: rgba(46, 133, 64, 0.1);
+  font-weight: 700;
+}
+
+/* ── DrawerItem ───────────────────────────────────────────────────── */
+.cc-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: var(--cc-font);
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-drawer-item__tile {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--cc-radius-sm);
+  background: #f2f2f2;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.cc-drawer-item__tile svg { width: 20px; height: 20px; }
+.cc-drawer-item--selected {
+  background: rgba(46, 133, 64, 0.1);
+  color: var(--cc-green);
+  font-weight: 600;
+}
+.cc-drawer-item--selected .cc-drawer-item__tile {
+  background: rgba(46, 133, 64, 0.15);
+  color: var(--cc-green);
+}
+
+/* ── ProfileChoiceCard ────────────────────────────────────────────── */
+.cc-profile-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: var(--cc-radius-md);
+  padding: 12px;
+  cursor: pointer;
+  font-family: var(--cc-font);
+  width: 100%;
+}
+.cc-profile-choice--selected {
+  border-color: rgba(46, 133, 64, 0.6);
+  background: #f7fff8;
+}
+.cc-profile-choice__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--cc-pastel-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #424242;
+  overflow: hidden;
+}
+.cc-profile-choice__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-profile-choice__name { font-size: 16px; font-weight: 600; color: #2e2e2e; }
+.cc-profile-choice__bar {
+  width: 52px;
+  height: 4px;
+  border-radius: 10px;
+  background: #eaeaea;
+}
+.cc-profile-choice--selected .cc-profile-choice__bar { background: rgba(46, 133, 64, 0.6); }
+
+/* ── Wordmark ─────────────────────────────────────────────────────── */
+.cc-wordmark {
+  font-family: var(--cc-font-display);
+  font-weight: 200;
+  font-size: 48px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--cc-text);
+  margin: 0;
+  white-space: pre-line;
+}

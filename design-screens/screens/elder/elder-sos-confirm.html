@@ -1,0 +1,57 @@
+<!-- @dsCard group="Screens · Elder" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOS Confirm — CareCompanion</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-shadow-sos:0 8px 24px rgba(211,47,47,.35);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column;font-family:var(--cc-font)}
+.red-top{background:linear-gradient(180deg,var(--cc-danger-tint) 0%,var(--cc-bg) 100%)}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 6px;color:#4a4a4a;font-size:15px;font-weight:600}
+.statusbar .dots{display:flex;align-items:center;gap:7px}
+.statusbar .dot{width:9px;height:9px;border-radius:50%;background:#4a4a4a}
+.statusbar .batt{width:24px;height:12px;border:1.8px solid #4a4a4a;border-radius:3px;position:relative}
+.statusbar .batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:#4a4a4a;border-radius:1px}
+.content{flex:1;padding:24px 24px 32px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.warn-circle{width:96px;height:96px;border-radius:50%;background:var(--cc-danger-tint);color:var(--cc-danger);display:flex;align-items:center;justify-content:center;margin-top:28px}
+.warn-circle svg{width:54px;height:54px}
+h1{font-size:34px;font-weight:800;color:var(--cc-danger-dark);margin-top:18px}
+.count-ring{width:180px;height:180px;border-radius:50%;background:var(--cc-surface);border:10px solid var(--cc-danger);box-shadow:var(--cc-shadow-sos);display:flex;align-items:center;justify-content:center;margin-top:34px}
+.count-num{font-size:72px;font-weight:800;color:var(--cc-danger);line-height:1}
+.count-caption{font-size:22px;color:var(--cc-text);line-height:1.45;margin-top:20px;max-width:310px}
+.actions{width:100%;display:flex;flex-direction:column;gap:16px;margin-top:auto}
+.btn{width:100%;border:none;border-radius:var(--cc-radius-xl);font-family:var(--cc-font);font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.btn.cancel{height:110px;background:var(--cc-surface);color:var(--cc-danger);font-size:30px;border:3px solid var(--cc-danger);box-shadow:var(--cc-shadow-card)}
+.note{font-size:17px;color:var(--cc-text-sub);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="phone red-top">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="batt"></span>
+    </span>
+  </div>
+  <div class="content">
+    <div class="warn-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <h1>Emergency Alert</h1>
+
+    <div class="count-ring"><span class="count-num">5</span></div>
+    <p class="count-caption">Sending alert in 5 seconds…</p>
+
+    <div class="actions">
+      <button class="btn cancel">CANCEL — I'm OK</button>
+    </div>
+    <div class="note">Your location will be shared with your family</div>
+  </div>
+</div>
+</body>
+</html>

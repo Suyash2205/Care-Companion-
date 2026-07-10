@@ -1,0 +1,73 @@
+<!-- @dsCard group="Screens · Elder" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medicine Reminder — CareCompanion</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-shadow-sos:0 8px 24px rgba(211,47,47,.35);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column;font-family:var(--cc-font)}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 6px;color:#4a4a4a;font-size:15px;font-weight:600}
+.statusbar .dots{display:flex;align-items:center;gap:7px}
+.statusbar .dot{width:9px;height:9px;border-radius:50%;background:#4a4a4a}
+.statusbar .batt{width:24px;height:12px;border:1.8px solid #4a4a4a;border-radius:3px;position:relative}
+.statusbar .batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:#4a4a4a;border-radius:1px}
+.content{flex:1;padding:16px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:20px}
+.time-chip{background:var(--cc-green-tint);color:var(--cc-green-dark);font-size:20px;font-weight:800;padding:12px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px}
+.time-chip svg{width:24px;height:24px}
+.title{font-size:26px;font-weight:700;color:var(--cc-text);text-align:center}
+.med-card{width:100%;background:var(--cc-surface);border-radius:var(--cc-radius-3xl);box-shadow:var(--cc-shadow-raised);padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.photo{width:100%;height:240px;background:var(--cc-pastel-amber);border-radius:var(--cc-radius-xl);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--cc-pastel-amber-fg)}
+.photo svg{width:96px;height:96px}
+.photo .cap{font-size:16px;font-weight:600}
+.med-name{font-size:32px;font-weight:800;color:var(--cc-text);text-align:center}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.chip{background:var(--cc-surface-dim);border:1.5px solid var(--cc-border);color:var(--cc-text);font-size:20px;font-weight:600;padding:12px 18px;border-radius:999px}
+.question{font-size:24px;font-weight:700;color:var(--cc-text);text-align:center;margin-top:auto}
+.actions{display:flex;gap:14px;width:100%}
+.btn{flex:1;height:88px;border:none;border-radius:var(--cc-radius-xl);font-family:var(--cc-font);font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
+.btn.not-taken{background:var(--cc-danger-tint);color:var(--cc-danger)}
+.btn.taken{background:var(--cc-success);color:#fff;box-shadow:var(--cc-shadow-raised)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="batt"></span>
+    </span>
+  </div>
+  <div class="content">
+    <span class="time-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      8:00 AM
+    </span>
+    <h1 class="title">Time for your medicine</h1>
+
+    <div class="med-card">
+      <div class="photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>
+        <span class="cap">Metformin 500mg photo</span>
+      </div>
+      <div class="med-name">Metformin 500mg</div>
+      <div class="chips">
+        <span class="chip">Qty 1</span>
+        <span class="chip">After breakfast</span>
+        <span class="chip">With water</span>
+      </div>
+    </div>
+
+    <div class="question">Did you take this medicine?</div>
+    <div class="actions">
+      <button class="btn not-taken">✕ NOT TAKEN</button>
+      <button class="btn taken">✓ TAKEN</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

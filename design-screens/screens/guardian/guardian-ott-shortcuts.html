@@ -1,0 +1,165 @@
+<!-- @dsCard group="Screens · Guardian" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guardian · Videos &amp; Apps</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-pink:#fce4ec;--cc-pastel-pink-fg:#ad1457;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font);color:var(--cc-text)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);display:flex;flex-direction:column}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;background:var(--cc-grad-primary);color:#fff;font-size:13px;font-weight:600}
+.statusbar .dots{display:flex;gap:4px}
+.statusbar .dots span{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.9);display:block}
+.header{background:var(--cc-grad-primary);color:#fff;padding:12px 20px 22px;display:flex;align-items:center;gap:14px}
+.backbtn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.header h1{margin:0;font-size:20px;font-weight:700;line-height:1.2}
+.header .sub{font-size:13px;color:rgba(255,255,255,.8);margin-top:2px}
+.content{flex:1;padding:16px 16px 8px;display:flex;flex-direction:column;gap:14px}
+.explainer{font-size:12px;color:var(--cc-text-sub);line-height:1.5;margin:0 2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.shortcut{position:relative;background:var(--cc-surface);border-radius:var(--cc-radius-md);box-shadow:var(--cc-shadow-card);padding:10px;min-height:110px;display:flex;flex-direction:column;gap:6px}
+.thumb{height:60px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.sc-title{font-size:14px;font-weight:600;line-height:1.25}
+.sc-sub{font-size:11px;color:var(--cc-text-faint)}
+.sc-actions{position:absolute;top:14px;right:14px;display:flex;gap:6px;color:rgba(0,0,0,.45)}
+.sc-actions .icon{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center}
+.add-card{border:1.8px dashed var(--cc-border);border-radius:var(--cc-radius-md);min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--cc-green);font-size:14px;font-weight:600;background:transparent}
+.card{background:var(--cc-surface);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);padding:16px}
+.card h2{margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--cc-text-faint)}
+.label{font-size:11px;font-weight:700;color:var(--cc-text-faint);letter-spacing:.04em;margin:12px 0 5px}
+.label:first-of-type{margin-top:0}
+.field{background:var(--cc-surface);border:1px solid var(--cc-border);border-radius:var(--cc-radius-md);padding:13px 14px;font-size:14px;color:var(--cc-text-faint)}
+.preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.preset{display:flex;flex-direction:column;align-items:center;gap:6px}
+.preset .tile{position:relative;width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800;box-shadow:var(--cc-shadow-card)}
+.preset .tile .plus{position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--cc-green);color:#fff;font-size:12px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;border:2px solid var(--cc-surface)}
+.preset .plabel{font-size:10px;font-weight:600;color:var(--cc-text-sub)}
+.form-divider{height:1px;background:var(--cc-border);margin:16px 0 2px}
+.note-sub{font-size:11px;color:var(--cc-text-faint);line-height:1.5;margin-top:10px}
+.footnote-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--cc-surface-dim);border:1px solid var(--cc-border);color:var(--cc-text-faint);align-self:flex-start}
+.btn-primary{display:block;width:100%;background:var(--cc-grad-primary);color:#fff;font-size:15px;font-weight:700;text-align:center;border-radius:var(--cc-radius-md);padding:14px 0;margin-top:16px}
+.bottomnav{display:flex;background:var(--cc-surface);border-top:1px solid var(--cc-border);padding:8px 8px 18px;margin-top:auto}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--cc-text-faint);font-weight:600}
+.nav-item.active{color:var(--cc-green)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+  <div class="header">
+    <div class="backbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div><h1>Videos &amp; Apps</h1><div class="sub">Shortcuts on Sunita&rsquo;s home</div></div>
+  </div>
+  <div class="content">
+    <p class="explainer">These shortcuts appear as big buttons on Sunita&rsquo;s home screen. Tap one to edit or remove it.</p>
+
+    <div class="grid">
+      <div class="shortcut">
+        <div class="thumb" style="background:var(--cc-pastel-red);color:var(--cc-pastel-red-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div class="sc-title">YouTube</div>
+        <div class="sc-sub">Bhajans playlist</div>
+        <div class="sc-actions">
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+        </div>
+      </div>
+
+      <div class="shortcut">
+        <div class="thumb" style="background:var(--cc-pastel-blue);color:var(--cc-pastel-blue-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="sc-title">Hotstar</div>
+        <div class="sc-sub">App</div>
+        <span class="footnote-chip">Not installed on Sunita&rsquo;s phone</span>
+        <div class="sc-actions">
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+        </div>
+      </div>
+
+      <div class="shortcut">
+        <div class="thumb" style="background:var(--cc-pastel-amber);color:var(--cc-pastel-amber-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+        <div class="sc-title">Old Hindi Songs</div>
+        <div class="sc-sub">YouTube link</div>
+        <div class="sc-actions">
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+        </div>
+      </div>
+
+      <div class="shortcut">
+        <div class="thumb" style="background:var(--cc-pastel-green);color:var(--cc-pastel-green-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="sc-title">Video Call</div>
+        <div class="sc-sub">WhatsApp</div>
+        <div class="sc-actions">
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          <span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+        </div>
+      </div>
+
+      <div class="add-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Shortcut
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ADD FROM CATALOG</h2>
+      <div class="preset-grid">
+        <div class="preset">
+          <div class="tile" style="background:#e62117">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="8 5 19 12 8 19 8 5"/></svg>
+            <span class="plus">+</span>
+          </div>
+          <div class="plabel">YouTube</div>
+        </div>
+        <div class="preset">
+          <div class="tile" style="background:#1e40af">
+            D+
+            <span class="plus">+</span>
+          </div>
+          <div class="plabel">Hotstar</div>
+        </div>
+        <div class="preset">
+          <div class="tile" style="background:#25d366">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span class="plus">+</span>
+          </div>
+          <div class="plabel">WhatsApp</div>
+        </div>
+        <div class="preset">
+          <div class="tile" style="background:#00879e;font-size:15px;font-style:italic">
+            prime
+            <span class="plus">+</span>
+          </div>
+          <div class="plabel">Prime</div>
+        </div>
+      </div>
+      <div class="form-divider"></div>
+      <div class="label">CUSTOM LINK — TITLE</div>
+      <div class="field">e.g. Ramayan episodes</div>
+      <div class="label">URL</div>
+      <div class="field">Paste YouTube/video link</div>
+      <div class="note-sub">Custom links show a letter tile on Sunita&rsquo;s home.</div>
+      <div class="btn-primary">Save Shortcut</div>
+    </div>
+  </div>
+
+  <div class="bottomnav">
+    <div class="nav-item"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="nav-item"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Reminders</div>
+    <div class="nav-item"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Family</div>
+    <div class="nav-item active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!-- @dsCard group="Screens · Elder" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Health Reading</title>
+<style>
+:root{--cc-green:#2e8540;--cc-green-dark:#1f5c2d;--cc-green-tint:#eaf6ec;--cc-green-tint-strong:#f1f8f2;--cc-bg:#f4f6f4;--cc-surface:#ffffff;--cc-surface-dim:#f8f8f8;--cc-border:#e0e4e0;--cc-text:#1c1c1c;--cc-text-sub:#666666;--cc-text-faint:#8a8a8a;--cc-danger:#d32f2f;--cc-danger-dark:#b42318;--cc-danger-tint:#fdecec;--cc-success:#2e7d32;--cc-success-tint:#eaf6ec;--cc-info:#4c8bd9;--cc-grad-primary:linear-gradient(135deg,#4b8b62,#2e8540);--cc-grad-sos:linear-gradient(90deg,#f24141,#d62323);--cc-pastel-blue:#e3f2fd;--cc-pastel-blue-fg:#1565c0;--cc-pastel-purple:#f3e5f5;--cc-pastel-purple-fg:#6a1b9a;--cc-pastel-green:#e8f5e9;--cc-pastel-green-fg:#2e7d32;--cc-pastel-amber:#fff8e1;--cc-pastel-amber-fg:#6b4d00;--cc-pastel-red:#ffebee;--cc-pastel-red-fg:#c62828;--cc-pastel-pink:#fce4ec;--cc-pastel-pink-fg:#ad1457;--cc-pastel-teal:#e0f2f1;--cc-pastel-teal-fg:#00695c;--cc-radius-md:14px;--cc-radius-xl:20px;--cc-radius-3xl:24px;--cc-shadow-card:0 4px 16px rgba(0,0,0,.06);--cc-shadow-raised:0 6px 20px rgba(0,0,0,.08);--cc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#e9ece9;display:flex;justify-content:center;padding:24px 0;font-family:var(--cc-font);color:var(--cc-text)}
+.phone{width:393px;min-height:852px;background:var(--cc-bg);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 6px;color:#3a3a3a;font-size:15px;font-weight:600}
+.statusbar .dots{display:flex;gap:6px;align-items:center}
+.statusbar .dot{width:9px;height:9px;border-radius:50%;background:#3a3a3a}
+.statusbar .batt{width:22px;height:11px;border:1.8px solid #3a3a3a;border-radius:3px;position:relative}
+.statusbar .batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:#3a3a3a;border-radius:1px}
+.header{display:flex;align-items:center;gap:14px;padding:16px 20px 8px}
+.backbtn{width:52px;height:52px;border-radius:50%;background:var(--cc-surface);box-shadow:var(--cc-shadow-card);display:flex;align-items:center;justify-content:center;color:var(--cc-text);flex:none}
+h1{font-size:28px;font-weight:700;margin:0;line-height:1.2}
+.content{padding:12px 20px 28px;display:flex;flex-direction:column;gap:20px;flex:1}
+.typegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.typecard{height:88px;border-radius:var(--cc-radius-xl);background:var(--cc-surface);border:2.5px solid var(--cc-border);display:flex;align-items:center;gap:12px;padding:0 16px;box-shadow:var(--cc-shadow-card)}
+.typecard .ticon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.typecard .tlabel{font-size:20px;font-weight:700;line-height:1.15}
+.typecard.selected{border-color:var(--cc-green);background:var(--cc-green-tint)}
+.inputs{display:flex;gap:14px}
+.numcard{flex:1;height:96px;background:var(--cc-surface);border:2px solid var(--cc-border);border-radius:var(--cc-radius-xl);box-shadow:var(--cc-shadow-card);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 6px}
+.numcard .num{font-size:44px;font-weight:800;line-height:1;letter-spacing:.5px}
+.numcard .nlabel{font-size:17px;color:var(--cc-text-sub);margin-top:6px}
+.autonote{display:flex;align-items:center;gap:10px;color:var(--cc-text-faint);font-size:16px;justify-content:center}
+.savebtn{margin-top:auto;height:80px;border-radius:var(--cc-radius-xl);background:var(--cc-grad-primary);color:#fff;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:var(--cc-shadow-raised)}
+.sectionlabel{font-size:19px;font-weight:700;color:var(--cc-text-sub);margin:2px 2px -6px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="batt"></span>
+    </span>
+  </div>
+
+  <div class="header">
+    <div class="backbtn">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </div>
+    <h1>Add Health Reading</h1>
+  </div>
+
+  <div class="content">
+    <div class="sectionlabel">What are you measuring?</div>
+    <div class="typegrid">
+      <div class="typecard selected">
+        <div class="ticon" style="background:var(--cc-pastel-red);color:var(--cc-pastel-red-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="tlabel">Blood<br>Pressure</div>
+      </div>
+      <div class="typecard">
+        <div class="ticon" style="background:var(--cc-pastel-amber);color:var(--cc-pastel-amber-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        </div>
+        <div class="tlabel">Sugar</div>
+      </div>
+      <div class="typecard">
+        <div class="ticon" style="background:var(--cc-pastel-teal);color:var(--cc-pastel-teal-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+        </div>
+        <div class="tlabel">Temperature</div>
+      </div>
+      <div class="typecard">
+        <div class="ticon" style="background:var(--cc-pastel-pink);color:var(--cc-pastel-pink-fg)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="tlabel">Pulse</div>
+      </div>
+    </div>
+
+    <div class="sectionlabel">Enter your numbers</div>
+    <div class="inputs">
+      <div class="numcard">
+        <div class="num">120</div>
+        <div class="nlabel">Systolic (upper)</div>
+      </div>
+      <div class="numcard">
+        <div class="num">80</div>
+        <div class="nlabel">Diastolic (lower)</div>
+      </div>
+    </div>
+
+    <div class="autonote">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Date &amp; time saved automatically · Today 9:41 AM</span>
+    </div>
+
+    <div class="savebtn">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Save Reading
+    </div>
+  </div>
+</div>
+</body>
+</html>
