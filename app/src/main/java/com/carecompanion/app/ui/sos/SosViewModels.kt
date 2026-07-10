@@ -39,6 +39,9 @@ class ElderSosViewModel @Inject constructor(
     private val _result = MutableStateFlow(SosSendResult())
     val result: StateFlow<SosSendResult> = _result.asStateFlow()
 
+    /** Reset before each new SOS entry so a prior "sent" result never leaks into the next. */
+    fun reset() { _result.value = SosSendResult() }
+
     @SuppressLint("MissingPermission")
     fun fire(elderId: String, elderName: String, emergencyPhones: List<String>) {
         _result.value = SosSendResult(sending = true)

@@ -151,7 +151,7 @@ class AddEditElderViewModel @Inject constructor(
     fun deactivate(active: Boolean) = viewModelScope.launch {
         val id = _ui.value.elderId ?: return@launch
         runCatching { elderRepo.setActive(id, active) }
-            .onSuccess { _ui.value = _ui.value.copy(isActive = active, saved = it) }
+            .onSuccess { _ui.value = _ui.value.copy(isActive = active) }   // in-place toggle, don't exit
             .onFailure { _ui.value = _ui.value.copy(error = it.message) }
     }
 }

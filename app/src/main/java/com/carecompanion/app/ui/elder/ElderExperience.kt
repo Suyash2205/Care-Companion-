@@ -495,6 +495,7 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
     val primaryPhone = emergencyPhones.firstOrNull()
 
     LaunchedEffect(Unit) {
+        sosVm.reset()   // clear any prior "sent" result so this SOS starts fresh (visible countdown + CANCEL)
         while (countdown > 0 && !fired) { delay(1000); countdown-- }
         if (!fired) { fired = true; ui.elder?.id?.let { sosVm.fire(it, ui.elder.name, emergencyPhones) } }
     }

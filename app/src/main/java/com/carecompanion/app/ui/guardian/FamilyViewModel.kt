@@ -42,7 +42,10 @@ class FamilyViewModel @Inject constructor(
     fun invite(phone: String, access: String) {
         _ui.value = _ui.value.copy(inviting = true, error = null)
         viewModelScope.launch {
-            runCatching { repo.inviteGuardian(elderId, phone.trim(), access) }
+            // normalize to +91 so it matches how phones are stored for existing users
+            val digits = phone.filter { it.isDigit() || it == '+' }
+            val normalized = if (digits.startsWith("+")) digits else "+91$digits"
+            runCatching { repo.inviteGuardian(elderId, normalized, access) }
                 .onSuccess { _ui.value = _ui.value.copy(inviting = false); load() }
                 .onFailure { _ui.value = _ui.value.copy(inviting = false, error = it.message ?: "Failed to send invite") }
         }
