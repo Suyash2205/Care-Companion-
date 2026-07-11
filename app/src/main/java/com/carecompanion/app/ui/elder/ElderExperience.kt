@@ -2,6 +2,7 @@ package com.carecompanion.app.ui.elder
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -65,6 +66,10 @@ fun ElderExperience(
     val contrast by settingsVm.contrast.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
     var dest by remember { mutableStateOf(ElderDest.HOME) }
+
+    // Elder-friendly system-back: from any sub-screen, go home instead of
+    // exiting the app (an accidental back-swipe should never kick an elder out).
+    BackHandler(enabled = dest != ElderDest.HOME) { dest = ElderDest.HOME }
 
     val baseDensity = LocalDensity.current
     CompositionLocalProvider(
