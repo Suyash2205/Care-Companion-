@@ -15,6 +15,12 @@ class ElderRepository @Inject constructor(
     suspend fun listElders(): List<ElderDto> =
         api.getElders().sortedByDescending { it.isActive }
 
+    /** Auto-link the logged-in elder to a profile created for their phone number.
+     *  Best-effort: the server-side link happens regardless of the parsed result. */
+    suspend fun linkSelfByPhone() {
+        runCatching { api.rpcLinkElderByPhone() }
+    }
+
     suspend fun getElder(id: String): ElderDto? =
         api.getElders(id = "eq.$id").firstOrNull()
 

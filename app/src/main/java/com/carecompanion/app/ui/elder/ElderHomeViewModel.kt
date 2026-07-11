@@ -55,8 +55,12 @@ class ElderHomeViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { outbox.flush() }   // retry any offline-queued adherence writes
             try {
+                elderRepo.linkSelfByPhone()      // auto-link to a profile created for this phone
                 val elder = elderRepo.listElders().firstOrNull { it.isActive }
-                if (elder?.id == null) { _ui.value = ElderUiState(false, error = "No profile linked yet"); return@launch }
+                if (elder?.id == null) {
+                    _ui.value = ElderUiState(false, error = "No care profile is linked to this phone number yet. Ask your family member to add you using the same number you logged in with.")
+                    return@launch
+                }
                 val eid = elder.id
                 val meds = care.medicines(eid).filter { it.isActive }
                 val scheds = care.schedules(eid).filter { it.enabled }

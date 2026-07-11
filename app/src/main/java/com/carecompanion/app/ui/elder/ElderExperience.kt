@@ -443,7 +443,7 @@ private fun ElderVideos(ott: List<OttShortcutDto>, onBack: () -> Unit) {
         if (notInstalled) Surface(shape = RoundedCornerShape(12.dp), color = Color(0xFFFFF8E1)) {
             Text(tr(lang, "not_installed"), Modifier.padding(12.dp), fontSize = 16.sp, color = Color(0xFF6B4D00))
         }
-        if (ott.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_contacts"), fontSize = 18.sp, color = Color(0xFF888888)) }
+        if (ott.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_videos"), fontSize = 18.sp, color = Color(0xFF888888)) }
         else LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             items(ott.chunked(2)) { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {

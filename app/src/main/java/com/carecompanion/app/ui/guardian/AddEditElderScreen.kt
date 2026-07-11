@@ -89,30 +89,19 @@ fun AddEditElderScreen(onDone: () -> Unit, onBack: () -> Unit, vm: AddEditElderV
                 GuardianTextField(value = ui.age, onValueChange = vm::setAge, label = "Age", keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
                 GuardianTextField(value = ui.address, onValueChange = vm::setAddress, label = "Address")
 
-                // Phone + verification
+                // Elder's login phone — the elder logs in with this number and auto-links.
                 Surface(shape = RoundedCornerShape(16.dp), color = Color.White, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("Elder's Phone (login + verification)", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = GuardianTextPrimary)
+                        Text("Elder's Phone Number", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = GuardianTextPrimary)
                         GuardianTextField(value = ui.phone, onValueChange = vm::setPhone, label = "Phone number",
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
-                        when (ui.verify) {
-                            ElderVerify.VERIFIED -> Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(shape = RoundedCornerShape(10.dp), color = Color(0xFFEAF6EC)) {
+                            Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = CareGreen, modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text("Verified — the elder can log in with this number", fontSize = 12.sp, color = CareGreen)
-                            }
-                            ElderVerify.CODE_SENT -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                GuardianTextField(value = otpCode, onValueChange = { otpCode = it }, label = "Enter code the elder received",
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword))
-                                Button(onClick = { vm.confirmElderOtp(otpCode) }, colors = ButtonDefaults.buttonColors(containerColor = CareGreen)) { Text("Confirm Code") }
-                            }
-                            ElderVerify.SENDING -> CircularProgressIndicator(color = CareGreen, strokeWidth = 2.dp, modifier = Modifier.size(22.dp))
-                            else -> OutlinedButton(onClick = { activity?.let { vm.sendElderOtp(it) } }, enabled = ui.phone.length >= 10) {
-                                Text("Send OTP to verify elder's phone")
+                                Text("The elder logs in on their own phone with THIS number to see everything you set up — they link automatically. Use a real number they can receive an OTP on.",
+                                    fontSize = 12.sp, color = Color(0xFF2E7D32))
                             }
                         }
-                        Text("Verify now so the elder can log in. You can also save unverified and verify later.",
-                            fontSize = 11.sp, color = GuardianTextSub)
                     }
                 }
 

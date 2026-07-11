@@ -210,4 +210,7 @@ interface SupabaseService {
 
     @POST("rest/v1/rpc/rpc_resolve_pending_links")
     suspend fun rpcResolvePendingLinks(@Body body: Map<String, String> = emptyMap()): Int
+
+    @POST("rest/v1/rpc/rpc_link_elder_by_phone")
+    suspend fun rpcLinkElderByPhone(@Body body: Map<String, String> = emptyMap()): ElderDto?
 }

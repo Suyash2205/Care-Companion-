@@ -67,6 +67,7 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "call_now_btn" to m("Yes, Call", "हाँ, कॉल करें", "होय, कॉल करा", "હા, કૉલ કરો"),
     "cancel_btn" to m("No", "नहीं", "नाही", "ના"),
     "tap_to_call" to m("Tap a photo to call", "कॉल करने के लिए फ़ोटो दबाएँ", "कॉल करण्यासाठी फोटो दाबा", "કૉલ કરવા ફોટો દબાવો"),
+    "no_videos" to m("No videos added yet", "अभी कोई वीडियो नहीं", "अजून व्हिडिओ नाहीत", "હજી કોઈ વિડિઓ નથી"),
     // vitals
     "add_reading" to m("Add reading", "रीडिंग जोड़ें", "रीडिंग जोडा", "રીડિંગ ઉમેરો"),
     "my_readings" to m("My readings", "मेरी रीडिंग", "माझ्या रीडिंग", "મારી રીડિંગ"),
