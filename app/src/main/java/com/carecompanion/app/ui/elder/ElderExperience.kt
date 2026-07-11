@@ -248,31 +248,92 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
 private fun ElderContacts(contacts: List<ContactDto>, onBack: () -> Unit) {
     val ctx = LocalContext.current
     val lang = LocalElderLang.current
-    Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    // The contact the elder tapped — a confirmation is shown before any dial, so an
+    // accidental tap while scrolling never actually places a call.
+    var pending by remember { mutableStateOf<ContactDto?>(null) }
+
+    Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ElderHeader(tr(lang, "contacts"), onBack)
-        if (contacts.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_contacts"), fontSize = 20.sp, color = Color(0xFF666666)) }
-        else LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            items(contacts.chunked(2)) { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    row.forEach { c ->
-                        Box(Modifier.weight(1f).height(180.dp).clip(RoundedCornerShape(18.dp)).background(Color.White).padding(12.dp)) {
-                            Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
-                                Box(Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(14.dp)).background(Color(0xFFE3F2FD)), contentAlignment = Alignment.Center) {
-                                    if (c.photoUrl != null) AsyncImage(model = c.photoUrl, contentDescription = c.name, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-                                    else Text(c.name.take(1).uppercase(), fontSize = 40.sp, color = Color(0xFF1565C0), fontWeight = FontWeight.Bold)
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = { ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${c.phone}"))) },
-                                        modifier = Modifier.size(40.dp).clip(CircleShape).background(Color(0xFFE8F5E9))) {
-                                        Icon(Icons.Outlined.Call, contentDescription = "Call", tint = CareGreen)
-                                    }
-                                    Spacer(Modifier.width(6.dp))
-                                    Text(c.name, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                                }
-                            }
-                        }
+        if (contacts.isEmpty()) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_contacts"), fontSize = 20.sp, color = Color(0xFF666666)) }
+        } else {
+            Text(tr(lang, "tap_to_call"), fontSize = 16.sp, color = Color(0xFF888888))
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                items(contacts.chunked(2)) { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        row.forEach { c -> ContactTile(c, Modifier.weight(1f)) { pending = c } }
+                        if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
-                    if (row.size == 1) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+    }
+
+    // ── Confirm-before-dial (prevents accidental mis-dials) ──
+    pending?.let { c ->
+        CallConfirmDialog(
+            contact = c,
+            onDismiss = { pending = null },
+            onCall = {
+                ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${c.phone}")))
+                pending = null
+            },
+        )
+    }
+}
+
+/** A big photo tile — the photo IS the button. The whole card taps to call. */
+@Composable
+private fun ContactTile(c: ContactDto, modifier: Modifier, onTap: () -> Unit) {
+    Column(
+        modifier = modifier.height(230.dp).clip(RoundedCornerShape(20.dp)).background(Color.White)
+            .clickable(onClick = onTap).padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Photo dominates the tile
+        Box(Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(16.dp)).background(Color(0xFFE3F2FD)), contentAlignment = Alignment.Center) {
+            if (c.photoUrl != null) {
+                AsyncImage(model = c.photoUrl, contentDescription = c.name, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            } else {
+                // No text fallback — a face silhouette (a non-reading elder can't use a letter)
+                Icon(Icons.Outlined.Person, contentDescription = c.name, tint = Color(0xFF7BA7D0), modifier = Modifier.fillMaxSize(0.6f))
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Box(Modifier.size(30.dp).clip(CircleShape).background(Color(0xFFE8F5E9)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Outlined.Call, contentDescription = null, tint = CareGreen, modifier = Modifier.size(18.dp))
+            }
+            Text(c.name, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        }
+    }
+}
+
+/** Full-screen-feel confirmation: shows the face big again + "Call [Name]?" + huge Yes/No. */
+@Composable
+private fun CallConfirmDialog(contact: ContactDto, onDismiss: () -> Unit, onCall: () -> Unit) {
+    val lang = LocalElderLang.current
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(shape = RoundedCornerShape(24.dp), color = Color.White) {
+            Column(
+                Modifier.padding(24.dp).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                Box(Modifier.size(150.dp).clip(CircleShape).background(Color(0xFFE3F2FD)), contentAlignment = Alignment.Center) {
+                    if (contact.photoUrl != null) AsyncImage(model = contact.photoUrl, contentDescription = contact.name, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    else Icon(Icons.Outlined.Person, contentDescription = null, tint = Color(0xFF7BA7D0), modifier = Modifier.fillMaxSize(0.6f))
+                }
+                Text(String.format(Locale.getDefault(), tr(lang, "call_who"), contact.name),
+                    fontSize = 28.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Button(onClick = onCall, modifier = Modifier.fillMaxWidth().height(84.dp), shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = CareGreen)) {
+                    Icon(Icons.Outlined.Call, contentDescription = null, modifier = Modifier.size(28.dp)); Spacer(Modifier.width(10.dp))
+                    Text(tr(lang, "call_now_btn"), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                }
+                OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().height(68.dp), shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF555555))) {
+                    Text(tr(lang, "cancel_btn"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

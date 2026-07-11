@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -135,9 +137,26 @@ fun AddContactScreenG(onDone: () -> Unit, onBack: () -> Unit, editContactId: Str
         Column(Modifier.padding(pad).fillMaxSize()) {
             GuardianHeaderBar("Add Contact", onBack)
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(Modifier.size(110.dp).clip(CircleShape).background(Color(0xFFEAF6EC)).clickable { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, contentAlignment = Alignment.Center) {
+                Box(
+                    Modifier.size(120.dp).clip(CircleShape).background(Color(0xFFEAF6EC))
+                        .then(if (photo == null) Modifier.border(2.dp, CareGreen.copy(alpha = 0.5f), CircleShape) else Modifier)
+                        .clickable { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    contentAlignment = Alignment.Center
+                ) {
                     if (photo != null) UriBitmapImage(photo!!, "photo", Modifier.fillMaxSize().clip(CircleShape), ContentScale.Crop)
-                    else Icon(Icons.Outlined.Person, contentDescription = null, tint = CareGreen, modifier = Modifier.size(44.dp))
+                    else Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Outlined.AddAPhoto, contentDescription = null, tint = CareGreen, modifier = Modifier.size(38.dp))
+                        Text("Add photo", fontSize = 12.sp, color = CareGreen, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+                // Photos are how the elder recognises who to call — nudge hard.
+                Surface(shape = RoundedCornerShape(12.dp), color = if (photo == null) Color(0xFFFFF8E1) else Color(0xFFEAF6EC)) {
+                    Text(
+                        if (photo == null) "📷 Add a clear photo — it's how the elder recognises who to call (they may not read the name)."
+                        else "Great — a clear photo makes this contact easy to recognise.",
+                        Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        fontSize = 12.5.sp, color = if (photo == null) Color(0xFF6B4D00) else Color(0xFF2E7D32),
+                    )
                 }
                 GuardianTextField(value = name, onValueChange = { name = it }, label = "Full Name")
                 GuardianTextField(value = phone, onValueChange = { phone = it }, label = "Phone Number", keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
