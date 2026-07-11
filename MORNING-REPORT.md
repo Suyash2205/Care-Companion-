@@ -47,8 +47,12 @@ cd ~/CareCampanion && ./gradlew :app:assembleDebug
 
 ---
 
+## Verified end-to-end on a Play-Services emulator (2026-07-11)
+The full login was driven on an android-34 Google-Play emulator: entered test number **+91 98765 00001**, received the code step, entered **111111**, and the app **signed in → provisioned the guardian user in Supabase (row confirmed: role=guardian, fcm_token present) → loaded the RLS-scoped dashboard**. This confirms the entire Firebase→Supabase→RLS→UI chain works from the real APK, not just via REST tests.
+
+**Production fix made during this test:** the Firebase project's SMS region policy defaulted to `allowlistOnly` with an *empty* allowlist, which blocks ALL phone-auth SMS (test and real). Fixed to allow **IN (India)** — OTP works now. If you add users in other countries, add their region codes in Firebase Console → Authentication → Settings → SMS region policy.
+
 ## Remaining (small, non-blocking)
-1. **Live OTP screenshot** — needs Play Services (your device); the arm64 Play-Services emulator image would not download here (flaky mirror). Auth path proven via backend tests + on-device wiring.
 2. **Realtime** is polling (20 s) + FCM push; a websocket subscription could be added for sub-second in-app updates.
 3. **SOS-settings** guardian screen is a placeholder (emergency recipients are managed via the contact "emergency" toggle; SOS history is on the SOS screen).
 4. **Multi-timezone**: server missed-dose scan assumes IST (fine for India). Per-elder timezones would generalize it.
