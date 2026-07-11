@@ -13,7 +13,8 @@ Legend: ✅ pass · ❌ fail (fixed) · ⚠️ partial/blocked · ⏳ not yet ru
 | ELD-CON-02 | ✅ | **Photo-first design** — Ravi shows his photo; photoless "Meena" shows the **person silhouette (never a letter)** |
 | XDEV-01(update) | ✅ | Contact rename ("Ravi Kumar") and elder rename ("Kamla Devi Sharma") both crossed to the elder |
 | ELD-SET-02 | ✅ | Text size Large enlarges UI + preview; the 3 "A" swatches show distinct sizes (double-scale fix confirmed) |
-| ELD-SET-03 | ⚠️ | High-contrast toggle functions (state flips); visual scope is limited (documented known limitation) |
+| ELD-SET-03 | ✅ | **Fixed** — high-contrast now darkens all muted secondary text/icons to pure black across every elder screen (verified before/after on Contacts + Medicines). Previously only affected a few headings. |
+| ELD-MED-05 | ✅ | "No medicines due today 🎉" shown once today's dose was responded to |
 | XDEV-05 | ⚠️ | SOS template saved guardian-side; elder loads the same `sos_message` field via the identical proven cross-device path (name/contact/vital all crossed). Not SMS-body-inspected. |
 | GRD-MISC-01 | ✅ | Wheelchair services seeded; Call opens dialer with 108 |
 

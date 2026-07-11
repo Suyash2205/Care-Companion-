@@ -98,6 +98,15 @@ fun ElderExperience(
 
 private fun ink(contrast: Boolean, normal: Color) = if (contrast) Color(0xFF000000) else normal
 
+/**
+ * High-contrast foreground helper. When the elder's High-contrast mode is on, muted
+ * grey text/icons are pushed to pure black for maximum legibility; otherwise the
+ * colour passes through unchanged. Only wrap muted greys — never accent/semantic
+ * colours (greens, reds, blues), so they keep their meaning.
+ */
+@Composable
+private fun hc(color: Color): Color = if (LocalHighContrast.current) Color(0xFF000000) else color
+
 // ── Home ─────────────────────────────────────────────────────────────────────
 @Composable
 private fun ElderHome(ui: ElderUiState, onOpen: (ElderDest) -> Unit, onLogout: () -> Unit) {
@@ -106,13 +115,13 @@ private fun ElderHome(ui: ElderUiState, onOpen: (ElderDest) -> Unit, onLogout: (
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("${tr(lang, "namaste")} 🙏", fontSize = 18.sp, color = Color(0xFF666666))
+                Text("${tr(lang, "namaste")} 🙏", fontSize = 18.sp, color = hc(Color(0xFF666666)))
                 Text(ui.elder?.name ?: "…", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = ink(contrast, Color(0xFF1C1C1C)))
             }
             Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFFF1F8F2)) {
                 Text(tr(lang, "at_home"), Modifier.padding(horizontal = 14.dp, vertical = 8.dp), color = Color(0xFF3F5C45), fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
             }
-            IconButton(onClick = { onOpen(ElderDest.SETTINGS) }) { Icon(Icons.Outlined.Settings, contentDescription = tr(lang, "settings"), tint = Color(0xFF555555)) }
+            IconButton(onClick = { onOpen(ElderDest.SETTINGS) }) { Icon(Icons.Outlined.Settings, contentDescription = tr(lang, "settings"), tint = hc(Color(0xFF555555))) }
             IconButton(onClick = onLogout) { Icon(Icons.Outlined.Logout, contentDescription = tr(lang, "logout"), tint = Color(0xFFB42318)) }
         }
 
@@ -188,7 +197,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         ElderHeader(tr(lang, "take_medicine"), onBack)
         if (doses.isEmpty()) {
-            Box(Modifier.fillMaxSize(), Alignment.Center) { Text("${tr(lang, "no_medicines_today")} 🎉", fontSize = 20.sp, color = Color(0xFF666666)) }
+            Box(Modifier.fillMaxSize(), Alignment.Center) { Text("${tr(lang, "no_medicines_today")} 🎉", fontSize = 20.sp, color = hc(Color(0xFF666666))) }
             return@Column
         }
         when (step) {
@@ -198,7 +207,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                     doses.forEachIndexed { i, d ->
                         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFFF8F8F8)).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text("${i + 1}. ${d.medicine.name}", fontSize = 18.sp, modifier = Modifier.weight(1f))
-                            Text(d.schedule.time, fontSize = 16.sp, color = Color(0xFF666666))
+                            Text(d.schedule.time, fontSize = 16.sp, color = hc(Color(0xFF666666)))
                         }
                     }
                     Spacer(Modifier.weight(1f))
@@ -211,7 +220,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
             1 -> AnimatedContent(targetState = index, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(200)) }, label = "dose") { idx ->
                 val dose = doses[idx.coerceIn(0, doses.lastIndex)]
                 Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(String.format(Locale.getDefault(), tr(lang, "medicine_of"), idx + 1, doses.size), fontSize = 18.sp, color = Color(0xFF666666))
+                    Text(String.format(Locale.getDefault(), tr(lang, "medicine_of"), idx + 1, doses.size), fontSize = 18.sp, color = hc(Color(0xFF666666)))
                     Box(Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFFFFF8E1)), contentAlignment = Alignment.Center) {
                         if (dose.medicine.pillUrl != null) AsyncImage(model = dose.medicine.pillUrl, contentDescription = dose.medicine.name, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                         else Icon(Icons.Outlined.Medication, contentDescription = null, tint = Color(0xFF6B4D00), modifier = Modifier.size(96.dp))
@@ -219,7 +228,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                     Text(dose.medicine.name, fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1F1F1F))
                     val chips = listOfNotNull(dose.medicine.dosage.ifBlank { null }, dose.schedule.label,
                         dose.medicine.withLiquid?.let { "with $it" }).joinToString(" · ")
-                    Text(chips, fontSize = 18.sp, color = Color(0xFF555555))
+                    Text(chips, fontSize = 18.sp, color = hc(Color(0xFF555555)))
                     Spacer(Modifier.weight(1f))
                     Text(tr(lang, "did_you_take"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -242,7 +251,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                 }
                 Spacer(Modifier.height(16.dp))
                 Text(tr(lang, "great_job"), fontSize = 34.sp, fontWeight = FontWeight.Bold)
-                Text(tr(lang, "finished_medicines"), fontSize = 18.sp, color = Color(0xFF555555), textAlign = TextAlign.Center)
+                Text(tr(lang, "finished_medicines"), fontSize = 18.sp, color = hc(Color(0xFF555555)), textAlign = TextAlign.Center)
                 Spacer(Modifier.height(24.dp))
                 OutlinedButton(onClick = onBack, modifier = Modifier.height(56.dp)) { Text(tr(lang, "back_to_home"), fontSize = 18.sp) }
             }
@@ -262,9 +271,9 @@ private fun ElderContacts(contacts: List<ContactDto>, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ElderHeader(tr(lang, "contacts"), onBack)
         if (contacts.isEmpty()) {
-            Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_contacts"), fontSize = 20.sp, color = Color(0xFF666666)) }
+            Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_contacts"), fontSize = 20.sp, color = hc(Color(0xFF666666))) }
         } else {
-            Text(tr(lang, "tap_to_call"), fontSize = 16.sp, color = Color(0xFF888888))
+            Text(tr(lang, "tap_to_call"), fontSize = 16.sp, color = hc(Color(0xFF888888)))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 items(contacts.chunked(2)) { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -339,7 +348,7 @@ private fun CallConfirmDialog(contact: ContactDto, onDismiss: () -> Unit, onCall
                     Text(tr(lang, "call_now_btn"), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 }
                 OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().height(68.dp), shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF555555))) {
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = hc(Color(0xFF555555)))) {
                     Text(tr(lang, "cancel_btn"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
@@ -378,8 +387,8 @@ private fun ElderVitals(onBack: () -> Unit, vm: ElderVitalsViewModel = hiltViewM
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = Color(0xFF999999), modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(6.dp)); Text(tr(lang, "saved_auto_time"), fontSize = 14.sp, color = Color(0xFF888888))
+            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = hc(Color(0xFF999999)), modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp)); Text(tr(lang, "saved_auto_time"), fontSize = 14.sp, color = hc(Color(0xFF888888)))
         }
         Button(onClick = {
             val a = v1.toDoubleOrNull() ?: return@Button
@@ -390,7 +399,7 @@ private fun ElderVitals(onBack: () -> Unit, vm: ElderVitalsViewModel = hiltViewM
         }
         HorizontalDivider()
         Text(tr(lang, "my_readings"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-        if (ui.readings.isEmpty()) Text(tr(lang, "no_readings"), fontSize = 16.sp, color = Color(0xFF888888))
+        if (ui.readings.isEmpty()) Text(tr(lang, "no_readings"), fontSize = 16.sp, color = hc(Color(0xFF888888)))
         ui.readings.take(10).forEach { r -> VitalRow(r, ui.severities[r.id]) }
     }
 }
@@ -401,7 +410,7 @@ private fun VitalTypeCard(type: String, label: String, selected: Boolean, modifi
         .background(if (selected) Color(0xFFEAF6EC) else Color.White)
         .border(if (selected) 2.5.dp else 1.dp, if (selected) CareGreen else Color(0xFFE0E4E0), RoundedCornerShape(14.dp))
         .clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-        Text(label, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = if (selected) CareGreen else Color(0xFF444444), textAlign = TextAlign.Center)
+        Text(label, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = if (selected) CareGreen else hc(Color(0xFF444444)), textAlign = TextAlign.Center)
     }
 }
 
@@ -413,7 +422,7 @@ private fun BigNumberField(value: String, onChange: (String) -> Unit, label: Str
             textStyle = LocalTextStyle.current.copy(fontSize = 32.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
             modifier = Modifier.fillMaxWidth().height(80.dp), shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = CareGreen))
-        Text(label, fontSize = 15.sp, color = Color(0xFF666666), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
+        Text(label, fontSize = 15.sp, color = hc(Color(0xFF666666)), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
     }
 }
 
@@ -430,7 +439,7 @@ private fun VitalRow(r: VitalDto, sev: Severity?) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Text(r.takenAt?.take(16)?.replace("T", " ") ?: "", fontSize = 13.sp, color = Color(0xFF888888))
+                Text(r.takenAt?.take(16)?.replace("T", " ") ?: "", fontSize = 13.sp, color = hc(Color(0xFF888888)))
             }
             Surface(shape = RoundedCornerShape(20.dp), color = pillBg) {
                 Text(pillText, Modifier.padding(horizontal = 12.dp, vertical = 5.dp), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = pillFg)
@@ -450,7 +459,7 @@ private fun ElderVideos(ott: List<OttShortcutDto>, onBack: () -> Unit) {
         if (notInstalled) Surface(shape = RoundedCornerShape(12.dp), color = Color(0xFFFFF8E1)) {
             Text(tr(lang, "not_installed"), Modifier.padding(12.dp), fontSize = 16.sp, color = Color(0xFF6B4D00))
         }
-        if (ott.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_videos"), fontSize = 18.sp, color = Color(0xFF888888)) }
+        if (ott.isEmpty()) Box(Modifier.fillMaxSize(), Alignment.Center) { Text(tr(lang, "no_videos"), fontSize = 18.sp, color = hc(Color(0xFF888888))) }
         else LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             items(ott.chunked(2)) { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -501,12 +510,12 @@ private fun ElderSettings(vm: ElderSettingsViewModel, onLogout: () -> Unit, onBa
                         .clickable { vm.setFontScale(f) }, contentAlignment = Alignment.Center) {
                         // Divide out the globally-applied fontScale so each swatch shows its own
                         // absolute target size (18*f px), not f × currentScale (double-scaling).
-                        Text("A", fontSize = (18 * f / fontScale).sp, fontWeight = FontWeight.Bold, color = if (sel) CareGreen else Color(0xFF444444))
+                        Text("A", fontSize = (18 * f / fontScale).sp, fontWeight = FontWeight.Bold, color = if (sel) CareGreen else hc(Color(0xFF444444)))
                     }
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text("${tr(lang, "preview_text")}", fontSize = 18.sp, color = Color(0xFF333333))
+            Text("${tr(lang, "preview_text")}", fontSize = 18.sp, color = hc(Color(0xFF333333)))
         }
         // Language
         SettingsCard(tr(lang, "language")) {
@@ -518,7 +527,7 @@ private fun ElderSettings(vm: ElderSettingsViewModel, onLogout: () -> Unit, onBa
                             Box(Modifier.weight(1f).height(64.dp).clip(RoundedCornerShape(14.dp)).background(if (sel) Color(0xFFEAF6EC) else Color(0xFFF8F8F8))
                                 .border(if (sel) 2.5.dp else 1.dp, if (sel) CareGreen else Color(0xFFE0E4E0), RoundedCornerShape(14.dp))
                                 .clickable { vm.setLang(l) }, contentAlignment = Alignment.Center) {
-                                Text(l.native, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = if (sel) CareGreen else Color(0xFF333333))
+                                Text(l.native, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = if (sel) CareGreen else hc(Color(0xFF333333)))
                             }
                         }
                     }
@@ -578,13 +587,13 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
                 Text(if (result.sending) "…" else "$countdown", fontSize = 72.sp, fontWeight = FontWeight.Bold, color = Color(0xFFD32F2F))
             }
             Spacer(Modifier.height(20.dp))
-            Text(if (result.sending) tr(lang, "sending") else String.format(Locale.getDefault(), tr(lang, "sending_in"), countdown), fontSize = 20.sp, color = Color(0xFF555555), textAlign = TextAlign.Center)
+            Text(if (result.sending) tr(lang, "sending") else String.format(Locale.getDefault(), tr(lang, "sending_in"), countdown), fontSize = 20.sp, color = hc(Color(0xFF555555)), textAlign = TextAlign.Center)
             Spacer(Modifier.height(32.dp))
             Button(onClick = onBack, enabled = !result.sending, modifier = Modifier.fillMaxWidth().height(96.dp), shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFFD32F2F))) {
                 Text(tr(lang, "cancel_im_ok"), fontSize = 26.sp, fontWeight = FontWeight.Bold)
             }
-            Text(tr(lang, "location_shared_note"), fontSize = 14.sp, color = Color(0xFF888888), modifier = Modifier.padding(top = 12.dp), textAlign = TextAlign.Center)
+            Text(tr(lang, "location_shared_note"), fontSize = 14.sp, color = hc(Color(0xFF888888)), modifier = Modifier.padding(top = 12.dp), textAlign = TextAlign.Center)
         }
     } else {
         Column(Modifier.fillMaxSize().statusBarsPadding().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -593,7 +602,7 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
             }
             Spacer(Modifier.height(16.dp))
             Text(tr(lang, "alert_sent"), fontSize = 38.sp, fontWeight = FontWeight.Bold)
-            Text(tr(lang, "family_notified"), fontSize = 20.sp, color = Color(0xFF555555))
+            Text(tr(lang, "family_notified"), fontSize = 20.sp, color = hc(Color(0xFF555555)))
             Spacer(Modifier.height(20.dp))
             Surface(shape = RoundedCornerShape(16.dp), color = Color.White, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
