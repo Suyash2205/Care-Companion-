@@ -42,3 +42,4 @@ build/
 app/build/
 *.iml
 .idea/
+/CareCompanion.apk
