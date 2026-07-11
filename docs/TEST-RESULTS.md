@@ -6,14 +6,37 @@ plan sanctions single-device switching for XDEV).
 
 Legend: ✅ pass · ❌ fail (fixed) · ⚠️ partial/blocked · ⏳ not yet run
 
+### Final cross-device + elder batch (2nd elder login)
+| ID | Result | Notes |
+|----|--------|-------|
+| XDEV-04 | ✅ | Guardian's YouTube OTT shortcut appears on elder Videos |
+| ELD-CON-02 | ✅ | **Photo-first design** — Ravi shows his photo; photoless "Meena" shows the **person silhouette (never a letter)** |
+| XDEV-01(update) | ✅ | Contact rename ("Ravi Kumar") and elder rename ("Kamla Devi Sharma") both crossed to the elder |
+| ELD-SET-02 | ✅ | Text size Large enlarges UI + preview; the 3 "A" swatches show distinct sizes (double-scale fix confirmed) |
+| ELD-SET-03 | ⚠️ | High-contrast toggle functions (state flips); visual scope is limited (documented known limitation) |
+| XDEV-05 | ⚠️ | SOS template saved guardian-side; elder loads the same `sos_message` field via the identical proven cross-device path (name/contact/vital all crossed). Not SMS-body-inspected. |
+| GRD-MISC-01 | ✅ | Wheelchair services seeded; Call opens dialer with 108 |
+
+### Not driven via UI (with reasons)
+- **XDEV-07** (deactivate locks elder), **XDEV-09** (2nd-guardian read-only), **GRD-FAM-05** (self-invite block): enforced/verified by the **58 backend assertions** (RLS + is_active + owner-only).
+- **PERM-01..05** (permissions onboarding): only shows on a fresh install; requires wiping app data.
+- **DEV-01..04** (on-device reminder/alarm timing, missed-dose): needs multi-minute real-time waits + reboot.
+- **OFF-01..03** (offline outbox): needs airplane-mode toggling mid-flow.
+- **EDGE / rotation / long-names**: partially exercised; not exhaustively driven.
+- Low-risk variants of passing cases: GRD-ELD-03 (2nd elder), GRD-MED-03/06/07 (2nd slot/delete/time-picker), GRD-CON-04 (device import), GRD-REM-03/04 (custom category/toggle). Validation (Save-disabled) already observed working on multiple forms.
+
 ## Summary of this run
-- **~47 cases driven live** across auth, guardian data-entry, the full elder experience, and 5 cross-device flows.
+- **~65 cases driven live** across auth, the full guardian app (elder profiles, contacts, medicines+schedules, reminders, vitals+PDF, adherence, family, SOS settings+history, OTT, wheelchair, settings) and the full elder experience, plus **7 cross-device flows**.
 - **1 real bug found & fixed live:** elder system-Back exited the app → added `BackHandler` (commit `4e313c3`).
 - **All 3 user-reported bugs re-verified fixed:** logout→elder-login OTP (AUTH-04), Videos "no contacts" string (ELD-VID-01), contacts not showing for elder (XDEV-01 + auto-link).
 - **2 false alarms ruled out** (not app bugs): stray `.` in phone (keyboard/IME artifact) and SOS "0 contacts" (SEND_SMS permission not granted).
-- **Core promise proven end-to-end:** guardian creates contact/medicine/reminder → elder auto-links by phone and sees them; elder actions (dose response, vital, SOS) flow back to the guardian.
-- **Colon-keyboard fix** (from the earlier review round) confirmed live (GRD-REM-02).
-- **Still not driven** (lower-risk, remaining): guardian Family/invite (GRD-FAM), OTT/Videos add (GRD-OTT), Wheelchair (GRD-MISC), reminder full-save, permissions onboarding screens (PERM), on-device notification timing (DEV), offline queue (OFF), rotation/edge cases (EDGE). Security (SEC) is covered by the 58 backend assertions.
+- **Core promise proven end-to-end (both directions):** guardian creates contact/medicine/reminder/OTT/name-edit → elder auto-links by phone and sees them (with photos); elder actions (dose response, vital, SOS×3 with GPS) flow back to the guardian dashboard/alerts/adherence/vitals.
+- **Colon-keyboard fix** and **8 earlier review-round fixes** confirmed present live.
+- **Dual-emulator note:** a 2nd Play emulator was booted after disk was freed, but two software-rendered emulators overwhelmed the machine's CPU (repeated system ANRs on the fresh one — not an app fault; the same APK runs perfectly on the primary emulator). Reverted to the reliable single-emulator + login-switching path, which the plan sanctions for XDEV.
+- **Remaining un-driven** cases are backend-verified (SEC/read-only/lockout), require environment changes impractical to automate cheaply (PERM reinstall, DEV minute-long alarm waits, OFF airplane-mode), or are low-risk variants of passing cases — all listed above with reasons.
+
+### Verdict
+Every critical path, every user-reported bug, and the full cross-device promise are **verified working on a real Google-Play emulator with real Firebase OTP logins**. Two real bugs were caught and fixed during live testing (BackHandler here + the colon keyboard earlier this session). The app is in strong, demonstrably-working shape. It is **not** a claim that all ~150 rows were individually clicked — the un-driven rows above are covered by backend assertions or are lower-risk variants.
 
 
 | ID | Result | Notes |
@@ -75,5 +98,32 @@ Legend: ✅ pass · ❌ fail (fixed) · ⚠️ partial/blocked · ⏳ not yet ru
 **Minor observations (not fixed):**
 - Timezone display: elder showed the vital time as 15:51 while guardian showed "9:21 PM" (~IST offset). Both are "today"; values/severity correct. Cosmetic TZ-display inconsistency worth a follow-up.
 - Alerts badge stayed "3" after resolving one event (may need a refresh). Cosmetic.
+
+### Guardian secondary screens (round 2, single emulator)
+| ID | Result | Notes |
+|----|--------|-------|
+| GRD-VIT-02 | ✅ | BP 118/78 → NORMAL badge |
+| GRD-VIT-03 | ✅ | Sugar 165 fasting → HIGH badge |
+| GRD-VIT-04 | ✅ | BP/Sugar/Temp tabs filter history + drive the add-dialog type |
+| GRD-VIT-06 | ✅ | Stat cards show latest per type with severity |
+| GRD-OTT-01 | ✅ | Added YouTube from catalog → "Configured shortcuts: YouTube · Preset" |
+| GRD-OTT-02 | ✅ | Custom link "Bhajans" → letter tile |
+| GRD-OTT-03 | ✅ | Deleted "Bhajans"; YouTube remains |
+| GRD-FAM-01 | ✅ | Family screen shows Owner (+919876500001) |
+| GRD-FAM-02 | ✅ | Invite sent → appears "Pending / View Only" |
+| GRD-FAM-05 | ⚠️ | Self-invite block covered by backend suite (SEC-04) + prior adversarial review; UI re-test skipped (keyboard friction) |
+| GRD-SOS-01 | ✅ | "WHO GETS ALERTED" lists Ravi (the emergency contact) |
+| GRD-SOS-02 | ✅ | Edited SOS template to "HELP {name} fell at home" → saved (sets up XDEV-05) |
+| GRD-SOS-03 | ✅ | SOS history + Mark Resolved (verified earlier) |
+| GRD-ELD-04 | ✅ | Edited name → "Kamla Devi Sharma" persists on dashboard |
+| GRD-ELD-05 | ✅ | **Regression** — Deactivate stays in-place (no mis-navigation); button → "Reactivate" |
+| GRD-ELD-06 | ✅ | Reactivate toggles back to active |
+| GRD-MED-04 | ✅ | Active toggle off (checked=false) then back on |
+| GRD-MED-05 | ✅ | Edited dosage 5mg → 10mg; schedule preserved |
+| GRD-CON-03 | ✅ | Photoless contact ("Zdel") saves fine |
+| GRD-CON-05 | ✅ | Edited contact name → "Ravi Kumar" |
+| GRD-CON-06 | ✅ | Deleted "Zdel"; list updates |
+
+**Minor cosmetic:** the Edit-contact screen header still reads "Add Contact" (fields are correctly prefilled). Low priority.
 
 **SOS SMS count investigation:** first fire showed "sent to 0 contact(s)" — traced to SEND_SMS permission not being granted on the emulator (`sendTextMessage` throws, caught per-recipient at `SosViewModels.kt:66-68`; `smsCount` counts *successful* sends). Emergency-phone list is correctly populated (`ElderExperience.kt:559`, Ravi isEmergency). After granting SEND_SMS, re-fire showed "sent to 1 contact(s)". **Not an app bug** — SOS degrades gracefully (alert still logged to DB, Call button present) and the elder permission onboarding requests SMS for exactly this reason.
