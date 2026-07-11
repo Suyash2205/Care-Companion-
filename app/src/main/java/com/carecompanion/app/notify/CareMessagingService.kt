@@ -26,6 +26,10 @@ class CareMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+        // Respect the guardian's in-app "notifications" preference.
+        val enabled = getSharedPreferences("cc_guardian_settings", MODE_PRIVATE)
+            .getBoolean("notifications_enabled", true)
+        if (!enabled) return
         val title = message.notification?.title ?: message.data["title"] ?: "Care Companion"
         val body = message.notification?.body ?: message.data["body"] ?: ""
         Notifications.showAlert(this, title, body)

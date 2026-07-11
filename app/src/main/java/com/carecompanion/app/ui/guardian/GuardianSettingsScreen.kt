@@ -114,11 +114,15 @@ fun GuardianSettingsScreen(onBack: () -> Unit, vm: GuardianSettingsViewModel = h
 
                 // ── HELP & SUPPORT ──────────────────────────────────────
                 SectionHeader("HELP & SUPPORT")
+                val ctx = androidx.compose.ui.platform.LocalContext.current
                 SettingsCard {
                     Column {
-                        HelpRow(Icons.Outlined.HelpOutline, "How CareCompanion works")
-                        HorizontalDivider(color = Color(0xFFF0F0F0))
-                        HelpRow(Icons.Outlined.Email, "Contact support", "care@example.com")
+                        HelpRow(Icons.Outlined.Email, "Contact support", "care@example.com", onClick = {
+                            runCatching {
+                                ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_SENDTO,
+                                    android.net.Uri.parse("mailto:care@example.com?subject=Care%20Companion%20Support")))
+                            }
+                        })
                         HorizontalDivider(color = Color(0xFFF0F0F0))
                         HelpRow(Icons.Outlined.Info, "App version", "1.0")
                     }
@@ -160,9 +164,10 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun HelpRow(icon: ImageVector, title: String, value: String? = null) {
+private fun HelpRow(icon: ImageVector, title: String, value: String? = null, onClick: (() -> Unit)? = null) {
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+        Modifier.fillMaxWidth().then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {

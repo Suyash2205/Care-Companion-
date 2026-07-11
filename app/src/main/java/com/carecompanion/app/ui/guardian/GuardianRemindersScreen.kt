@@ -206,9 +206,9 @@ private fun AddReminderDialog(
                     GuardianTextField(
                         value = timeInput,
                         onValueChange = { timeInput = it },
-                        label = "Time (HH:MM)",
+                        label = "Time e.g. 14:30",
                         modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     )
                     OutlinedButton(onClick = {
                         val t = timeInput.trim()

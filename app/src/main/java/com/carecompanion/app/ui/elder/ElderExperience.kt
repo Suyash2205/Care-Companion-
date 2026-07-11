@@ -71,7 +71,9 @@ fun ElderExperience(
         LocalElderLang provides lang,
         LocalFontScale provides fontScale,
         LocalHighContrast provides contrast,
-        LocalDensity provides Density(baseDensity.density, fontScale),
+        // Combine the OS accessibility font scale with the elder's in-app step
+        // so a system-wide enlargement is preserved, not discarded.
+        LocalDensity provides Density(baseDensity.density, baseDensity.fontScale * fontScale),
     ) {
         Scaffold(containerColor = Color(0xFFF4F6F4)) { pad ->
             Box(Modifier.padding(pad).fillMaxSize()) {
@@ -355,10 +357,10 @@ private fun ElderVitals(onBack: () -> Unit, vm: ElderVitalsViewModel = hiltViewM
         ElderHeader(tr(lang, "add_reading"), onBack)
         // type picker
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            listOf("bp" to tr(lang, "blood_pressure"), "sugar" to tr(lang, "sugar")).forEach { (t, l) -> VitalTypeCard(t, l, type == t, Modifier.weight(1f)) { type = t } }
+            listOf("bp" to tr(lang, "blood_pressure"), "sugar" to tr(lang, "sugar")).forEach { (t, l) -> VitalTypeCard(t, l, type == t, Modifier.weight(1f)) { type = t; v1 = ""; v2 = "" } }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            listOf("temp" to tr(lang, "temperature"), "pulse" to tr(lang, "pulse")).forEach { (t, l) -> VitalTypeCard(t, l, type == t, Modifier.weight(1f)) { type = t } }
+            listOf("temp" to tr(lang, "temperature"), "pulse" to tr(lang, "pulse")).forEach { (t, l) -> VitalTypeCard(t, l, type == t, Modifier.weight(1f)) { type = t; v1 = ""; v2 = "" } }
         }
         // fields
         if (type == "bp") Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -366,7 +368,7 @@ private fun ElderVitals(onBack: () -> Unit, vm: ElderVitalsViewModel = hiltViewM
             BigNumberField(v2, { v2 = it }, tr(lang, "diastolic"), Modifier.weight(1f))
         } else BigNumberField(v1, { v1 = it }, tr(lang, when (type) { "sugar" -> "sugar"; "temp" -> "temperature"; else -> "pulse" }), Modifier.fillMaxWidth())
         if (type == "sugar") Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("fasting" to "Fasting", "post_meal" to "Post-meal").forEach { (v, l) ->
+            listOf("fasting" to tr(lang, "ctx_fasting"), "post_meal" to tr(lang, "ctx_post_meal")).forEach { (v, l) ->
                 FilterChip(selected = ctxSel == v, onClick = { ctxSel = v }, label = { Text(l) }, colors = FilterChipDefaults.filterChipColors(selectedContainerColor = CareGreen, selectedLabelColor = Color.White))
             }
         }
@@ -376,7 +378,7 @@ private fun ElderVitals(onBack: () -> Unit, vm: ElderVitalsViewModel = hiltViewM
         }
         Button(onClick = {
             val a = v1.toDoubleOrNull() ?: return@Button
-            vm.add(type, a, v2.toDoubleOrNull(), if (type == "sugar") ctxSel else null); v1 = ""; v2 = ""
+            vm.add(type, a, if (type == "bp") v2.toDoubleOrNull() else null, if (type == "sugar") ctxSel else null); v1 = ""; v2 = ""
         }, enabled = v1.toDoubleOrNull() != null && !ui.saving, modifier = Modifier.fillMaxWidth().height(72.dp),
             shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = CareGreen)) {
             Text(tr(lang, "save_reading"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
@@ -492,7 +494,9 @@ private fun ElderSettings(vm: ElderSettingsViewModel, onLogout: () -> Unit, onBa
                     Box(Modifier.weight(1f).height(72.dp).clip(RoundedCornerShape(14.dp)).background(if (sel) Color(0xFFEAF6EC) else Color(0xFFF8F8F8))
                         .border(if (sel) 2.5.dp else 1.dp, if (sel) CareGreen else Color(0xFFE0E4E0), RoundedCornerShape(14.dp))
                         .clickable { vm.setFontScale(f) }, contentAlignment = Alignment.Center) {
-                        Text("A", fontSize = (18 * f).sp, fontWeight = FontWeight.Bold, color = if (sel) CareGreen else Color(0xFF444444))
+                        // Divide out the globally-applied fontScale so each swatch shows its own
+                        // absolute target size (18*f px), not f × currentScale (double-scaling).
+                        Text("A", fontSize = (18 * f / fontScale).sp, fontWeight = FontWeight.Bold, color = if (sel) CareGreen else Color(0xFF444444))
                     }
                 }
             }

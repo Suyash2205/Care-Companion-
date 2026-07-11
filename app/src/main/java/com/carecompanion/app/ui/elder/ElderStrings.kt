@@ -75,6 +75,8 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "sugar" to m("Sugar", "शुगर", "साखर", "સુગર"),
     "temperature" to m("Temperature", "तापमान", "तापमान", "તાપમાન"),
     "pulse" to m("Pulse", "नाड़ी", "नाडी", "પલ્સ"),
+    "ctx_fasting" to m("Fasting", "खाली पेट", "उपाशी", "ઉપવાસ"),
+    "ctx_post_meal" to m("Post-meal", "खाने के बाद", "जेवणानंतर", "જમ્યા પછી"),
     "systolic" to m("Systolic (upper)", "सिस्टोलिक (ऊपर)", "सिस्टोलिक (वर)", "સિસ્ટોલિક (ઉપર)"),
     "diastolic" to m("Diastolic (lower)", "डायस्टोलिक (नीचे)", "डायस्टोलिक (खाली)", "ડાયાસ્ટોલિક (નીચે)"),
     "save_reading" to m("Save reading", "सहेजें", "जतन करा", "સાચવો"),

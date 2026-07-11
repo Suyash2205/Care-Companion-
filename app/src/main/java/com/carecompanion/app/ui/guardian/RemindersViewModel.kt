@@ -70,11 +70,15 @@ class RemindersViewModel @Inject constructor(
 
     fun toggleReminder(r: ReminderDto) = viewModelScope.launch {
         val id = r.id ?: return@launch
-        runCatching { care.updateReminder(id, r.copy(enabled = !r.enabled)) }.onSuccess { load() }
+        runCatching { care.updateReminder(id, r.copy(enabled = !r.enabled)) }
+            .onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't update reminder") }
     }
 
     fun deleteReminder(id: String) = viewModelScope.launch {
-        runCatching { care.deleteReminder(id) }.onSuccess { load() }
+        runCatching { care.deleteReminder(id) }
+            .onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't delete reminder") }
     }
 
     fun addCustomCategory(name: String) {
