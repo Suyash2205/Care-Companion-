@@ -74,6 +74,17 @@ class MedicinesViewModel @Inject constructor(
         }
     }
 
+    fun editMedicine(id: String, name: String, dosage: String, form: String, withLiquid: String?, meal: String?) {
+        val existing = _ui.value.medicines.find { it.id == id } ?: return
+        _ui.value = _ui.value.copy(saving = true, error = null)
+        viewModelScope.launch {
+            runCatching {
+                care.updateMedicine(id, existing.copy(name = name.trim(), dosage = dosage.trim(), form = form, withLiquid = withLiquid, meal = meal))
+            }.onSuccess { _ui.value = _ui.value.copy(saving = false, done = true) }
+                .onFailure { _ui.value = _ui.value.copy(saving = false, error = it.message ?: "Failed to save") }
+        }
+    }
+
     fun toggleActive(m: MedicineDto) = viewModelScope.launch {
         val id = m.id ?: return@launch
         runCatching { care.setMedicineActive(id, !m.isActive, m) }.onSuccess { load() }

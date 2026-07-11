@@ -47,6 +47,7 @@ fun GuardianDashboardScreen(
     onAddElder: () -> Unit,
     onOpen: (route: String) -> Unit,
     onLogout: () -> Unit,
+    onSettings: () -> Unit = {},
     vm: GuardianDashboardViewModel = hiltViewModel(),
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
@@ -66,6 +67,7 @@ fun GuardianDashboardScreen(
                 activeTab = BottomTab.Home,
                 onHome = {},
                 onAlerts = { ui.selectedElder?.id?.let { onOpen(Routes.elder(Routes.SOS, it)) } },
+                onSettings = onSettings,
             )
         }
     ) { pad ->

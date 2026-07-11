@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Medication
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
@@ -35,7 +36,7 @@ import com.carecompanion.app.ui.theme.CareGreen
 private val forms = listOf("Tablet", "Capsule", "Syrup", "Drops", "Injection")
 
 @Composable
-fun MedicinesScreenG(onBack: () -> Unit, onAdd: () -> Unit, onSchedule: (String) -> Unit, vm: MedicinesViewModel = hiltViewModel()) {
+fun MedicinesScreenG(onBack: () -> Unit, onAdd: () -> Unit, onSchedule: (String) -> Unit, onEdit: (String) -> Unit = {}, vm: MedicinesViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
     Scaffold(
@@ -73,8 +74,13 @@ fun MedicinesScreenG(onBack: () -> Unit, onAdd: () -> Unit, onSchedule: (String)
                                 }
                                 HorizontalDivider(color = Color(0xFFF1F5F9))
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    TextButton(onClick = { m.id?.let(onSchedule) }) {
-                                        Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("Schedule")
+                                    Row {
+                                        TextButton(onClick = { m.id?.let(onEdit) }) {
+                                            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("Edit")
+                                        }
+                                        TextButton(onClick = { m.id?.let(onSchedule) }) {
+                                            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("Schedule")
+                                        }
                                     }
                                     TextButton(onClick = { m.id?.let(vm::deleteMedicine) }, colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFDC2626))) {
                                         Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("Remove")
@@ -91,7 +97,7 @@ fun MedicinesScreenG(onBack: () -> Unit, onAdd: () -> Unit, onSchedule: (String)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AddMedicineScreenG(onDone: () -> Unit, onBack: () -> Unit, vm: MedicinesViewModel = hiltViewModel()) {
+fun AddMedicineScreenG(onDone: () -> Unit, onBack: () -> Unit, editMedicineId: String? = null, vm: MedicinesViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     var name by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }
@@ -101,19 +107,34 @@ fun AddMedicineScreenG(onDone: () -> Unit, onBack: () -> Unit, vm: MedicinesView
     var pill by remember { mutableStateOf<Uri?>(null) }
     var pf by remember { mutableStateOf<Uri?>(null) }
     var pb by remember { mutableStateOf<Uri?>(null) }
+    var prefilled by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { if (editMedicineId != null) vm.load() }
+    LaunchedEffect(ui.medicines) {
+        if (editMedicineId != null && !prefilled) {
+            ui.medicines.find { it.id == editMedicineId }?.let { m ->
+                name = m.name; dosage = m.dosage; form = m.form
+                withLiquid = m.withLiquid; meal = m.meal; prefilled = true
+            }
+        }
+    }
     LaunchedEffect(ui.done) { if (ui.done) onDone() }
 
     Scaffold(containerColor = GuardianBg, bottomBar = {
         Surface(color = Color.White, shadowElevation = 12.dp) {
             Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(20.dp)) {
                 GradientButton(text = if (ui.saving) "Saving…" else "Save Medicine",
-                    onClick = { if (name.isNotBlank()) vm.addMedicine(name, dosage, form, withLiquid, meal, pill, pf, pb) },
+                    onClick = {
+                        if (name.isNotBlank()) {
+                            if (editMedicineId != null) vm.editMedicine(editMedicineId, name, dosage, form, withLiquid, meal)
+                            else vm.addMedicine(name, dosage, form, withLiquid, meal, pill, pf, pb)
+                        }
+                    },
                     enabled = !ui.saving && name.isNotBlank(), modifier = Modifier.fillMaxWidth())
             }
         }
     }) { pad ->
         Column(Modifier.padding(pad).fillMaxSize()) {
-            GuardianHeaderBar("Add Medicine", onBack)
+            GuardianHeaderBar(if (editMedicineId != null) "Edit Medicine" else "Add Medicine", onBack)
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 GuardianTextField(value = name, onValueChange = { name = it }, label = "Medicine Name")
                 GuardianTextField(value = dosage, onValueChange = { dosage = it }, label = "Dosage (e.g. 500mg)")

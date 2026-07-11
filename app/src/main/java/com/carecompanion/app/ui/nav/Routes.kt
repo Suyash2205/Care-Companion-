@@ -15,6 +15,9 @@ object Routes {
     const val ADD_CONTACT = "guardian/elder/{elderId}/contacts/add"
     const val MEDICINES = "guardian/elder/{elderId}/medicines"
     const val ADD_MEDICINE = "guardian/elder/{elderId}/medicines/add"
+    const val EDIT_MEDICINE = "guardian/elder/{elderId}/medicines/edit/{medicineId}"
+    const val EDIT_CONTACT = "guardian/elder/{elderId}/contacts/edit/{contactId}"
+    const val SETTINGS = "guardian/settings"
     const val SCHEDULE = "guardian/elder/{elderId}/schedule"
     const val SCHEDULE_BUILDER = "guardian/elder/{elderId}/schedule/build/{medicineId}"
     const val REMINDERS = "guardian/elder/{elderId}/reminders"
@@ -32,4 +35,8 @@ object Routes {
     fun elder(route: String, elderId: String) = route.replace("{elderId}", elderId)
     fun scheduleBuilder(elderId: String, medicineId: String) =
         SCHEDULE_BUILDER.replace("{elderId}", elderId).replace("{medicineId}", medicineId)
+    fun editMedicine(elderId: String, medicineId: String) =
+        EDIT_MEDICINE.replace("{elderId}", elderId).replace("{medicineId}", medicineId)
+    fun editContact(elderId: String, contactId: String) =
+        EDIT_CONTACT.replace("{elderId}", elderId).replace("{contactId}", contactId)
 }

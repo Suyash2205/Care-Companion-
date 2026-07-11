@@ -31,6 +31,7 @@ data class ElderDto(
     @SerialName("verified_elder_uid") val verifiedElderUid: String? = null,
     @SerialName("is_active") val isActive: Boolean = true,
     @SerialName("created_by") val createdBy: String? = null,
+    @SerialName("sos_message") val sosMessage: String? = null,
 )
 
 @Serializable

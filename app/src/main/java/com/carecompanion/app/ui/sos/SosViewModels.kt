@@ -43,7 +43,7 @@ class ElderSosViewModel @Inject constructor(
     fun reset() { _result.value = SosSendResult() }
 
     @SuppressLint("MissingPermission")
-    fun fire(elderId: String, elderName: String, emergencyPhones: List<String>) {
+    fun fire(elderId: String, elderName: String, emergencyPhones: List<String>, template: String? = null) {
         _result.value = SosSendResult(sending = true)
         viewModelScope.launch {
             // 1) location (best-effort, ~5s cap)
@@ -57,10 +57,9 @@ class ElderSosViewModel @Inject constructor(
             val locText = loc?.let { "Location: %.5f, %.5f".format(it.latitude, it.longitude) }
 
             // 2) SMS first — the channel that must work without internet
-            val body = buildString {
-                append("EMERGENCY! $elderName needs help.")
-                if (mapsLink != null) append(" $mapsLink")
-            }
+            val base = template?.takeIf { it.isNotBlank() }?.replace("{name}", elderName)
+                ?: "EMERGENCY! $elderName needs help."
+            val body = if (mapsLink != null) "$base $mapsLink" else base
             var smsCount = 0
             for (phone in emergencyPhones) {
                 try {

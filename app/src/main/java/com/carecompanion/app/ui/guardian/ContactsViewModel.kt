@@ -64,6 +64,17 @@ class ContactsViewModel @Inject constructor(
         }
     }
 
+    fun editContact(id: String, name: String, phone: String, relation: String?, isEmergency: Boolean) {
+        val existing = _ui.value.contacts.find { it.id == id } ?: return
+        _ui.value = _ui.value.copy(saving = true, error = null)
+        viewModelScope.launch {
+            runCatching {
+                care.updateContact(id, existing.copy(name = name.trim(), phone = phone.trim(), relation = relation?.ifBlank { null }, isEmergency = isEmergency))
+            }.onSuccess { _ui.value = _ui.value.copy(saving = false, done = true) }
+                .onFailure { _ui.value = _ui.value.copy(saving = false, error = it.message ?: "Failed to save") }
+        }
+    }
+
     fun deleteContact(id: String) = viewModelScope.launch {
         runCatching { care.deleteContact(id) }.onSuccess { load() }
     }

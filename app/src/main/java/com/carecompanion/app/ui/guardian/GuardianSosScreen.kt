@@ -28,13 +28,16 @@ import com.carecompanion.app.ui.sos.GuardianSosViewModel
 import com.carecompanion.app.ui.theme.CareGreen
 
 @Composable
-fun GuardianSosScreen(onBack: () -> Unit, vm: GuardianSosViewModel = hiltViewModel()) {
+fun GuardianSosScreen(onBack: () -> Unit, onSettings: () -> Unit = {}, vm: GuardianSosViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
 
     Scaffold(containerColor = GuardianBg) { pad ->
         Column(Modifier.padding(pad).fillMaxSize()) {
             GuardianHeaderBar("SOS Alerts", onBack)
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = onSettings) { Text("Settings", color = CareGreen, fontWeight = FontWeight.Bold) }
+            }
             when {
                 ui.loading -> Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator(color = CareGreen) }
                 ui.events.isEmpty() -> AllClear()

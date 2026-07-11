@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.*
@@ -42,7 +43,7 @@ import com.carecompanion.app.*
 import com.carecompanion.app.ui.theme.CareGreen
 
 @Composable
-fun ContactsScreenG(onBack: () -> Unit, onAdd: () -> Unit, vm: ContactsViewModel = hiltViewModel()) {
+fun ContactsScreenG(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (String) -> Unit = {}, vm: ContactsViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
 
@@ -74,6 +75,7 @@ fun ContactsScreenG(onBack: () -> Unit, onAdd: () -> Unit, vm: ContactsViewModel
                                     }
                                     Text(c.phone, fontSize = 13.sp, color = GuardianTextSub)
                                 }
+                                IconButton(onClick = { c.id?.let(onEdit) }) { Icon(Icons.Outlined.Edit, contentDescription = "Edit", tint = CareGreen) }
                                 IconButton(onClick = { c.id?.let(vm::deleteContact) }) { Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = Color(0xFFDC2626)) }
                             }
                         }
@@ -85,7 +87,7 @@ fun ContactsScreenG(onBack: () -> Unit, onAdd: () -> Unit, vm: ContactsViewModel
 }
 
 @Composable
-fun AddContactScreenG(onDone: () -> Unit, onBack: () -> Unit, vm: ContactsViewModel = hiltViewModel()) {
+fun AddContactScreenG(onDone: () -> Unit, onBack: () -> Unit, editContactId: String? = null, vm: ContactsViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     var name by remember { mutableStateOf("") }
@@ -93,7 +95,16 @@ fun AddContactScreenG(onDone: () -> Unit, onBack: () -> Unit, vm: ContactsViewMo
     var relation by remember { mutableStateOf("") }
     var emergency by remember { mutableStateOf(true) }
     var photo by remember { mutableStateOf<Uri?>(null) }
+    var prefilled by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) { if (editContactId != null) vm.load() }
+    LaunchedEffect(ui.contacts) {
+        if (editContactId != null && !prefilled) {
+            ui.contacts.find { it.id == editContactId }?.let {
+                name = it.name; phone = it.phone; relation = it.relation.orEmpty(); emergency = it.isEmergency; prefilled = true
+            }
+        }
+    }
     LaunchedEffect(ui.done) { if (ui.done) onDone() }
 
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let { photo = it } }
@@ -110,7 +121,12 @@ fun AddContactScreenG(onDone: () -> Unit, onBack: () -> Unit, vm: ContactsViewMo
             Surface(color = Color.White, shadowElevation = 12.dp) {
                 Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(20.dp)) {
                     GradientButton(text = if (ui.saving) "Saving…" else "Save Contact",
-                        onClick = { if (name.isNotBlank() && phone.isNotBlank()) vm.addContact(name, phone, relation, emergency, false, photo) },
+                        onClick = {
+                            if (name.isNotBlank() && phone.isNotBlank()) {
+                                if (editContactId != null) vm.editContact(editContactId, name, phone, relation, emergency)
+                                else vm.addContact(name, phone, relation, emergency, false, photo)
+                            }
+                        },
                         enabled = !ui.saving && name.isNotBlank() && phone.isNotBlank(), modifier = Modifier.fillMaxWidth())
                 }
             }
