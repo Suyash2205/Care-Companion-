@@ -34,7 +34,14 @@ class AuthViewModel @Inject constructor(
     private val _ui = MutableStateFlow(AuthUiState())
     val ui: StateFlow<AuthUiState> = _ui.asStateFlow()
 
-    fun setRole(role: String) { _ui.value = _ui.value.copy(role = role) }
+    /** Fresh state for the login screen (called on each entry so a prior session's
+     *  OTP step never lingers after logout). */
+    fun reset() { _ui.value = AuthUiState() }
+
+    fun setRole(role: String) {
+        // Switching role restarts the flow at the phone step (clears any stale OTP step).
+        _ui.value = _ui.value.copy(role = role, phase = AuthUiState.Phase.PHONE, verificationId = null, error = null)
+    }
     fun setPhone(p: String) { _ui.value = _ui.value.copy(phone = p) }
     fun clearError() { _ui.value = _ui.value.copy(error = null) }
 

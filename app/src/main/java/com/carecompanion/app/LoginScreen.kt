@@ -57,6 +57,9 @@ fun LoginScreen(vm: AuthViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val activity = context as? Activity
     var otp by remember { mutableStateOf("") }
+    // Start every visit to the login screen fresh — the ViewModel is Activity-scoped and
+    // would otherwise retain the previous session's OTP step after a logout.
+    LaunchedEffect(Unit) { vm.reset(); otp = "" }
 
     Box(modifier = Modifier.fillMaxSize().background(PageBg)) {
         Column(
