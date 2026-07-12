@@ -111,13 +111,14 @@ class ElderHomeViewModel @Inject constructor(
 
     fun recordDose(dose: Dose, taken: Boolean) {
         val elderId = _ui.value.elder?.id ?: return
+        val scheduleId = dose.schedule.id ?: return   // malformed dose → ignore, never crash
         val newStatus = if (taken) "taken" else "skipped"
         // optimistic UI update — the tap is never lost even offline
         _ui.value = _ui.value.copy(doses = _ui.value.doses.map {
             if (it.schedule.id == dose.schedule.id && it.dueAt == dose.dueAt) it.copy(status = newStatus) else it
         })
         val log = AdherenceLogDto(
-            elderId = elderId, source = "schedule", sourceId = dose.schedule.id!!,
+            elderId = elderId, source = "schedule", sourceId = scheduleId,
             occurrenceDate = dose.occurrenceDate, dueAt = dose.dueAt,
             status = newStatus, respondedAt = nowIso(),
         )

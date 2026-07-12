@@ -50,16 +50,18 @@ class AuthRepository @Inject constructor(
      */
     private suspend fun loadUser(uid: String) {
         val result = runCatching { api.getUsers(firebaseUid = "eq.$uid") }
+        // Capture the cache once so the null-check and use can't race (no !! on a re-read).
+        val cached = cachedUser()
         _state.value = when {
             result.isSuccess -> {
                 val user = result.getOrNull()?.firstOrNull()
                 if (user == null) {
                     // genuinely no row for this uid → needs role (unless we have a stale cache for a different uid)
-                    if (cachedUser()?.firebaseUid == uid) SessionState.Ready(cachedUser()!!) else SessionState.NeedsRole
+                    if (cached?.firebaseUid == uid) SessionState.Ready(cached) else SessionState.NeedsRole
                 } else { cacheUser(user); SessionState.Ready(user) }
             }
             // network/parse error: use cache if it belongs to this uid, else keep them logged in but retryable
-            cachedUser()?.firebaseUid == uid -> SessionState.Ready(cachedUser()!!)
+            cached?.firebaseUid == uid -> SessionState.Ready(cached)
             else -> SessionState.LoggedOut
         }
     }

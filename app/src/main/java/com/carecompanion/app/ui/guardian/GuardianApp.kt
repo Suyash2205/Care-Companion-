@@ -37,7 +37,7 @@ fun GuardianApp(onLogout: () -> Unit) {
 
         // ── Contacts ──
         composable(Routes.CONTACTS, elderArg) { back ->
-            val elderId = back.arguments?.getString("elderId")!!
+            val elderId = back.arguments?.getString("elderId") ?: run { nav.popBackStack(); return@composable }
             ContactsScreenG(
                 onBack = { nav.popBackStack() },
                 onAdd = { nav.navigate(Routes.elder(Routes.ADD_CONTACT, elderId)) },
@@ -57,7 +57,7 @@ fun GuardianApp(onLogout: () -> Unit) {
 
         // ── Medicines ──
         composable(Routes.MEDICINES, elderArg) { back ->
-            val elderId = back.arguments?.getString("elderId")!!
+            val elderId = back.arguments?.getString("elderId") ?: run { nav.popBackStack(); return@composable }
             MedicinesScreenG(
                 onBack = { nav.popBackStack() },
                 onAdd = { nav.navigate(Routes.elder(Routes.ADD_MEDICINE, elderId)) },
@@ -76,7 +76,7 @@ fun GuardianApp(onLogout: () -> Unit) {
                 editMedicineId = back.arguments?.getString("medicineId"))
         }
         composable(Routes.SCHEDULE, elderArg) { back ->
-            val elderId = back.arguments?.getString("elderId")!!
+            val elderId = back.arguments?.getString("elderId") ?: run { nav.popBackStack(); return@composable }
             MedicinesScreenG(onBack = { nav.popBackStack() }, onAdd = {},
                 onSchedule = { medId -> nav.navigate(Routes.scheduleBuilder(elderId, medId)) })
         }
@@ -85,7 +85,7 @@ fun GuardianApp(onLogout: () -> Unit) {
             listOf(navArgument("elderId") { type = NavType.StringType }, navArgument("medicineId") { type = NavType.StringType })
         ) { back ->
             ScheduleBuilderScreen(
-                medicineId = back.arguments?.getString("medicineId")!!,
+                medicineId = back.arguments?.getString("medicineId") ?: run { nav.popBackStack(); return@composable },
                 onDone = { nav.popBackStack() }, onBack = { nav.popBackStack() },
             )
         }
@@ -95,7 +95,7 @@ fun GuardianApp(onLogout: () -> Unit) {
         composable(Routes.VITALS, elderArg) { GuardianVitalsScreen(onBack = { nav.popBackStack() }) }
         composable(Routes.ADHERENCE, elderArg) { GuardianAdherenceScreen(onBack = { nav.popBackStack() }) }
         composable(Routes.SOS, elderArg) { back ->
-            val elderId = back.arguments?.getString("elderId")!!
+            val elderId = back.arguments?.getString("elderId") ?: run { nav.popBackStack(); return@composable }
             GuardianSosScreen(onBack = { nav.popBackStack() }, onSettings = { nav.navigate(Routes.elder(Routes.SOS_SETTINGS, elderId)) })
         }
         composable(Routes.SOS_SETTINGS, elderArg) { SosSettingsScreen(onBack = { nav.popBackStack() }) }
