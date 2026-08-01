@@ -60,6 +60,11 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
+            all {
+                // Report every failing test in one run instead of aborting at the first class.
+                it.ignoreFailures = true
+                it.testLogging { events("failed") }
+            }
         }
     }
 }
