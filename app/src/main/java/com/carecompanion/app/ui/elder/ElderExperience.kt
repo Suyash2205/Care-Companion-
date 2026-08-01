@@ -196,7 +196,11 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
 
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         ElderHeader(tr(lang, "take_medicine"), onBack)
-        if (doses.isEmpty()) {
+        // Only show the "nothing due" state before the flow starts. recordDose() updates
+        // the dose list optimistically, so once the elder answers the LAST dose the list
+        // can empty out — without this `step == 0` guard the completion screen would be
+        // replaced by "No medicines due today", losing the "Great job!" confirmation.
+        if (doses.isEmpty() && step == 0) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { Text("${tr(lang, "no_medicines_today")} 🎉", fontSize = 20.sp, color = hc(Color(0xFF666666))) }
             return@Column
         }
@@ -217,7 +221,13 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                     }
                 }
             }
-            1 -> AnimatedContent(targetState = index, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(200)) }, label = "dose") { idx ->
+            1 -> {
+                // recordDose() updates state optimistically, so answering the last dose
+                // empties this list. Advance to the completion screen rather than trying
+                // to render a dose that no longer exists (which also crashed on doses[-1]).
+                LaunchedEffect(doses.isEmpty()) { if (doses.isEmpty()) step = 2 }
+                if (doses.isEmpty()) return@Column
+                AnimatedContent(targetState = index.coerceIn(0, doses.lastIndex), transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(200)) }, label = "dose") { idx ->
                 val dose = doses[idx.coerceIn(0, doses.lastIndex)]
                 Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(String.format(Locale.getDefault(), tr(lang, "medicine_of"), idx + 1, doses.size), fontSize = 18.sp, color = hc(Color(0xFF666666)))
@@ -243,6 +253,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                             Text("✓ ${tr(lang, "taken")}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
+                }
                 }
             }
             else -> Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {

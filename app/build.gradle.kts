@@ -135,4 +135,8 @@ dependencies {
     testImplementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     testImplementation("org.robolectric:robolectric:4.12.2")
     testImplementation("androidx.test:core-ktx:1.5.0")
+    // Compose UI tests run on the JVM via Robolectric — real screens, no emulator.
+    testImplementation("androidx.compose.ui:ui-test-junit4:1.6.7")
+    testImplementation("androidx.compose.ui:ui-test-manifest:1.6.7")
+    testImplementation("androidx.work:work-testing:2.9.0")
 }
