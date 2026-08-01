@@ -60,7 +60,12 @@ object ReminderScheduler {
     fun handleFire(context: Context, intent: Intent) {
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "Medicine reminder"
         val body = intent.getStringExtra(EXTRA_BODY) ?: "It's time to take your medicine."
-        com.carecompanion.app.notify.Notifications.showReminder(context, title.hashCode(), title, body)
+        // Use the per-occurrence key (carried on the intent action) as the notification id.
+        // Keying on the title alone collided whenever two doses shared a title, so one
+        // reminder silently REPLACED the other instead of both being shown.
+        val key = intent.action?.removePrefix("com.carecompanion.app.DOSE.").orEmpty()
+        val notifId = (if (key.isNotBlank()) key else title).hashCode()
+        com.carecompanion.app.notify.Notifications.showReminder(context, notifId, title, body)
     }
 
     /** Re-arm the persisted, still-future doses (called on boot). */

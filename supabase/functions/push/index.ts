@@ -62,12 +62,26 @@ Deno.serve(async (req) => {
     if (!token) return new Response("no token", { status: 200 });
 
     const accessToken = await getAccessToken();
+    // DATA-ONLY payload (deliberately no `notification` block).
+    //
+    // With a `notification` payload FCM renders the alert itself whenever the app is
+    // backgrounded, and CareMessagingService.onMessageReceived() is NEVER invoked. That
+    // silently bypassed the guardian's in-app notification preference and the app's own
+    // formatting in the most common case. Data-only messages always reach the client, so
+    // the app decides how (and whether) to display every alert.
+    //
+    // `priority: "high"` is required for data-only messages to be delivered promptly in
+    // Doze — without it an SOS alert can be held until the next maintenance window.
     const message = {
       message: {
         token,
-        notification: { title: alert.title ?? "Care Companion", body: alert.body ?? "" },
-        android: { priority: "HIGH", notification: { channel_id: "cc_alerts", sound: "default" } },
-        data: { kind: String(alert.kind ?? ""), elder_id: String(alert.elder_id ?? "") },
+        android: { priority: "high" },
+        data: {
+          title: String(alert.title ?? "Care Companion"),
+          body: String(alert.body ?? ""),
+          kind: String(alert.kind ?? ""),
+          elder_id: String(alert.elder_id ?? ""),
+        },
       },
     };
     const fcmResp = await fetch(

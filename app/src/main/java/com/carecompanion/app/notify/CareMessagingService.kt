@@ -26,12 +26,20 @@ class CareMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        // Respect the guardian's in-app "notifications" preference.
-        val enabled = getSharedPreferences("cc_guardian_settings", MODE_PRIVATE)
-            .getBoolean("notifications_enabled", true)
-        if (!enabled) return
         val title = message.notification?.title ?: message.data["title"] ?: "Care Companion"
         val body = message.notification?.body ?: message.data["body"] ?: ""
+        val kind = message.data["kind"].orEmpty()
+
+        // An SOS is a life-safety alert and must ALWAYS break through: a guardian who
+        // muted routine notifications must still learn their elder triggered an emergency.
+        // Every other alert kind (e.g. missed dose) respects the in-app preference.
+        val isEmergency = kind.contains("sos", ignoreCase = true)
+        if (!isEmergency) {
+            val enabled = getSharedPreferences("cc_guardian_settings", MODE_PRIVATE)
+                .getBoolean("notifications_enabled", true)
+            if (!enabled) return
+        }
+
         Notifications.showAlert(this, title, body)
     }
 }

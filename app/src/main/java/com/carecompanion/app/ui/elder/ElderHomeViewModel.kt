@@ -102,7 +102,10 @@ class ElderHomeViewModel @Inject constructor(
                 d.medicine.withLiquid?.let { "with $it" }
             ).joinToString(" · ")
             DoseAlarm(
-                key = "${d.schedule.id}-${d.dueAt}",
+                // MUST match DailyArmWorker's key format exactly: the key becomes the
+                // PendingIntent request code, so a divergent format would arm the SAME
+                // dose twice and notify the elder twice.
+                key = "${d.schedule.id}-${d.occurrenceDate}",
                 timeMillis = ReminderScheduler.timeMillisToday(d.schedule.time),
                 title = "Time for ${d.medicine.name}",
                 body = chips.ifBlank { "It's time to take your medicine." },
