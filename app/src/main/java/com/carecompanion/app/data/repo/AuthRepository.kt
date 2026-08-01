@@ -64,6 +64,10 @@ class AuthRepository @Inject constructor(
             cached?.firebaseUid == uid -> SessionState.Ready(cached)
             else -> SessionState.LoggedOut
         }
+        // FCM tokens rotate (app update, storage clear, restore). A guardian who simply
+        // stays logged in would otherwise keep a stale token on the server and silently
+        // stop receiving SOS / missed-dose pushes, so re-sync on every session restore.
+        if (_state.value is SessionState.Ready) runCatching { syncFcmToken() }
     }
 
     // ── OTP ──────────────────────────────────────────────────────────────────
