@@ -27,6 +27,10 @@ data class SosSendResult(
     val smsCount: Int = 0,
     val locationText: String? = null,
     val error: String? = null,
+    /** True when the alert reached NOBODY — no SMS delivered and the server insert failed. */
+    val nooneReached: Boolean = false,
+    /** True when the server record failed, so guardians get no push/dashboard entry. */
+    val serverAlertFailed: Boolean = false,
 )
 
 /** Elder side: fire the alert — SMS first (works offline), then best-effort DB insert. */
@@ -44,6 +48,9 @@ class ElderSosViewModel @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun fire(elderId: String, elderName: String, emergencyPhones: List<String>, template: String? = null) {
+        // Re-entrancy guard: a double-tap must not fire two alerts (duplicate SMS to
+        // every contact and a duplicate SOS row, in an already-stressful moment).
+        if (_result.value.sending) return
         _result.value = SosSendResult(sending = true)
         viewModelScope.launch {
             // 1) location (best-effort, ~5s cap)
@@ -68,12 +75,28 @@ class ElderSosViewModel @Inject constructor(
                 } catch (_: Exception) { /* best-effort per recipient */ }
             }
 
-            // 3) DB insert (best-effort; guardians also get FCM server-side)
-            runCatching {
-                sosRepo.trigger(elderId, loc?.latitude, loc?.longitude, loc?.accuracy?.toDouble(), mapsLink)
+            // 3) Server record — this is what reaches guardians (dashboard + FCM push),
+            //    so a failure here is NOT cosmetic: retry briefly before giving up.
+            var serverOk = false
+            repeat(3) { attempt ->
+                if (serverOk) return@repeat
+                serverOk = runCatching {
+                    sosRepo.trigger(elderId, loc?.latitude, loc?.longitude, loc?.accuracy?.toDouble(), mapsLink)
+                }.isSuccess
+                if (!serverOk && attempt < 2) kotlinx.coroutines.delay(1500L * (attempt + 1))
             }
 
-            _result.value = SosSendResult(sending = false, sent = true, smsCount = smsCount, locationText = locText)
+            // Tell the elder the TRUTH. Previously this always claimed "Alert Sent!" even
+            // when zero SMS went out (permission denied / no emergency contacts) and the
+            // server insert failed — i.e. nobody had been contacted at all.
+            _result.value = SosSendResult(
+                sending = false,
+                sent = true,
+                smsCount = smsCount,
+                locationText = locText,
+                serverAlertFailed = !serverOk,
+                nooneReached = smsCount == 0 && !serverOk,
+            )
         }
     }
 
@@ -112,5 +135,6 @@ class GuardianSosViewModel @Inject constructor(
 
     fun resolve(id: String, status: String) = viewModelScope.launch {
         runCatching { sosRepo.updateStatus(id, status) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't update the alert") }
     }
 }

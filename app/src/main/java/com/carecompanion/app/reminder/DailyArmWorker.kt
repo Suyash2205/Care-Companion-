@@ -91,5 +91,11 @@ class DailyArmWorker @AssistedInject constructor(
                     .enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.KEEP, req)
             }
         }
+
+        /** Stop the daily re-arm — used on sign-out so a shared device stops arming
+         *  the previous elder's doses. */
+        fun cancel(context: Context) {
+            runCatching { WorkManager.getInstance(context).cancelUniqueWork(NAME) }
+        }
     }
 }

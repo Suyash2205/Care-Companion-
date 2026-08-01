@@ -69,6 +69,27 @@ object ReminderScheduler {
         scheduleDoses(context, doses)
     }
 
+    /**
+     * Cancel every armed dose alarm and forget the persisted set. Used on sign-out so a
+     * shared device never keeps firing the previous elder's medicine reminders.
+     */
+    fun cancelAll(context: Context) {
+        val am = context.getSystemService(AlarmManager::class.java)
+        if (am != null) {
+            load(context).forEach { d ->
+                val intent = Intent(context, ReminderReceiver::class.java).apply {
+                    action = "com.carecompanion.app.DOSE." + d.key
+                }
+                val pi = PendingIntent.getBroadcast(
+                    context, d.key.hashCode(), intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                runCatching { am.cancel(pi) }
+            }
+        }
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
+    }
+
     // ── persistence ──────────────────────────────────────────────────────────
     private fun persist(context: Context, doses: List<DoseAlarm>) {
         val arr = JSONArray()

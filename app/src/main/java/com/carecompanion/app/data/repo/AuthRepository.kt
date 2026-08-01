@@ -110,9 +110,25 @@ class AuthRepository @Inject constructor(
         runCatching { api.patchUser("eq.$uid", mapOf("fcm_token" to token)) }
     }
 
+    /**
+     * Signing out must leave nothing of the previous user behind. Beyond the cached
+     * profile, that means the queued adherence outbox (otherwise the next person's
+     * session would flush someone else's doses) and the armed medicine reminders
+     * (otherwise a shared device keeps firing the previous elder's medicine alarms).
+     */
     fun signOut() {
         authManager.signOut()
         prefs.edit().remove("user").apply()
+        runCatching { com.carecompanion.app.reminder.ReminderScheduler.cancelAll(context) }
+        runCatching { com.carecompanion.app.reminder.DailyArmWorker.cancel(context) }
+        // Per-account local state must not leak to whoever signs in next on this device:
+        // a queued dose would flush under their session, and a previous guardian's
+        // "notifications off" toggle would silently suppress the new user's SOS alerts.
+        listOf("cc_outbox", "cc_guardian_settings", "cc_elder_settings").forEach { name ->
+            runCatching {
+                context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
+            }
+        }
         _state.value = SessionState.LoggedOut
     }
 

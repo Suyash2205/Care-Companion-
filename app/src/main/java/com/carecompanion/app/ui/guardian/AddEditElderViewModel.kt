@@ -114,6 +114,16 @@ class AddEditElderViewModel @Inject constructor(
     fun save() {
         val s = _ui.value
         if (s.name.isBlank()) { _ui.value = s.copy(error = "Enter a name"); return }
+        // The elder's phone is how they log in and auto-link, so a malformed value
+        // silently breaks the whole flow. Previously "abc" normalised to a bare "+91"
+        // and was saved as if valid. Reject anything that isn't a real number.
+        if (s.phone.isNotBlank()) {
+            val digits = s.phone.filter { it.isDigit() }
+            if (digits.length < 10) {
+                _ui.value = s.copy(error = "Enter a valid phone number (at least 10 digits)")
+                return
+            }
+        }
         _ui.value = s.copy(saving = true, error = null)
         viewModelScope.launch {
             try {

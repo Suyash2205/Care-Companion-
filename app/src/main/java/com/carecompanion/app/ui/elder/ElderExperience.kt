@@ -597,18 +597,38 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
         }
     } else {
         Column(Modifier.fillMaxSize().statusBarsPadding().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Box(Modifier.size(140.dp).clip(CircleShape).background(Color(0xFFDCFCE7)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = CareGreen, modifier = Modifier.size(80.dp))
+            // If nothing actually reached anyone, say so plainly and tell the elder to
+            // call directly — never show a reassuring green tick over a failed alert.
+            val failed = result.nooneReached
+            Box(
+                Modifier.size(140.dp).clip(CircleShape)
+                    .background(if (failed) Color(0xFFFDECEC) else Color(0xFFDCFCE7)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    if (failed) Icons.Outlined.Warning else Icons.Outlined.CheckCircle,
+                    contentDescription = null,
+                    tint = if (failed) Color(0xFFD32F2F) else CareGreen,
+                    modifier = Modifier.size(80.dp),
+                )
             }
             Spacer(Modifier.height(16.dp))
-            Text(tr(lang, "alert_sent"), fontSize = 38.sp, fontWeight = FontWeight.Bold)
-            Text(tr(lang, "family_notified"), fontSize = 20.sp, color = hc(Color(0xFF555555)))
+            Text(
+                tr(lang, if (failed) "alert_failed" else "alert_sent"),
+                fontSize = 38.sp, fontWeight = FontWeight.Bold,
+                color = if (failed) Color(0xFFD32F2F) else Color.Unspecified,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                tr(lang, if (failed) "call_family_now" else "family_notified"),
+                fontSize = 20.sp, color = hc(Color(0xFF555555)), textAlign = TextAlign.Center,
+            )
             Spacer(Modifier.height(20.dp))
             Surface(shape = RoundedCornerShape(16.dp), color = Color.White, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     SentRow(String.format(Locale.getDefault(), tr(lang, "sms_sent_to"), result.smsCount))
                     SentRow(result.locationText ?: tr(lang, "location_shared"))
-                    SentRow(tr(lang, "alert_logged"))
+                    SentRow(tr(lang, if (result.serverAlertFailed) "alert_not_logged" else "alert_logged"))
                 }
             }
             Spacer(Modifier.height(20.dp))

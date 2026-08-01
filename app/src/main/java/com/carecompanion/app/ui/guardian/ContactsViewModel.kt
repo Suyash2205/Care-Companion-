@@ -46,6 +46,7 @@ class ContactsViewModel @Inject constructor(
     }
 
     fun addContact(name: String, phone: String, relation: String?, isEmergency: Boolean, isService: Boolean, photo: Uri?) {
+        validatePhone(phone)?.let { _ui.value = _ui.value.copy(error = it); return }
         _ui.value = _ui.value.copy(saving = true, error = null)
         viewModelScope.launch {
             try {
@@ -66,6 +67,7 @@ class ContactsViewModel @Inject constructor(
 
     fun editContact(id: String, name: String, phone: String, relation: String?, isEmergency: Boolean) {
         val existing = _ui.value.contacts.find { it.id == id } ?: return
+        validatePhone(phone)?.let { _ui.value = _ui.value.copy(error = it); return }
         _ui.value = _ui.value.copy(saving = true, error = null)
         viewModelScope.launch {
             runCatching {
@@ -76,7 +78,23 @@ class ContactsViewModel @Inject constructor(
     }
 
     fun deleteContact(id: String) = viewModelScope.launch {
-        runCatching { care.deleteContact(id) }.onSuccess { load() }
+        runCatching { care.deleteContact(id) }
+            .onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't delete contact") }
+    }
+
+    /**
+     * A contact's number is dialled by the elder and, for emergency contacts, is the SOS
+     * SMS destination — a blank or malformed one fails silently at the worst possible
+     * moment. Returns an error message, or null when valid.
+     */
+    private fun validatePhone(phone: String): String? {
+        val digits = phone.filter { it.isDigit() }
+        return when {
+            digits.isEmpty() -> "Enter a phone number"
+            digits.length < 10 -> "Enter a valid phone number (at least 10 digits)"
+            else -> null
+        }
     }
 
     private suspend fun uploadPhoto(uri: Uri): String? {

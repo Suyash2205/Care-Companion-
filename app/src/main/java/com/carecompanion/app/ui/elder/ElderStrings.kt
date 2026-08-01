@@ -60,6 +60,10 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "sms_sent_to" to m("SMS with location sent to %d contact(s)", "स्थान सहित SMS %d संपर्कों को भेजा", "स्थानासह SMS %d संपर्कांना पाठवला", "સ્થાન સાથે SMS %d સંપર્કોને મોકલ્યો"),
     "location_shared" to m("Location shared", "स्थान भेजा गया", "स्थान पाठवले", "સ્થાન મોકલ્યું"),
     "alert_logged" to m("Alert logged with your family", "परिवार के पास अलर्ट दर्ज", "कुटुंबाकडे इशारा नोंदवला", "પરિવાર પાસે ચેતવણી નોંધાઈ"),
+    // Shown when the alert genuinely reached no one (no SMS sent AND the server record failed).
+    "alert_failed" to m("Alert NOT sent", "अलर्ट नहीं भेजा गया", "इशारा पाठवला गेला नाही", "ચેતવણી મોકલાઈ નથી"),
+    "call_family_now" to m("Please call your family now", "कृपया अभी परिवार को कॉल करें", "कृपया आता कुटुंबाला कॉल करा", "કૃપા કરીને હમણાં પરિવારને કૉલ કરો"),
+    "alert_not_logged" to m("Could not reach your family online", "परिवार तक ऑनलाइन नहीं पहुँच सका", "कुटुंबापर्यंत ऑनलाइन पोहोचू शकलो नाही", "પરિવાર સુધી ઓનલાઈન પહોંચી શકાયું નહીં"),
     "call_family" to m("Call %s", "%s को कॉल करें", "%s ला कॉल करा", "%s ને કૉલ કરો"),
     "im_safe" to m("I am safe — go back", "मैं सुरक्षित हूँ — वापस जाएँ", "मी सुरक्षित आहे — परत जा", "હું સુરક્ષિત છું — પાછા જાઓ"),
     "no_contacts" to m("No contacts yet", "कोई संपर्क नहीं", "संपर्क नाहीत", "કોઈ સંપર્ક નથી"),

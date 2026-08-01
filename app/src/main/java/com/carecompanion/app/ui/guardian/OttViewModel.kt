@@ -80,5 +80,6 @@ class OttViewModel @Inject constructor(
 
     fun delete(id: String) = viewModelScope.launch {
         runCatching { care.deleteOtt(id) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't remove the shortcut") }
     }
 }

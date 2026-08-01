@@ -12,11 +12,25 @@ import okhttp3.Response
 class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val firebaseToken = tokenProvider.currentIdTokenBlocking()
-        val bearer = firebaseToken ?: BuildConfig.SUPABASE_ANON_KEY
-        val request = chain.request().newBuilder()
-            .header("apikey", BuildConfig.SUPABASE_ANON_KEY)
-            .header("Authorization", "Bearer $bearer")
-            .build()
-        return chain.proceed(request)
+        val response = chain.proceed(signed(chain, firebaseToken))
+
+        // A 401 means the cached ID token was rejected (revoked, clock skew, or a refresh
+        // race). Without this retry the session is permanently stuck: every subsequent
+        // request fails and the user just sees empty data with no way back short of a
+        // manual re-login. Force-refresh once and replay the request.
+        if (response.code == 401 && firebaseToken != null) {
+            val fresh = tokenProvider.forceRefreshedIdTokenBlocking()
+            if (fresh != null && fresh != firebaseToken) {
+                response.close()
+                return chain.proceed(signed(chain, fresh))
+            }
+        }
+        return response
     }
+
+    private fun signed(chain: Interceptor.Chain, token: String?) =
+        chain.request().newBuilder()
+            .header("apikey", BuildConfig.SUPABASE_ANON_KEY)
+            .header("Authorization", "Bearer ${token ?: BuildConfig.SUPABASE_ANON_KEY}")
+            .build()
 }

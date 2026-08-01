@@ -20,6 +20,16 @@ class TokenProvider @Inject constructor() {
         }
     }
 
+    /** Blocking force-refresh, for the interceptor's one-shot retry after a 401. */
+    fun forceRefreshedIdTokenBlocking(): String? {
+        val user = FirebaseAuth.getInstance().currentUser ?: return null
+        return try {
+            Tasks.await(user.getIdToken(true)).token
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun currentIdToken(forceRefresh: Boolean = false): String? {
         val user = FirebaseAuth.getInstance().currentUser ?: return null
         return try {

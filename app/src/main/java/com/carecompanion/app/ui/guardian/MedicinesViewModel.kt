@@ -88,10 +88,12 @@ class MedicinesViewModel @Inject constructor(
     fun toggleActive(m: MedicineDto) = viewModelScope.launch {
         val id = m.id ?: return@launch
         runCatching { care.setMedicineActive(id, !m.isActive, m) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't update the medicine") }
     }
 
     fun deleteMedicine(id: String) = viewModelScope.launch {
         runCatching { care.deleteMedicine(id) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't delete the medicine") }
     }
 
     // ── Schedule builder ────────────────────────────────────────────────────
@@ -117,10 +119,12 @@ class MedicinesViewModel @Inject constructor(
     fun toggleSchedule(s: MedicineScheduleDto) = viewModelScope.launch {
         val id = s.id ?: return@launch
         runCatching { care.updateSchedule(id, s.copy(enabled = !s.enabled)) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't update the schedule") }
     }
 
     fun deleteSchedule(id: String) = viewModelScope.launch {
         runCatching { care.deleteSchedule(id) }.onSuccess { load() }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't delete the schedule") }
     }
 
     private suspend fun uploadMed(uri: Uri): String? {
