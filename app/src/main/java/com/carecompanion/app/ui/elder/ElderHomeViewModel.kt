@@ -71,6 +71,8 @@ class ElderHomeViewModel @Inject constructor(
                 val doses = buildDoses(meds, scheds, today, logs)
                 _ui.value = ElderUiState(false, elder, doses, contacts, ott)
                 armAlarms(doses)
+                // Keep reminders working on days the elder never opens the app.
+                com.carecompanion.app.reminder.DailyArmWorker.ensureScheduled(appContext)
             } catch (e: Exception) {
                 _ui.value = _ui.value.copy(loading = false, error = e.message)
             }
