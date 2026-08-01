@@ -40,10 +40,14 @@ class OutboxStore @Inject constructor(
         return MutableList(arr.length()) { arr.getString(it) }
     }
 
+    // Lint suggests apply(); we deliberately use commit(). apply() writes asynchronously,
+    // so a queued dose could be lost if the process is killed right after a tap — exactly
+    // the failure this outbox exists to prevent. The queue is tiny and writes are rare, so
+    // the synchronous cost is negligible and durability wins.
+    @android.annotation.SuppressLint("ApplySharedPref")
     private fun writeAll(items: List<String>) {
         val arr = JSONArray()
         items.forEach { arr.put(it) }
-        // commit() (not apply()) so the queue is durable even if the process dies next.
         prefs.edit().putString(KEY, arr.toString()).commit()
     }
 

@@ -16,6 +16,14 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!--
+      SEND_SMS / CALL_PHONE implicitly require telephony hardware, which makes Google Play
+      exclude tablets and Chromebooks from installing the app. The SOS SMS and the dialer
+      are a graceful degradation, not a hard requirement (the alert also reaches guardians
+      over the network), so telephony is declared OPTIONAL to keep those devices eligible.
+    -->
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
     <application
         android:name=".CareCompanionApp"
         android:allowBackup="true"
