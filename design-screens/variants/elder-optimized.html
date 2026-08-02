@@ -1,0 +1,247 @@
+<title>CareCompanion — Elder-Optimized Home</title>
+<style>
+:root{
+  --page-bg:#e9e4d8; --panel:#f5f1e8; --ink:#211c16; --ink-sub:#6b6155; --hair:#d8d0c1;
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){ :root{ --page-bg:#0d0b08; --panel:#16130e; --ink:#f2ede3; --ink-sub:#a89e8e; --hair:#2a2419; } }
+:root[data-theme="dark"]{ --page-bg:#0d0b08; --panel:#16130e; --ink:#f2ede3; --ink-sub:#a89e8e; --hair:#2a2419; }
+:root[data-theme="light"]{ --page-bg:#e9e4d8; --panel:#f5f1e8; --ink:#211c16; --ink-sub:#6b6155; --hair:#d8d0c1; }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--page-bg);color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 88px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-sub)}
+h1.title{font-size:clamp(30px,4.5vw,46px);font-weight:800;letter-spacing:-.5px;margin:10px 0 12px;text-wrap:balance}
+.lede{max-width:64ch;font-size:16px;line-height:1.55;color:var(--ink-sub);margin:0}
+.principles{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.principles span{font-size:12.5px;color:var(--ink-sub);border:1px solid var(--hair);border-radius:999px;padding:6px 13px}
+
+.phones{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;margin-top:48px}
+.pw{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:340px}
+.cap{font-size:13px;font-weight:700;color:var(--ink);text-align:center}
+.cap small{display:block;font-weight:500;color:var(--ink-sub);margin-top:3px;font-size:12.5px;line-height:1.4}
+
+/* ── ELDER THEME: warm paper, near-black ink, high contrast, clear borders ── */
+.phone{
+  --bg:#f7f2e9; --sf:#fffdf8; --tx:#211c16; --sub:#6b6155;
+  --brd:#211c16; --green:#1a6b34; --green-tint:#e4f1e4;
+  --sos1:#d42f2f; --sos2:#b71c1c;
+  --amber:#e08a0a; --amber-tint:#fbeccb; --blue:#1f6fb2; --blue-tint:#dcecf8; --purple:#7b3fb0; --purple-tint:#efe2f8;
+  width:340px;min-height:720px;border-radius:36px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;background:var(--bg);color:var(--tx);
+  box-shadow:0 18px 50px rgba(0,0,0,.22);font-family:var(--ui)}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:13px 22px 4px;font-size:13px;font-weight:700}
+.sb .d{display:flex;gap:5px;align-items:center}.sb .d i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+
+/* header row: hamburger + greeting + status */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:20px 18px 0}
+.brand{flex:1;text-align:center;font-size:17px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.brand .c1{color:var(--green)}.brand .c2{color:var(--tx)}
+.greetblock{padding:14px 18px 2px}
+.burger{width:52px;height:52px;flex:none;border:2.5px solid var(--brd);border-radius:15px;background:var(--sf);
+  display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;box-shadow:3px 3px 0 var(--brd)}
+.burger svg{width:26px;height:26px;stroke:var(--tx)}
+.burger .lockbadge{position:absolute;right:-7px;bottom:-7px;width:24px;height:24px;border-radius:50%;
+  background:var(--tx);color:var(--bg);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+.burger .lockbadge svg{width:12px;height:12px;stroke:var(--bg)}
+.greet{min-width:0}
+.greet small{display:block;font-size:16px;color:var(--sub);font-weight:600;margin-bottom:1px}
+.greet b{display:block;font-size:30px;font-weight:800;letter-spacing:-.3px;line-height:1.05}
+.safe{flex:none;display:inline-flex;align-items:center;gap:7px;background:var(--green-tint);color:#0f4a22;
+  font-size:13px;font-weight:800;padding:8px 12px;border-radius:999px;border:2px solid #0f4a22}
+.safe i{width:9px;height:9px;border-radius:50%;background:var(--green)}
+
+.body{flex:1;padding:14px 18px 18px;display:flex;flex-direction:column;gap:18px;justify-content:center}
+
+/* SOS — dominant */
+.sos{width:100%;min-height:132px;border:3px solid #7a1414;border-radius:26px;
+  background:linear-gradient(180deg,var(--sos1),var(--sos2));box-shadow:5px 6px 0 #7a1414;
+  color:#fff;display:flex;align-items:center;justify-content:center;gap:18px;cursor:pointer}
+.sos svg{width:52px;height:52px;stroke:#fff;stroke-width:2}
+.sos .t{text-align:left}
+.sos .t b{display:block;font-size:44px;font-weight:900;letter-spacing:3px;line-height:1}
+.sos .t span{display:block;font-size:16px;font-weight:600;opacity:.96;margin-top:5px}
+
+/* two big primary tiles */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:none}
+.big{background:var(--sf);border:2.5px solid var(--brd);border-radius:24px;box-shadow:4px 4px 0 var(--brd);
+  min-height:186px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  text-decoration:none;color:var(--tx);cursor:pointer}
+.big .ic{width:88px;height:88px;border-radius:22px;display:flex;align-items:center;justify-content:center;border:2.5px solid var(--brd)}
+.big .ic svg{width:46px;height:46px;stroke-width:2}
+.big .lbl{font-size:23px;font-weight:800}
+.ic.blue{background:var(--blue-tint);color:var(--blue)}
+.ic.purple{background:var(--purple-tint);color:var(--purple)}
+
+/* reminders bottom bar */
+.rem{display:flex;align-items:center;gap:14px;background:var(--amber-tint);
+  border:2.5px solid #8a5600;border-radius:22px;box-shadow:4px 4px 0 #8a5600;padding:16px 18px;cursor:pointer;color:#5c3a00}
+.rem .rc{width:52px;height:52px;flex:none;border-radius:15px;background:#fff;border:2.5px solid #8a5600;color:#8a5600;
+  display:flex;align-items:center;justify-content:center}
+.rem .rc svg{width:28px;height:28px;stroke-width:2}
+.rem .rt{flex:1}
+.rem .rt b{display:block;font-size:20px;font-weight:800}
+.rem .rt span{display:block;font-size:15px;font-weight:600;margin-top:2px}
+.rem .chev{stroke:#8a5600;width:24px;height:24px;stroke-width:2.5}
+
+/* ── DRAWER: pass-protected caretaker area ── */
+.drawer{position:absolute;inset:0;background:rgba(20,16,10,.55);display:flex}
+.sheet{width:86%;background:var(--sf);display:flex;flex-direction:column;padding:0;box-shadow:8px 0 40px rgba(0,0,0,.3)}
+.dhead{background:var(--tx);color:var(--bg);padding:44px 22px 20px;display:flex;align-items:center;gap:12px}
+.dhead .di{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center}
+.dhead .di svg{width:24px;height:24px;stroke:var(--bg);stroke-width:2}
+.dhead b{font-size:19px;font-weight:800}.dhead small{display:block;font-size:12.5px;opacity:.7;font-weight:500;margin-top:2px}
+.lockwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;text-align:center}
+.lockwrap .bigicon{width:72px;height:72px;border-radius:50%;background:var(--amber-tint);border:2.5px solid #8a5600;color:#8a5600;display:flex;align-items:center;justify-content:center}
+.lockwrap .bigicon svg{width:36px;height:36px;stroke-width:2}
+.lockwrap h3{font-size:20px;font-weight:800;margin:0}
+.lockwrap p{font-size:14px;color:var(--sub);margin:0;max-width:26ch;line-height:1.45}
+.pin{display:flex;gap:14px;margin:4px 0}
+.pin i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--brd)}
+.pin i.f{background:var(--tx)}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:250px}
+.keys button{border:2px solid var(--hair);background:var(--sf);border-radius:14px;padding:14px 0;font-size:22px;font-weight:800;color:var(--tx);cursor:pointer}
+.keys button.blank{border:none;background:transparent;cursor:default}
+
+/* unlocked caretaker menu */
+.dmenu{flex:1;padding:14px;display:flex;flex-direction:column;gap:10px}
+.dsec{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin:6px 4px 2px}
+.mrow{display:flex;align-items:center;gap:14px;padding:16px 14px;border:2px solid var(--hair);border-radius:16px;background:var(--sf);cursor:pointer}
+.mrow .mi{width:46px;height:46px;flex:none;border-radius:13px;display:flex;align-items:center;justify-content:center;border:2px solid var(--brd)}
+.mrow .mi svg{width:24px;height:24px;stroke-width:2}
+.mrow .mt{flex:1}.mrow .mt b{display:block;font-size:17px;font-weight:800}.mrow .mt span{display:block;font-size:13px;color:var(--sub);margin-top:1px}
+.mrow .chev{stroke:var(--sub);width:20px;height:20px;stroke-width:2.5}
+.mi.green{background:var(--green-tint);color:#0f4a22}.mi.red{background:#fce0e0;color:#b71c1c}.mi.grey{background:#eee9df;color:#4a4238}
+svg{fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+@media (max-width:760px){ .phone{width:300px} }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">CareCompanion · Elder IA Proposal</div>
+  <h1 class="title">Three choices for the elder — everything else behind a lock</h1>
+  <p class="lede">The elder home now shows only what they actually use: <strong>SOS</strong>, <strong>Contacts</strong> and <strong>Entertainment</strong>, with the next <strong>Reminder</strong> along the bottom. Medicines, Vitals and Settings move into a PIN-protected <strong>Caretaker Area</strong> behind the top-left menu — visible to the elder, but not something they can wander into and get confused by. Styled warm, high-contrast, with thick borders so every tile clearly reads as "tap me."</p>
+  <div class="principles">
+    <span>≤3 primary actions on screen</span>
+    <span>Contrast ≥ 4.5:1</span>
+    <span>Bordered = obviously tappable</span>
+    <span>Icon + text label always</span>
+    <span>Caretaker functions gated by PIN</span>
+  </div>
+
+  <div class="phones">
+    <!-- 1 · ELDER HOME -->
+    <div class="pw">
+      <div class="phone">
+        <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+        <div class="topbar">
+          <div class="burger">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <span class="lockbadge"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          </div>
+          <div class="brand"><span class="c1">Care</span><span class="c2">Companion</span></div>
+          <div class="safe"><i></i>Home</div>
+        </div>
+        <div class="greetblock">
+          <div class="greet"><small>Namaste 🙏</small><b>Sunita</b></div>
+        </div>
+        <div class="body">
+          <button class="sos">
+            <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span class="t"><b>SOS</b><span>Press &amp; hold for help</span></span>
+          </button>
+          <div class="two">
+            <a class="big">
+              <span class="ic blue"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+              <span class="lbl">Contacts</span>
+            </a>
+            <a class="big">
+              <span class="ic purple"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>
+              <span class="lbl">Watch</span>
+            </a>
+          </div>
+          <a class="rem">
+            <span class="rc"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+            <span class="rt"><b>Drink water</b><span>Next reminder · 2:00 PM</span></span>
+            <svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="cap">1 · Elder Home<small>Only SOS, Contacts, Watch + next reminder. Nothing to get lost in.</small></div>
+    </div>
+
+    <!-- 2 · LOCKED DRAWER -->
+    <div class="pw">
+      <div class="phone">
+        <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+        <div class="top" style="opacity:.25">
+          <div class="burger"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+          <div class="greet"><small>Namaste 🙏</small><b>Sunita</b></div>
+        </div>
+        <div class="body" style="opacity:.2"></div>
+        <div class="drawer">
+          <div class="sheet">
+            <div class="dhead">
+              <div class="di"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+              <div><b>Caretaker Area</b><small>Medicines · Vitals · Settings</small></div>
+            </div>
+            <div class="lockwrap">
+              <div class="bigicon"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+              <h3>Enter caretaker PIN</h3>
+              <p>These settings are managed by the caretaker.</p>
+              <div class="pin"><i class="f"></i><i class="f"></i><i></i><i></i></div>
+              <div class="keys">
+                <button>1</button><button>2</button><button>3</button>
+                <button>4</button><button>5</button><button>6</button>
+                <button>7</button><button>8</button><button>9</button>
+                <button class="blank"></button><button>0</button>
+                <button><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">2 · Caretaker Area (locked)<small>Tapping the menu asks for a PIN — the elder can't wander into medical settings.</small></div>
+    </div>
+
+    <!-- 3 · UNLOCKED MENU -->
+    <div class="pw">
+      <div class="phone">
+        <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+        <div class="top" style="opacity:.25">
+          <div class="burger"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+          <div class="greet"><small>Namaste 🙏</small><b>Sunita</b></div>
+        </div>
+        <div class="body" style="opacity:.2"></div>
+        <div class="drawer">
+          <div class="sheet">
+            <div class="dhead">
+              <div class="di"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+              <div><b>Caretaker Area</b><small>Unlocked · Raj</small></div>
+            </div>
+            <div class="dmenu">
+              <div class="dsec">Managed by caretaker</div>
+              <div class="mrow">
+                <span class="mi green"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span>
+                <span class="mt"><b>Medicines</b><span>3 active · 2 due today</span></span>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="mrow">
+                <span class="mi red"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+                <span class="mt"><b>Vitals</b><span>BP, sugar &amp; weight logs</span></span>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="mrow">
+                <span class="mi grey"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                <span class="mt"><b>Settings</b><span>Reminders, contacts &amp; PIN</span></span>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">3 · Caretaker Area (unlocked)<small>After the PIN: Medicines, Vitals and Settings — the caretaker's tools.</small></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,506 @@
+<title>CareCompanion — Design Variants</title>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   GALLERY CHROME  (theme-aware)
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --page-bg:#eceef0; --page-panel:#f7f8f9;
+  --ink:#1b2126; --ink-sub:#5c6670; --hair:#dbe0e4;
+  --chip-ink:#333;
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --font-serif:Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --page-bg:#0c0f12; --page-panel:#14181c; --ink:#eef1f3; --ink-sub:#9aa4ad; --hair:#262c32; }
+}
+:root[data-theme="dark"]{ --page-bg:#0c0f12; --page-panel:#14181c; --ink:#eef1f3; --ink-sub:#9aa4ad; --hair:#262c32; }
+:root[data-theme="light"]{ --page-bg:#eceef0; --page-panel:#f7f8f9; --ink:#1b2126; --ink-sub:#5c6670; --hair:#dbe0e4; }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--page-bg);color:var(--ink);font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:56px 24px 96px}
+.masthead{margin-bottom:8px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-sub)}
+.masthead h1{font-family:var(--font-serif);font-weight:300;font-size:clamp(34px,5vw,52px);letter-spacing:-.5px;margin:10px 0 12px;text-wrap:balance}
+.masthead p{max-width:60ch;font-size:16px;line-height:1.55;color:var(--ink-sub);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.legend span{font-size:12.5px;color:var(--ink-sub);border:1px solid var(--hair);border-radius:999px;padding:5px 12px}
+
+.variant{margin-top:64px;border-top:1px solid var(--hair);padding-top:36px}
+.v-head{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.v-num{font-family:var(--font-serif);font-size:40px;font-weight:300;line-height:1;color:var(--ink-sub);opacity:.5;min-width:52px}
+.v-meta{flex:1;min-width:260px}
+.v-meta h2{font-size:24px;font-weight:700;margin:0 0 2px;letter-spacing:-.2px}
+.v-meta .tag{font-size:13px;font-weight:600;color:var(--ink-sub);text-transform:uppercase;letter-spacing:.08em}
+.v-meta p{margin:10px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-sub);max-width:64ch}
+.swatches{display:flex;gap:0;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12);align-self:flex-start}
+.swatches i{width:34px;height:44px;display:block}
+.sw-label{display:flex;flex-direction:column;gap:8px}
+.sw-label small{font-size:11px;color:var(--ink-sub);letter-spacing:.04em}
+
+.phones{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;padding:8px 0}
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phone-cap{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-sub)}
+
+/* phone shell (shared) */
+.phone{width:340px;min-height:720px;border-radius:34px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.22);
+  background:var(--bg);color:var(--tx);font-family:var(--pf,var(--font-ui))}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 4px;font-size:13px;font-weight:600}
+.sb .d{display:flex;gap:5px;align-items:center}
+.sb .d i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+
+/* ─────────────────────────────────────────────────────────────
+   TOKEN-DRIVEN COMPONENTS  (each variant sets the tokens)
+   tokens: --p --pd --pt --bg --sf --tx --sub --bd --rad --rad2
+           --shadow --cardbd --sosg --danger --dtint
+           accent tiles: --a1..--a4 (bg) / --a1f..--a4f (fg)
+   ───────────────────────────────────────────────────────────── */
+
+/* ELDER HOME */
+.eh{flex:1;padding:12px 18px 24px;display:flex;flex-direction:column;gap:16px}
+.eh .greet small{display:block;font-size:16px;color:var(--sub);margin-bottom:2px}
+.eh .greet h1{font-size:30px;font-weight:800;line-height:1.05;letter-spacing:-.3px}
+.eh .grow{display:flex;justify-content:space-between;align-items:flex-start;padding-top:4px}
+.eh .safe{display:inline-flex;align-items:center;gap:7px;background:var(--pt);color:var(--pd);
+  font-size:13px;font-weight:700;padding:8px 13px;border-radius:999px;margin-top:6px;border:var(--pillbd,none)}
+.eh .safe i{width:9px;height:9px;border-radius:50%;background:var(--p)}
+.eh .sos{width:100%;min-height:118px;border:none;border-radius:var(--rad2);background:var(--sosg);
+  box-shadow:var(--sosshadow);color:#fff;display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer}
+.eh .sos b{display:block;font-size:38px;font-weight:900;letter-spacing:3px;line-height:1}
+.eh .sos span{display:block;font-size:15px;font-weight:500;opacity:.95;margin-top:5px}
+.eh .grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.eh .tile{background:var(--sf);border:var(--cardbd);border-radius:var(--rad);box-shadow:var(--shadow);
+  min-height:132px;padding:16px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;position:relative;text-decoration:none;color:var(--tx)}
+.eh .icn{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.eh .icn svg{width:32px;height:32px}
+.eh .label{font-size:20px;font-weight:700}
+.eh .badge{position:absolute;top:12px;right:12px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--a4);color:var(--a4f)}
+.eh .wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:84px;gap:16px}
+.eh .wide .sub{display:block;font-size:15px;color:var(--sub);margin-top:3px;font-weight:400}
+.a1{background:var(--a1);color:var(--a1f)} .a2{background:var(--a2);color:var(--a2f)}
+.a3{background:var(--a3);color:var(--a3f)} .a4{background:var(--a4b,var(--a4));color:var(--a4bf,var(--a4f))}
+.a5{background:var(--a5,var(--a1));color:var(--a5f,var(--a1f))}
+
+/* GUARDIAN DASHBOARD */
+.gd{flex:1;display:flex;flex-direction:column}
+.gh{background:var(--headg,var(--p));color:var(--headtx,#fff);padding:0 18px 20px}
+.gh .sb{padding-top:12px}
+.gh .hrow{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.gh .htitle{font-size:19px;font-weight:700}
+.gh .hsub{font-size:12.5px;opacity:.82;margin-top:2px}
+.gh .bell{position:relative;width:36px;height:36px;border-radius:50%;background:var(--bellbg,rgba(255,255,255,.18));display:flex;align-items:center;justify-content:center}
+.gh .bell b{position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.gh .elders{display:flex;gap:14px;margin-top:16px;align-items:center}
+.gh .ec{display:flex;flex-direction:column;align-items:center;gap:5px}
+.gh .av{width:48px;height:48px;border-radius:50%;background:var(--avbg,rgba(255,255,255,.25));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--avtx,#fff)}
+.gh .ec.sel .av{box-shadow:0 0 0 3px var(--headtx,#fff)}
+.gh .ec.dim .av{opacity:.7}
+.gh .ec small{font-size:11.5px;font-weight:600;opacity:.95}
+.gh .add .av{background:transparent;border:2px dashed var(--dash,rgba(255,255,255,.55));font-size:20px;font-weight:400}
+.gcont{padding:16px 18px 12px;display:flex;flex-direction:column;gap:15px}
+.gcard{background:var(--sf);border:var(--cardbd);border-radius:var(--rad);box-shadow:var(--shadow)}
+.status{display:flex;align-items:center;gap:13px;padding:15px;margin-top:-32px}
+.status .sav{width:50px;height:50px;border-radius:50%;background:var(--pt);color:var(--pd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.status .sinfo{flex:1}
+.status .snm{font-size:16px;font-weight:700}
+.status .ss{font-size:12.5px;color:var(--sub);margin-top:3px;display:flex;align-items:center;gap:6px}
+.status .ss i{width:8px;height:8px;border-radius:50%;background:var(--ok,#2e7d32)}
+.status .badge{background:var(--oktint);color:var(--ok);font-size:11px;font-weight:700;letter-spacing:.06em;padding:6px 12px;border-radius:999px}
+.slabel{font-size:11px;font-weight:700;letter-spacing:.11em;color:var(--sub);text-transform:uppercase}
+.ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.gtile{height:100px;border-radius:var(--rad);padding:12px;display:flex;flex-direction:column;justify-content:space-between;color:var(--gtiletx,#fff);box-shadow:var(--shadow);border:var(--gtilebd,none)}
+.gtile .ic{width:32px;height:32px;border-radius:50%;background:var(--gtileic,rgba(255,255,255,.22));display:flex;align-items:center;justify-content:center}
+.gtile .tl{font-size:13.5px;font-weight:700;line-height:1.1}
+.gtile .tsu{font-size:10px;opacity:.82;margin-top:2px}
+.alerts{padding:15px}
+.ahead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ahead .ab{position:relative;width:32px;height:32px;border-radius:50%;background:var(--dtint);color:var(--danger);display:flex;align-items:center;justify-content:center}
+.atitle{font-size:15px;font-weight:700}
+.arow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--bd)}
+.arow .adot{width:9px;height:9px;border-radius:50%;flex:none}
+.arow .atx{flex:1;font-size:13px}
+.arow .atx .m{color:var(--sub)}
+.gnav{background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:10px 0 16px}
+.gnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--sub)}
+.gnav .ni.act{color:var(--p)}
+svg{stroke-linecap:round;stroke-linejoin:round;fill:none;stroke-width:1.8}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT 1 · OCEAN TRUST  — clinical teal, crisp & flat
+   ═══════════════════════════════════════════════════════════════ */
+.v1 .phone,.v1.tok{
+  --p:#0e7490;--pd:#0b5568;--pt:#dff1f7;--bg:#eef3f5;--sf:#ffffff;--tx:#132027;--sub:#5b6b74;--bd:#e2e9ec;
+  --rad:16px;--rad2:18px;--shadow:0 3px 12px rgba(15,60,80,.07);--cardbd:1px solid #e8eef0;
+  --sosg:linear-gradient(90deg,#ef5350,#d63a3a);--sosshadow:0 8px 22px rgba(214,58,58,.28);
+  --danger:#d63a3a;--dtint:#fdecec;--ok:#0e7490;--oktint:#dff1f7;
+  --headg:linear-gradient(135deg,#159fb8,#0e7490);
+  --a1:#dff1f7;--a1f:#0e7490; --a2:#e5edfb;--a2f:#2f5fb3; --a3:#e6f4ec;--a3f:#207a4a;
+  --a4:#eae6f7;--a4f:#5b3fa8; --a5:#fdeede;--a5f:#a55b12; --a4b:#dff1f7;--a4bf:#0b5568;
+}
+.v1 .eh .tile,.v1 .gcard,.v1 .gtile{transition:none}
+.v1 .gtile.g-teal{background:linear-gradient(135deg,#159fb8,#0e7490)}
+.v1 .gtile.g-blue{background:linear-gradient(135deg,#4c7fd6,#345faf)}
+.v1 .gtile.g-slate{background:linear-gradient(135deg,#5a748a,#3f5568)}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT 2 · MARIGOLD HOME — warm terracotta, extra-rounded
+   ═══════════════════════════════════════════════════════════════ */
+.v2 .phone,.v2.tok{
+  --p:#d9683f;--pd:#a8461f;--pt:#fbe6d8;--bg:#fbf3e8;--sf:#fffaf3;--tx:#3a2c22;--sub:#8a7362;--bd:#f0e3d3;
+  --pf:"Iowan Old Style",Georgia,"Times New Roman",serif;
+  --rad:26px;--rad2:28px;--shadow:0 6px 20px rgba(150,90,40,.10);--cardbd:1px solid #f2e5d5;
+  --sosg:linear-gradient(90deg,#e8543f,#c9351f);--sosshadow:0 10px 26px rgba(201,53,31,.30);
+  --danger:#c9351f;--dtint:#fbe3dd;--ok:#a8621f;--oktint:#f8ead0;
+  --headg:linear-gradient(135deg,#eaa04a,#d9683f);
+  --a1:#f8ead0;--a1f:#a8621f; --a2:#fbe0d4;--a2f:#c1522f; --a3:#e9f0da;--a3f:#5f7a2e;
+  --a4:#f5ddc9;--a4f:#9a5a24; --a5:#f9e3d0;--a5f:#b0561f;
+}
+.v2 .eh .greet h1,.v2 .gh .htitle{font-family:"Iowan Old Style",Georgia,serif}
+.v2 .gtile.g-terra{background:linear-gradient(135deg,#e8814e,#d9683f)}
+.v2 .gtile.g-amber{background:linear-gradient(135deg,#eeab52,#dd8b34)}
+.v2 .gtile.g-olive{background:linear-gradient(135deg,#8ea45a,#6f8a3f)}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT 3 · MIDNIGHT CARE — dark navy + mint glow, night mode
+   ═══════════════════════════════════════════════════════════════ */
+.v3 .phone,.v3.tok{
+  --p:#34d399;--pd:#6ee7b7;--pt:rgba(52,211,153,.14);--bg:#0f172a;--sf:#1b2438;--tx:#e8edf5;--sub:#93a1b8;--bd:#2a3550;
+  --rad:20px;--rad2:22px;--shadow:0 6px 22px rgba(0,0,0,.35);--cardbd:1px solid #2a3550;
+  --sosg:linear-gradient(90deg,#fb5a5a,#e23b3b);--sosshadow:0 10px 30px rgba(226,59,59,.40);
+  --danger:#fb7185;--dtint:rgba(251,113,133,.16);--ok:#34d399;--oktint:rgba(52,211,153,.16);
+  --headg:linear-gradient(135deg,#14324a,#0f172a);--headtx:#e8edf5;--bellbg:rgba(255,255,255,.10);
+  --avbg:rgba(52,211,153,.18);--avtx:#6ee7b7;--dash:rgba(255,255,255,.30);--pillbd:1px solid rgba(52,211,153,.4);
+  --a1:rgba(52,211,153,.16);--a1f:#5eead4; --a2:rgba(96,165,250,.16);--a2f:#7cb6ff; --a3:rgba(52,211,153,.16);--a3f:#6ee7b7;
+  --a4:rgba(167,139,250,.18);--a4f:#c4b5fd; --a5:rgba(251,191,36,.16);--a5f:#fcd34d;
+}
+.v3 .eh .safe i{box-shadow:0 0 8px #34d399}
+.v3 .gtile.g-mint{background:linear-gradient(135deg,#1c8f6a,#12724f)}
+.v3 .gtile.g-blue{background:linear-gradient(135deg,#2f5c8f,#1e3f66)}
+.v3 .gtile.g-violet{background:linear-gradient(135deg,#5b4b9c,#3f3470)}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT 4 · BOLD & CLEAR — indigo, thick borders, offset shadows
+   ═══════════════════════════════════════════════════════════════ */
+.v4 .phone,.v4.tok{
+  --p:#4338ca;--pd:#312a9c;--pt:#e7e5fb;--bg:#f6f5ff;--sf:#ffffff;--tx:#14121f;--sub:#565270;--bd:#14121f;
+  --rad:14px;--rad2:16px;--shadow:4px 4px 0 #14121f;--cardbd:2.5px solid #14121f;
+  --sosg:#e11d48;--sosshadow:4px 4px 0 #14121f;
+  --danger:#e11d48;--dtint:#ffe1e8;--ok:#15803d;--oktint:#dcfce7;
+  --headg:#4338ca;--pillbd:2.5px solid #14121f;
+  --a1:#c7f0dd;--a1f:#0f5132; --a2:#cfe0ff;--a2f:#1e3a8a; --a3:#ffe9b0;--a3f:#8a5a00;
+  --a4:#ffd4e0;--a4f:#9d174d; --a5:#e2d6ff;--a5f:#4c1d95;
+}
+.v4 .eh .icn,.v4 .status .sav,.v4 .gtile .ic,.v4 .gh .ic,.v4 .ahead .ab{border:2.5px solid #14121f}
+.v4 .eh .safe,.v4 .eh .badge,.v4 .status .badge{border:2.5px solid #14121f}
+.v4 .gtile{color:#fff;--gtilebd:2.5px solid #14121f}
+.v4 .gtile.g-ind{background:#4338ca}.v4 .gtile.g-amb{background:#d97706}.v4 .gtile.g-emr{background:#0d9488}
+.v4 .gh{border-bottom:2.5px solid #14121f}
+.v4 .gnav{border-top:2.5px solid #14121f}
+.v4 .gh .bell{border:2.5px solid #14121f;background:#fff;color:#14121f}
+.v4 .gh .bell b{border:2px solid #14121f}
+.v4 .eh .greet h1,.v4 .gh .htitle{letter-spacing:-.5px;font-weight:900}
+
+/* toolbar */
+.hint{margin-top:14px;font-size:13px;color:var(--ink-sub)}
+@media (max-width:760px){ .phone{width:300px;min-height:640px} }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">CareCompanion · Design Exploration</div>
+    <h1>Four directions for elder &amp; guardian</h1>
+    <p>Each variant restyles the two flagship screens — the <strong>elder home</strong> and the <strong>guardian dashboard</strong> — while keeping the existing layout and information intact. They differ in palette and in styling philosophy, so you can judge feel, not features. Pick one and we'll decide whether to implement it.</p>
+    <div class="legend">
+      <span>Layout unchanged from current build</span>
+      <span>393px phone canvas</span>
+      <span>Same SOS · elder-switcher · quick-actions · alerts</span>
+    </div>
+  </header>
+
+  <!-- ══════════ VARIANT 1 ══════════ -->
+  <section class="variant v1">
+    <div class="v-head">
+      <div class="v-num">01</div>
+      <div class="v-meta">
+        <div class="tag">Clinical Teal · crisp &amp; flat</div>
+        <h2>Ocean Trust</h2>
+        <p>A cool, medical-grade palette built on teal and cyan. Tighter corner radii, hairline card borders and restrained shadows give it a clean, clinical, "this is a health device" credibility. Reads as calm and dependable rather than playful.</p>
+      </div>
+      <div class="sw-label">
+        <div class="swatches"><i style="background:#0e7490"></i><i style="background:#159fb8"></i><i style="background:#dff1f7"></i><i style="background:#345faf"></i><i style="background:#eef3f5"></i></div>
+        <small>teal · cyan · tint · indigo · cool grey</small>
+      </div>
+    </div>
+    <div class="phones">
+      <!-- ELDER -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+          <div class="eh">
+            <div class="grow">
+              <div class="greet"><small>Namaste 🙏</small><h1>Sunita</h1></div>
+              <div class="safe"><i></i>At home</div>
+            </div>
+            <button class="sos"><svg viewBox="0 0 24 24" width="46" height="46" stroke="currentColor"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><b>SOS</b><span>Press &amp; hold for help</span></span></button>
+            <div class="grid">
+              <a class="tile"><span class="icn a3"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span><span class="label">Medicines</span><span class="badge">2 due</span></a>
+              <a class="tile"><span class="icn a1"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span class="label">Contacts</span></a>
+              <a class="tile"><span class="icn a2"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="label">Vitals</span></a>
+              <a class="tile"><span class="icn a4"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="label">Videos</span></a>
+              <a class="tile wide"><span class="icn a5"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span><span class="label">Reminders</span><span class="sub">Water · 2:00 PM next</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Elder · Home</div>
+      </div>
+      <!-- GUARDIAN -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="gd">
+            <div class="gh">
+              <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+              <div class="hrow"><div><div class="htitle">Care Companion</div><div class="hsub">Good morning, Raj</div></div><div class="bell"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><b>2</b></div></div>
+              <div class="elders">
+                <div class="ec sel"><div class="av">SS</div><small>Sunita</small></div>
+                <div class="ec dim"><div class="av">DJ</div><small>Dada ji</small></div>
+                <div class="ec add"><div class="av">+</div><small>Add</small></div>
+              </div>
+            </div>
+            <div class="gcont">
+              <div class="gcard status"><div class="sav">SS</div><div class="sinfo"><div class="snm">Sunita Sharma</div><div class="ss"><i></i>At Home · 15 mins ago</div></div><span class="badge">SAFE</span></div>
+              <div class="slabel">Quick actions</div>
+              <div class="ggrid">
+                <div class="gtile g-teal"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/></svg></div><div><div class="tl">Medicines</div><div class="tsu">3 active</div></div></div>
+                <div class="gtile g-blue"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="tl">Schedule</div><div class="tsu">2 slots</div></div></div>
+                <div class="gtile g-slate"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="tl">Reminders</div><div class="tsu">4 active</div></div></div>
+                <div class="gtile g-blue"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="tl">Vitals</div><div class="tsu">BP normal</div></div></div>
+                <div class="gtile g-teal"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="tl">Contacts</div><div class="tsu">Aarav, Riya</div></div></div>
+                <div class="gtile g-slate"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="tl">Tracking</div><div class="tsu">At Home</div></div></div>
+              </div>
+              <div class="gcard alerts">
+                <div class="ahead"><div class="ab"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg><b style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center">2</b></div><div class="atitle">Recent Alerts</div></div>
+                <div class="arow"><span class="adot" style="background:#e08a00"></span><div class="atx">Missed 8:00 AM Metformin <span class="m">· 1h ago</span></div></div>
+                <div class="arow"><span class="adot" style="background:var(--danger)"></span><div class="atx">SOS · Mira Road <span class="m">· 2h ago</span></div></div>
+              </div>
+            </div>
+            <div class="gnav">
+              <div class="ni act"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alerts</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Guardian · Dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ VARIANT 2 ══════════ -->
+  <section class="variant v2">
+    <div class="v-head">
+      <div class="v-num">02</div>
+      <div class="v-meta">
+        <div class="tag">Warm Terracotta · homely &amp; rounded</div>
+        <h2>Marigold Home</h2>
+        <p>Cream paper, terracotta and marigold amber — the warmth of an Indian household. Big soft corners, a serif for names and titles, and gentle shadows make it feel human and reassuring rather than corporate. The most emotionally "family" of the four.</p>
+      </div>
+      <div class="sw-label">
+        <div class="swatches"><i style="background:#d9683f"></i><i style="background:#eaa04a"></i><i style="background:#fbe6d8"></i><i style="background:#6f8a3f"></i><i style="background:#fbf3e8"></i></div>
+        <small>terracotta · marigold · tint · olive · cream</small>
+      </div>
+    </div>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+          <div class="eh">
+            <div class="grow"><div class="greet"><small>Namaste 🙏</small><h1>Sunita</h1></div><div class="safe"><i></i>At home</div></div>
+            <button class="sos"><svg viewBox="0 0 24 24" width="46" height="46" stroke="currentColor"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><b>SOS</b><span>Press &amp; hold for help</span></span></button>
+            <div class="grid">
+              <a class="tile"><span class="icn a3"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span><span class="label">Medicines</span><span class="badge">2 due</span></a>
+              <a class="tile"><span class="icn a1"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span class="label">Contacts</span></a>
+              <a class="tile"><span class="icn a2"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="label">Vitals</span></a>
+              <a class="tile"><span class="icn a4"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="label">Videos</span></a>
+              <a class="tile wide"><span class="icn a5"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span><span class="label">Reminders</span><span class="sub">Water · 2:00 PM next</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Elder · Home</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="gd">
+            <div class="gh">
+              <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+              <div class="hrow"><div><div class="htitle">Care Companion</div><div class="hsub">Good morning, Raj</div></div><div class="bell"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><b>2</b></div></div>
+              <div class="elders"><div class="ec sel"><div class="av">SS</div><small>Sunita</small></div><div class="ec dim"><div class="av">DJ</div><small>Dada ji</small></div><div class="ec add"><div class="av">+</div><small>Add</small></div></div>
+            </div>
+            <div class="gcont">
+              <div class="gcard status"><div class="sav">SS</div><div class="sinfo"><div class="snm">Sunita Sharma</div><div class="ss"><i></i>At Home · 15 mins ago</div></div><span class="badge">SAFE</span></div>
+              <div class="slabel">Quick actions</div>
+              <div class="ggrid">
+                <div class="gtile g-terra"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/></svg></div><div><div class="tl">Medicines</div><div class="tsu">3 active</div></div></div>
+                <div class="gtile g-amber"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="tl">Schedule</div><div class="tsu">2 slots</div></div></div>
+                <div class="gtile g-olive"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="tl">Reminders</div><div class="tsu">4 active</div></div></div>
+                <div class="gtile g-amber"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="tl">Vitals</div><div class="tsu">BP normal</div></div></div>
+                <div class="gtile g-terra"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="tl">Contacts</div><div class="tsu">Aarav, Riya</div></div></div>
+                <div class="gtile g-olive"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="tl">Tracking</div><div class="tsu">At Home</div></div></div>
+              </div>
+              <div class="gcard alerts">
+                <div class="ahead"><div class="ab"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg><b style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center">2</b></div><div class="atitle">Recent Alerts</div></div>
+                <div class="arow"><span class="adot" style="background:#e08a00"></span><div class="atx">Missed 8:00 AM Metformin <span class="m">· 1h ago</span></div></div>
+                <div class="arow"><span class="adot" style="background:var(--danger)"></span><div class="atx">SOS · Mira Road <span class="m">· 2h ago</span></div></div>
+              </div>
+            </div>
+            <div class="gnav">
+              <div class="ni act"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alerts</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Guardian · Dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ VARIANT 3 ══════════ -->
+  <section class="variant v3">
+    <div class="v-head">
+      <div class="v-num">03</div>
+      <div class="v-meta">
+        <div class="tag">Dark Navy + Mint · night-friendly</div>
+        <h2>Midnight Care</h2>
+        <p>A dark, OLED-friendly world where a mint-emerald accent glows against deep navy. Easy on aging eyes at night, low battery draw, and it makes the red SOS unmistakable. The most modern and "premium device" of the set — a real departure from the current light theme.</p>
+      </div>
+      <div class="sw-label">
+        <div class="swatches"><i style="background:#0f172a"></i><i style="background:#1b2438"></i><i style="background:#34d399"></i><i style="background:#7cb6ff"></i><i style="background:#fb7185"></i></div>
+        <small>navy · slate · mint · sky · coral</small>
+      </div>
+    </div>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+          <div class="eh">
+            <div class="grow"><div class="greet"><small>Namaste 🙏</small><h1>Sunita</h1></div><div class="safe"><i></i>At home</div></div>
+            <button class="sos"><svg viewBox="0 0 24 24" width="46" height="46" stroke="currentColor"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><b>SOS</b><span>Press &amp; hold for help</span></span></button>
+            <div class="grid">
+              <a class="tile"><span class="icn a3"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span><span class="label">Medicines</span><span class="badge">2 due</span></a>
+              <a class="tile"><span class="icn a1"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span class="label">Contacts</span></a>
+              <a class="tile"><span class="icn a2"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="label">Vitals</span></a>
+              <a class="tile"><span class="icn a4"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="label">Videos</span></a>
+              <a class="tile wide"><span class="icn a5"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span><span class="label">Reminders</span><span class="sub">Water · 2:00 PM next</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Elder · Home</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="gd">
+            <div class="gh">
+              <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+              <div class="hrow"><div><div class="htitle">Care Companion</div><div class="hsub">Good morning, Raj</div></div><div class="bell"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><b>2</b></div></div>
+              <div class="elders"><div class="ec sel"><div class="av">SS</div><small>Sunita</small></div><div class="ec dim"><div class="av">DJ</div><small>Dada ji</small></div><div class="ec add"><div class="av">+</div><small>Add</small></div></div>
+            </div>
+            <div class="gcont">
+              <div class="gcard status"><div class="sav">SS</div><div class="sinfo"><div class="snm">Sunita Sharma</div><div class="ss"><i></i>At Home · 15 mins ago</div></div><span class="badge">SAFE</span></div>
+              <div class="slabel">Quick actions</div>
+              <div class="ggrid">
+                <div class="gtile g-mint"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/></svg></div><div><div class="tl">Medicines</div><div class="tsu">3 active</div></div></div>
+                <div class="gtile g-blue"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="tl">Schedule</div><div class="tsu">2 slots</div></div></div>
+                <div class="gtile g-violet"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="tl">Reminders</div><div class="tsu">4 active</div></div></div>
+                <div class="gtile g-blue"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="tl">Vitals</div><div class="tsu">BP normal</div></div></div>
+                <div class="gtile g-mint"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="tl">Contacts</div><div class="tsu">Aarav, Riya</div></div></div>
+                <div class="gtile g-violet"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="tl">Tracking</div><div class="tsu">At Home</div></div></div>
+              </div>
+              <div class="gcard alerts">
+                <div class="ahead"><div class="ab"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg><b style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center">2</b></div><div class="atitle">Recent Alerts</div></div>
+                <div class="arow"><span class="adot" style="background:#e0a000"></span><div class="atx">Missed 8:00 AM Metformin <span class="m">· 1h ago</span></div></div>
+                <div class="arow"><span class="adot" style="background:var(--danger)"></span><div class="atx">SOS · Mira Road <span class="m">· 2h ago</span></div></div>
+              </div>
+            </div>
+            <div class="gnav">
+              <div class="ni act"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alerts</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Guardian · Dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ VARIANT 4 ══════════ -->
+  <section class="variant v4">
+    <div class="v-head">
+      <div class="v-num">04</div>
+      <div class="v-meta">
+        <div class="tag">Indigo · bold, high-contrast</div>
+        <h2>Bold &amp; Clear</h2>
+        <p>An accessibility-first take: thick ink outlines, solid drop shadows, heavy type and maximal contrast. Every target is unmistakable — designed for low vision and shaky taps. Confident and characterful without relying on subtle shadows that some eyes can't see.</p>
+      </div>
+      <div class="sw-label">
+        <div class="swatches"><i style="background:#4338ca"></i><i style="background:#14121f"></i><i style="background:#d97706"></i><i style="background:#0d9488"></i><i style="background:#f6f5ff"></i></div>
+        <small>indigo · ink · amber · teal · paper</small>
+      </div>
+    </div>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+          <div class="eh">
+            <div class="grow"><div class="greet"><small>Namaste 🙏</small><h1>Sunita</h1></div><div class="safe"><i></i>At home</div></div>
+            <button class="sos"><svg viewBox="0 0 24 24" width="46" height="46" stroke="currentColor"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><b>SOS</b><span>Press &amp; hold for help</span></span></button>
+            <div class="grid">
+              <a class="tile"><span class="icn a3"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span><span class="label">Medicines</span><span class="badge">2 due</span></a>
+              <a class="tile"><span class="icn a1"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span class="label">Contacts</span></a>
+              <a class="tile"><span class="icn a2"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="label">Vitals</span></a>
+              <a class="tile"><span class="icn a4"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="label">Videos</span></a>
+              <a class="tile wide"><span class="icn a5"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span><span class="label">Reminders</span><span class="sub">Water · 2:00 PM next</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Elder · Home</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="gd">
+            <div class="gh">
+              <div class="sb"><span>9:41</span><span class="d"><i></i><i></i><i></i></span></div>
+              <div class="hrow"><div><div class="htitle">Care Companion</div><div class="hsub">Good morning, Raj</div></div><div class="bell"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><b>2</b></div></div>
+              <div class="elders"><div class="ec sel"><div class="av">SS</div><small>Sunita</small></div><div class="ec dim"><div class="av">DJ</div><small>Dada ji</small></div><div class="ec add"><div class="av">+</div><small>Add</small></div></div>
+            </div>
+            <div class="gcont">
+              <div class="gcard status"><div class="sav">SS</div><div class="sinfo"><div class="snm">Sunita Sharma</div><div class="ss"><i></i>At Home · 15 mins ago</div></div><span class="badge">SAFE</span></div>
+              <div class="slabel">Quick actions</div>
+              <div class="ggrid">
+                <div class="gtile g-ind"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/></svg></div><div><div class="tl">Medicines</div><div class="tsu">3 active</div></div></div>
+                <div class="gtile g-amb"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="tl">Schedule</div><div class="tsu">2 slots</div></div></div>
+                <div class="gtile g-emr"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="tl">Reminders</div><div class="tsu">4 active</div></div></div>
+                <div class="gtile g-amb"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="tl">Vitals</div><div class="tsu">BP normal</div></div></div>
+                <div class="gtile g-ind"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="tl">Contacts</div><div class="tsu">Aarav, Riya</div></div></div>
+                <div class="gtile g-emr"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="tl">Tracking</div><div class="tsu">At Home</div></div></div>
+              </div>
+              <div class="gcard alerts">
+                <div class="ahead"><div class="ab"><svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg><b style="position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:2px solid #14121f">2</b></div><div class="atitle">Recent Alerts</div></div>
+                <div class="arow"><span class="adot" style="background:#d97706"></span><div class="atx">Missed 8:00 AM Metformin <span class="m">· 1h ago</span></div></div>
+                <div class="arow"><span class="adot" style="background:var(--danger)"></span><div class="atx">SOS · Mira Road <span class="m">· 2h ago</span></div></div>
+              </div>
+            </div>
+            <div class="gnav">
+              <div class="ni act"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alerts</div>
+              <div class="ni"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">Guardian · Dashboard</div>
+      </div>
+    </div>
+    <p class="hint">All four keep the exact screen layout you already shipped — only palette, corner radius, borders, shadows and type treatment change. Tell me which number you'd like, and I'll say whether it's worth implementing.</p>
+  </section>
+</div>
