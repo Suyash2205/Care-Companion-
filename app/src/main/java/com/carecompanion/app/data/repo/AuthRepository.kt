@@ -1,9 +1,8 @@
 package com.carecompanion.app.data.repo
 
-import android.app.Activity
 import android.content.Context
 import com.carecompanion.app.auth.FirebaseAuthManager
-import com.carecompanion.app.auth.OtpRequest
+import com.carecompanion.app.auth.GoogleSignInResult
 import com.carecompanion.app.data.model.UserDto
 import com.carecompanion.app.data.remote.SupabaseService
 import com.google.firebase.messaging.FirebaseMessaging
@@ -70,18 +69,12 @@ class AuthRepository @Inject constructor(
         if (_state.value is SessionState.Ready) runCatching { syncFcmToken() }
     }
 
-    // ── OTP ──────────────────────────────────────────────────────────────────
-    suspend fun requestOtp(activity: Activity, phoneE164: String): OtpRequest =
-        authManager.requestOtp(activity, phoneE164)
-
-    suspend fun signInWithCode(verificationId: String, code: String) {
-        authManager.signInWithCode(verificationId, code)
-        authManager.currentUid?.let { loadUser(it) }
-    }
-
-    suspend fun completeAutoVerified(credential: com.google.firebase.auth.PhoneAuthCredential) {
-        authManager.signInWithCredential(credential)
-        authManager.currentUid?.let { loadUser(it) }
+    // ── Google Sign-In ───────────────────────────────────────────────────────
+    /** Show the account picker, sign in, and load (or flag as new) the user's row. */
+    suspend fun signInWithGoogle(activityContext: Context): GoogleSignInResult {
+        val result = authManager.signInWithGoogle(activityContext)
+        loadUser(result.uid)
+        return result
     }
 
     /**

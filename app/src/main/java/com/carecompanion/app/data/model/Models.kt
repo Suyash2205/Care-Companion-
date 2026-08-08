@@ -192,3 +192,15 @@ data class WheelchairPlaceDto(
     val lng: Double? = null,
     val sort: Int = 0,
 )
+
+/**
+ * A one-time code that links an elder's device to their care profile. Replaces the
+ * old phone-number matching now that sign-in is via Google.
+ */
+@Serializable
+data class InviteCodeDto(
+    val code: String,
+    @SerialName("elder_id") val elderId: String,
+    @SerialName("expires_at") val expiresAt: String? = null,
+    @SerialName("redeemed_at") val redeemedAt: String? = null,
+)

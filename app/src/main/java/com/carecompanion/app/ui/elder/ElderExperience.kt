@@ -82,6 +82,18 @@ fun ElderExperience(
     ) {
         Scaffold(containerColor = Color(0xFFF4F6F4)) { pad ->
             Box(Modifier.padding(pad).fillMaxSize()) {
+                // Before anything else: this Google account isn't connected to a care
+                // profile yet. Everything else is meaningless until it is.
+                if (ui.needsInviteCode) {
+                    InviteCodeEntry(
+                        redeeming = ui.redeeming,
+                        error = ui.redeemError,
+                        onSubmit = { vm.redeemInviteCode(it) },
+                        onClearError = { vm.clearRedeemError() },
+                        onLogout = onLogout,
+                    )
+                    return@Box
+                }
                 when (dest) {
                     ElderDest.HOME -> ElderHome(ui, onOpen = { dest = it }, onLogout = onLogout)
                     ElderDest.MEDICINES -> MedicineFlow(vm, onBack = { dest = ElderDest.HOME })
@@ -661,5 +673,93 @@ private fun SentRow(text: String) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = CareGreen, modifier = Modifier.size(18.dp))
         Text(text, fontSize = 15.sp, color = Color(0xFF374151))
+    }
+}
+
+// ── Invite code entry (one time, on the elder's device) ──────────────────────
+/**
+ * Shown when a signed-in Google account isn't connected to a care profile yet.
+ * Deliberately oversized and single-purpose: this is often filled in by the guardian
+ * sitting next to the elder during setup, and never seen again afterwards.
+ */
+@Composable
+private fun InviteCodeEntry(
+    redeeming: Boolean,
+    error: String?,
+    onSubmit: (String) -> Unit,
+    onClearError: () -> Unit,
+    onLogout: () -> Unit,
+) {
+    val lang = LocalElderLang.current
+    var code by remember { mutableStateOf("") }
+
+    Column(
+        Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(18.dp),
+    ) {
+        Spacer(Modifier.height(24.dp))
+        Box(
+            Modifier.size(110.dp).clip(CircleShape).background(Color(0xFFEAF6EC)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Outlined.Lock, contentDescription = null, tint = CareGreen, modifier = Modifier.size(56.dp))
+        }
+
+        Text(
+            tr(lang, "enter_code_title"),
+            fontSize = 30.sp, fontWeight = FontWeight.Bold,
+            color = hc(Color(0xFF1C1C1C)), textAlign = TextAlign.Center,
+        )
+        Text(
+            tr(lang, "enter_code_sub"),
+            fontSize = 18.sp, color = hc(Color(0xFF555555)), textAlign = TextAlign.Center,
+        )
+
+        OutlinedTextField(
+            value = code,
+            onValueChange = { new ->
+                if (new.length <= 6 && new.all { it.isDigit() }) { code = new; if (error != null) onClearError() }
+            },
+            singleLine = true,
+            enabled = !redeeming,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            textStyle = LocalTextStyle.current.copy(
+                fontSize = 40.sp, fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center, letterSpacing = 10.sp,
+            ),
+            placeholder = {
+                Text("------", fontSize = 40.sp, letterSpacing = 10.sp,
+                    color = Color(0xFFBBBBBB), textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth())
+            },
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth().height(96.dp),
+        )
+
+        error?.let {
+            Text(it, color = Color(0xFFD32F2F), fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+        }
+
+        Button(
+            onClick = { onSubmit(code) },
+            enabled = code.length == 6 && !redeeming,
+            modifier = Modifier.fillMaxWidth().height(76.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = CareGreen),
+        ) {
+            if (redeeming) CircularProgressIndicator(color = Color.White, strokeWidth = 3.dp, modifier = Modifier.size(28.dp))
+            else Text(tr(lang, "connect_btn"), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+
+        Text(
+            tr(lang, "enter_code_help"),
+            fontSize = 15.sp, color = hc(Color(0xFF888888)), textAlign = TextAlign.Center,
+        )
+
+        TextButton(onClick = onLogout) {
+            Text(tr(lang, "logout"), fontSize = 16.sp, color = Color(0xFFB42318))
+        }
     }
 }

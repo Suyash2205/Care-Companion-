@@ -1,13 +1,11 @@
 package com.carecompanion.app.ui.guardian
 
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.carecompanion.app.auth.FirebaseAuthManager
-import com.carecompanion.app.auth.OtpRequest
 import com.carecompanion.app.data.model.ElderDto
 import com.carecompanion.app.data.repo.ElderRepository
 import com.carecompanion.app.data.repo.StorageRepository
@@ -37,6 +35,9 @@ data class AddEditElderUiState(
     val saving: Boolean = false,
     val saved: ElderDto? = null,
     val error: String? = null,
+    /** One-time code the elder enters on their own phone to connect to this profile. */
+    val inviteCode: String? = null,
+    val inviteLoading: Boolean = false,
 )
 
 @HiltViewModel
@@ -53,6 +54,17 @@ class AddEditElderViewModel @Inject constructor(
     val ui: StateFlow<AddEditElderUiState> = _ui.asStateFlow()
 
     init { editingId?.let { load(it) } }
+
+    /** Fetch (or create) this elder's connect code. Idempotent server-side. */
+    fun loadInviteCode() {
+        val id = _ui.value.elderId ?: return
+        if (_ui.value.inviteCode != null || _ui.value.inviteLoading) return
+        _ui.value = _ui.value.copy(inviteLoading = true)
+        viewModelScope.launch {
+            val code = runCatching { elderRepo.inviteCode(id)?.code }.getOrNull()
+            _ui.value = _ui.value.copy(inviteLoading = false, inviteCode = code)
+        }
+    }
 
     private fun load(id: String) = viewModelScope.launch {
         elderRepo.getElder(id)?.let { e ->
@@ -77,46 +89,12 @@ class AddEditElderViewModel @Inject constructor(
         return if (d.startsWith("+")) d else "+91$d"
     }
 
-    /** Send OTP to the elder's phone from the guardian device (secondary auth). */
-    fun sendElderOtp(activity: Activity) {
-        val phone = normalize(_ui.value.phone)
-        if (phone.length < 10) { _ui.value = _ui.value.copy(error = "Enter elder's phone"); return }
-        _ui.value = _ui.value.copy(verify = ElderVerify.SENDING, error = null)
-        viewModelScope.launch {
-            try {
-                when (val r = authManager.requestElderOtp(activity, phone)) {
-                    is OtpRequest.AutoVerified -> {
-                        val uid = authManager.verifyElderCredential(r.credential)
-                        _ui.value = _ui.value.copy(verify = ElderVerify.VERIFIED, verifiedUid = uid)
-                    }
-                    is OtpRequest.CodeSent ->
-                        _ui.value = _ui.value.copy(verify = ElderVerify.CODE_SENT, verificationId = r.verificationId)
-                }
-            } catch (e: Exception) {
-                _ui.value = _ui.value.copy(verify = ElderVerify.FAILED, error = e.message ?: "Verification failed")
-            }
-        }
-    }
-
-    fun confirmElderOtp(code: String) {
-        val vid = _ui.value.verificationId ?: return
-        viewModelScope.launch {
-            try {
-                val cred = com.google.firebase.auth.PhoneAuthProvider.getCredential(vid, code)
-                val uid = authManager.verifyElderCredential(cred)
-                _ui.value = _ui.value.copy(verify = ElderVerify.VERIFIED, verifiedUid = uid)
-            } catch (e: Exception) {
-                _ui.value = _ui.value.copy(verify = ElderVerify.FAILED, error = "Wrong code")
-            }
-        }
-    }
-
     fun save() {
         val s = _ui.value
         if (s.name.isBlank()) { _ui.value = s.copy(error = "Enter a name"); return }
-        // The elder's phone is how they log in and auto-link, so a malformed value
-        // silently breaks the whole flow. Previously "abc" normalised to a bare "+91"
-        // and was saved as if valid. Reject anything that isn't a real number.
+        // The elder's phone is no longer used for login (Google Sign-In + invite code),
+        // but it IS used for SOS SMS and for the guardian to call them, so a malformed
+        // value still silently breaks those. Reject anything that isn't a real number.
         if (s.phone.isNotBlank()) {
             val digits = s.phone.filter { it.isDigit() }
             if (digits.length < 10) {

@@ -35,6 +35,11 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "videos" to m("Videos", "वीडियो", "व्हिडिओ", "વિડિઓ"),
     "due_today" to m("%d due today", "आज %d बाकी", "आज %d बाकी", "આજે %d બાકી"),
     "settings" to m("Settings", "सेटिंग्स", "सेटिंग्ज", "સેટિંગ્સ"),
+    // Invite-code entry (one-time device linking, replaces phone-number matching)
+    "enter_code_title" to m("Enter your code", "अपना कोड डालें", "तुमचा कोड टाका", "તમારો કોડ દાખલ કરો"),
+    "enter_code_sub" to m("Type the 6 numbers your family gave you", "परिवार ने दिए 6 अंक टाइप करें", "कुटुंबाने दिलेले 6 अंक टाइप करा", "પરિવારે આપેલા 6 અંક ટાઈપ કરો"),
+    "connect_btn" to m("Connect", "जोड़ें", "जोडा", "જોડો"),
+    "enter_code_help" to m("Ask your family member for the code from their app", "कोड के लिए अपने परिवार से पूछें", "कोडसाठी तुमच्या कुटुंबाला विचारा", "કોડ માટે તમારા પરિવારને પૂછો"),
     "logout" to m("Log out", "लॉग आउट", "लॉग आउट", "લૉગ આઉટ"),
     "back" to m("Back", "पीछे", "मागे", "પાછળ"),
     // medicine flow

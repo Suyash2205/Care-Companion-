@@ -2,6 +2,7 @@ package com.carecompanion.app.data.repo
 
 import com.carecompanion.app.data.model.ElderDto
 import com.carecompanion.app.data.model.GuardianLinkDto
+import com.carecompanion.app.data.model.InviteCodeDto
 import com.carecompanion.app.data.model.UserDto
 import com.carecompanion.app.data.remote.*
 import javax.inject.Inject
@@ -15,11 +16,25 @@ class ElderRepository @Inject constructor(
     suspend fun listElders(): List<ElderDto> =
         api.getElders().sortedByDescending { it.isActive }
 
-    /** Auto-link the logged-in elder to a profile created for their phone number.
-     *  Best-effort: the server-side link happens regardless of the parsed result. */
+    /** Legacy: auto-link by phone. Kept for profiles created before Google Sign-In;
+     *  new devices link with an invite code instead. Best-effort. */
     suspend fun linkSelfByPhone() {
         runCatching { api.rpcLinkElderByPhone() }
     }
+
+    /**
+     * The guardian's shareable code for connecting the elder's device. Safe to call
+     * repeatedly — the server returns the existing live code rather than a new one.
+     */
+    suspend fun inviteCode(elderId: String): InviteCodeDto? =
+        api.rpcCreateInviteCode(mapOf("p_elder_id" to elderId))
+
+    /**
+     * Claim an elder profile for the signed-in Google account. Throws with a
+     * user-safe message when the code is wrong, expired, or already used.
+     */
+    suspend fun redeemInviteCode(code: String): ElderDto? =
+        api.rpcRedeemInviteCode(mapOf("p_code" to code.filter { it.isDigit() }))
 
     suspend fun getElder(id: String): ElderDto? =
         api.getElders(id = "eq.$id").firstOrNull()

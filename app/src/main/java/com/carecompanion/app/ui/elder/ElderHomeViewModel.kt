@@ -34,6 +34,10 @@ data class ElderUiState(
     val contacts: List<ContactDto> = emptyList(),
     val ott: List<OttShortcutDto> = emptyList(),
     val error: String? = null,
+    /** No profile is linked to this Google account yet — show the invite-code screen. */
+    val needsInviteCode: Boolean = false,
+    val redeeming: Boolean = false,
+    val redeemError: String? = null,
 ) {
     val dueCount: Int get() = doses.count { it.status == "pending" || it.status == "missed" }
 }
@@ -58,7 +62,8 @@ class ElderHomeViewModel @Inject constructor(
                 elderRepo.linkSelfByPhone()      // auto-link to a profile created for this phone
                 val elder = elderRepo.listElders().firstOrNull { it.isActive }
                 if (elder?.id == null) {
-                    _ui.value = ElderUiState(false, error = "No care profile is linked to this phone number yet. Ask your family member to add you using the same number you logged in with.")
+                    // Not linked yet: ask for the invite code the guardian was given.
+                    _ui.value = ElderUiState(loading = false, needsInviteCode = true)
                     return@launch
                 }
                 val eid = elder.id
@@ -113,6 +118,48 @@ class ElderHomeViewModel @Inject constructor(
         }
         runCatching { ReminderScheduler.scheduleDoses(appContext, alarms) }
     }
+
+    /**
+     * Claim this elder's profile with the code the guardian was given. On success the
+     * normal load() runs and the elder lands on their home screen — this happens once,
+     * ever, on this device.
+     */
+    fun redeemInviteCode(code: String) {
+        val digits = code.filter { it.isDigit() }
+        if (digits.length != 6) {
+            _ui.value = _ui.value.copy(redeemError = "Please enter all 6 numbers.")
+            return
+        }
+        _ui.value = _ui.value.copy(redeeming = true, redeemError = null)
+        viewModelScope.launch {
+            runCatching { elderRepo.redeemInviteCode(digits) }
+                .onSuccess {
+                    _ui.value = _ui.value.copy(redeeming = false, needsInviteCode = false)
+                    load()
+                }
+                .onFailure {
+                    // The RPC raises messages written to be shown as-is; fall back to a
+                    // friendly line if the transport mangles it.
+                    val msg = it.message.orEmpty()
+                    _ui.value = _ui.value.copy(
+                        redeeming = false,
+                        redeemError = when {
+                            msg.contains("already been used", true) ->
+                                "That code has already been used. Ask your family for a new one."
+                            msg.contains("another phone", true) ->
+                                "This profile is already set up on another phone."
+                            msg.contains("not valid", true) ->
+                                "That code is not valid. Ask your family for a new one."
+                            msg.contains("Unable to resolve host", true) || msg.contains("timeout", true) ->
+                                "No internet connection. Connect and try again."
+                            else -> "That code did not work. Please check and try again."
+                        },
+                    )
+                }
+        }
+    }
+
+    fun clearRedeemError() { _ui.value = _ui.value.copy(redeemError = null) }
 
     fun recordDose(dose: Dose, taken: Boolean) {
         val elderId = _ui.value.elder?.id ?: return

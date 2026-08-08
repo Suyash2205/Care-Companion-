@@ -1,9 +1,8 @@
 package com.carecompanion.app.ui.auth
 
-import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.carecompanion.app.auth.OtpRequest
 import com.carecompanion.app.data.repo.AuthRepository
 import com.carecompanion.app.data.repo.SessionState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,15 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AuthUiState(
-    val phase: Phase = Phase.PHONE,
-    val role: String = "guardian",         // chosen on the login card before OTP
-    val phone: String = "",
-    val verificationId: String? = null,
+    val role: String = "guardian",   // chosen on the login card before signing in
     val loading: Boolean = false,
     val error: String? = null,
-) {
-    enum class Phase { PHONE, OTP }
-}
+)
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -34,55 +28,36 @@ class AuthViewModel @Inject constructor(
     private val _ui = MutableStateFlow(AuthUiState())
     val ui: StateFlow<AuthUiState> = _ui.asStateFlow()
 
-    /** Fresh state for the login screen (called on each entry so a prior session's
-     *  OTP step never lingers after logout). */
+    /** Fresh state on each entry so a previous session's error never lingers. */
     fun reset() { _ui.value = AuthUiState() }
 
-    fun setRole(role: String) {
-        // Switching role restarts the flow at the phone step (clears any stale OTP step).
-        _ui.value = _ui.value.copy(role = role, phase = AuthUiState.Phase.PHONE, verificationId = null, error = null)
-    }
-    fun setPhone(p: String) { _ui.value = _ui.value.copy(phone = p) }
+    fun setRole(role: String) { _ui.value = _ui.value.copy(role = role, error = null) }
     fun clearError() { _ui.value = _ui.value.copy(error = null) }
 
-    fun requestOtp(activity: Activity) {
-        val phone = normalize(_ui.value.phone)
-        if (phone.length < 10) { _ui.value = _ui.value.copy(error = "Enter a valid phone number"); return }
+    /**
+     * Show the Google account picker and sign in. [activityContext] must be an Activity
+     * context — Credential Manager renders a system dialog.
+     */
+    fun signInWithGoogle(activityContext: Context) {
+        if (_ui.value.loading) return          // guard against a double-tap opening two pickers
         _ui.value = _ui.value.copy(loading = true, error = null)
         viewModelScope.launch {
             try {
-                when (val r = authRepo.requestOtp(activity, phone)) {
-                    is OtpRequest.AutoVerified -> {
-                        authRepo.completeAutoVerified(r.credential)
-                        ensureProvisioned()
-                    }
-                    is OtpRequest.CodeSent ->
-                        _ui.value = _ui.value.copy(loading = false, phase = AuthUiState.Phase.OTP, verificationId = r.verificationId)
-                }
+                val result = authRepo.signInWithGoogle(activityContext)
+                ensureProvisioned(result.displayName)
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Failed to send OTP")
-            }
-        }
-    }
-
-    fun verifyOtp(code: String) {
-        val vid = _ui.value.verificationId ?: return
-        _ui.value = _ui.value.copy(loading = true, error = null)
-        viewModelScope.launch {
-            try {
-                authRepo.signInWithCode(vid, code)
-                ensureProvisioned()
-            } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = "Incorrect code, try again")
+                _ui.value = _ui.value.copy(loading = false, error = friendlyError(e))
             }
         }
     }
 
     /** After sign-in: if this is a brand-new user, create the users row with the chosen role. */
-    private suspend fun ensureProvisioned() {
+    private suspend fun ensureProvisioned(displayName: String?) {
         when (authRepo.state.value) {
             is SessionState.NeedsRole -> {
-                authRepo.provisionUser(_ui.value.role, name = "", phone = normalize(_ui.value.phone))
+                // Phone is no longer collected at login; guardians add the elder's number
+                // on the profile itself (it is still used for SOS/dialling).
+                authRepo.provisionUser(_ui.value.role, name = displayName.orEmpty(), phone = "")
                 authRepo.syncFcmToken()
             }
             is SessionState.Ready -> authRepo.syncFcmToken()
@@ -91,8 +66,21 @@ class AuthViewModel @Inject constructor(
         _ui.value = _ui.value.copy(loading = false)
     }
 
-    private fun normalize(raw: String): String {
-        val digits = raw.filter { it.isDigit() || it == '+' }
-        return if (digits.startsWith("+")) digits else "+91$digits"   // default India country code
+    /**
+     * Credential Manager throws for ordinary situations too (user dismissed the sheet,
+     * no Google account on the device), so translate rather than dumping a raw message
+     * that would read as a crash to an elder.
+     */
+    private fun friendlyError(e: Exception): String {
+        val msg = e.message.orEmpty()
+        return when {
+            msg.contains("cancel", true) || msg.contains("dismiss", true) ->
+                "Sign-in was cancelled."
+            msg.contains("No credential", true) || msg.contains("no matching", true) ->
+                "No Google account found on this phone. Add one in Settings, then try again."
+            msg.contains("network", true) || msg.contains("Unable to resolve host", true) ->
+                "No internet connection. Connect and try again."
+            else -> "Could not sign in. Please try again."
+        }
     }
 }

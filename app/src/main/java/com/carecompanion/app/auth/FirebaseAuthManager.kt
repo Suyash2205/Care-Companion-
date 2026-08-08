@@ -1,28 +1,30 @@
 package com.carecompanion.app.auth
 
-import android.app.Activity
 import android.content.Context
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.carecompanion.app.BuildConfig
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
-/** Result of requesting an OTP: either auto-verified (instant) or a code was sent. */
-sealed class OtpRequest {
-    data class AutoVerified(val credential: PhoneAuthCredential) : OtpRequest()
-    data class CodeSent(val verificationId: String) : OtpRequest()
-}
+/** What the caller needs to show/store after a successful Google sign-in. */
+data class GoogleSignInResult(
+    val uid: String,
+    val email: String?,
+    val displayName: String?,
+)
 
+/**
+ * Google Sign-In via Credential Manager (the current API — GoogleSignInClient is
+ * deprecated). Phone OTP was removed: linking an elder to their profile is now done
+ * with a one-time invite code instead of matching phone numbers.
+ */
 @Singleton
 class FirebaseAuthManager @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -31,83 +33,47 @@ class FirebaseAuthManager @Inject constructor(
 
     val currentUid: String? get() = auth.currentUser?.uid
     val isSignedIn: Boolean get() = auth.currentUser != null
+    val currentEmail: String? get() = auth.currentUser?.email
+    val currentDisplayName: String? get() = auth.currentUser?.displayName
 
-    /** Request an OTP for [phone] (E.164). Test numbers auto-verify. */
-    suspend fun requestOtp(activity: Activity, phone: String): OtpRequest =
-        requestOtpOn(auth, activity, phone)
+    /**
+     * Show the Google account picker and sign in to Firebase with the chosen account.
+     *
+     * [activityContext] must be an Activity context — Credential Manager renders a
+     * system dialog and cannot use the application context.
+     *
+     * @param filterByAuthorized when true, only accounts already used with this app are
+     *   offered (a faster returning-user path). We pass false so every Google account on
+     *   the device is offered, including first-time sign-ins.
+     */
+    suspend fun signInWithGoogle(
+        activityContext: Context,
+        filterByAuthorized: Boolean = false,
+    ): GoogleSignInResult {
+        check(BuildConfig.GOOGLE_WEB_CLIENT_ID.isNotBlank()) {
+            "Google sign-in is not configured (missing web client id in google-services.json)"
+        }
 
-    /** Complete sign-in with the SMS code the user typed. */
-    suspend fun signInWithCode(verificationId: String, code: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
-        auth.signInWithCredential(credential).await()
-    }
+        val option = GetGoogleIdOption.Builder()
+            .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+            .setFilterByAuthorizedAccounts(filterByAuthorized)
+            .setAutoSelectEnabled(false)
+            .build()
 
-    suspend fun signInWithCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential).await()
+        val response = CredentialManager.create(context)
+            .getCredential(activityContext, GetCredentialRequest.Builder().addCredentialOption(option).build())
+
+        val googleCredential = GoogleIdTokenCredential.createFrom(response.credential.data)
+        val firebaseCredential = GoogleAuthProvider.getCredential(googleCredential.idToken, null)
+        val user = auth.signInWithCredential(firebaseCredential).await().user
+            ?: error("Sign-in did not return a user")
+
+        return GoogleSignInResult(
+            uid = user.uid,
+            email = user.email ?: googleCredential.id,
+            displayName = user.displayName ?: googleCredential.displayName,
+        )
     }
 
     fun signOut() = auth.signOut()
-
-    /**
-     * Verify the ELDER's phone from the GUARDIAN's device without disturbing the
-     * guardian's session, using a secondary FirebaseApp. Returns the elder's
-     * Firebase UID (which the elder self-links on later), then signs the secondary
-     * instance out. Used during elder-profile setup (verified-at-creation).
-     */
-    suspend fun verifyElderPhone(activity: Activity, phone: String, code: String, verificationId: String): String {
-        val secondary = secondaryAuth()
-        try {
-            val credential = PhoneAuthProvider.getCredential(verificationId, code)
-            val result = secondary.signInWithCredential(credential).await()
-            return result.user?.uid ?: error("no elder uid")
-        } finally {
-            secondary.signOut()
-        }
-    }
-
-    /** Request an OTP on the SECONDARY instance (used for elder verification). */
-    suspend fun requestElderOtp(activity: Activity, phone: String): OtpRequest =
-        requestOtpOn(secondaryAuth(), activity, phone)
-
-    suspend fun verifyElderCredential(credential: PhoneAuthCredential): String {
-        val secondary = secondaryAuth()
-        try {
-            val result = secondary.signInWithCredential(credential).await()
-            return result.user?.uid ?: error("no elder uid")
-        } finally {
-            secondary.signOut()
-        }
-    }
-
-    private fun secondaryAuth(): FirebaseAuth {
-        val name = "elderVerify"
-        val app = FirebaseApp.getApps(context).firstOrNull { it.name == name }
-            ?: run {
-                val primary = FirebaseApp.getInstance()
-                FirebaseApp.initializeApp(context, primary.options, name)
-            }
-        return FirebaseAuth.getInstance(app)
-    }
-
-    private suspend fun requestOtpOn(target: FirebaseAuth, activity: Activity, phone: String): OtpRequest =
-        suspendCancellableCoroutine { cont ->
-            val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    if (cont.isActive) cont.resume(OtpRequest.AutoVerified(credential))
-                }
-                override fun onVerificationFailed(e: com.google.firebase.FirebaseException) {
-                    if (cont.isActive) cont.resumeWithException(e)
-                }
-                override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                    if (cont.isActive) cont.resume(OtpRequest.CodeSent(verificationId))
-                }
-            }
-            val options = PhoneAuthOptions.newBuilder(target)
-                .setPhoneNumber(phone)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setActivity(activity)
-                .setCallbacks(callbacks)
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(options)
-        }
 }

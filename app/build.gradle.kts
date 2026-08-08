@@ -26,6 +26,17 @@ android {
             "SUPABASE_ANON_KEY",
             "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppamVkenNvZXZobGphbmtndnZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MDU4ODQsImV4cCI6MjA5OTI4MTg4NH0.CCay92d4k_wN01yFF5oF3kIC1WuNLZf3PA4XiE9TM5A\""
         )
+
+        // Google Sign-In needs the WEB (client_type 3) OAuth client id. Read it straight
+        // out of google-services.json so it can never drift from the Firebase project.
+        val webClientId: String = providers.provider {
+            val f = rootProject.file("app/google-services.json")
+            if (!f.exists()) "" else Regex("\"client_id\"\\s*:\\s*\"([^\"]+)\"[^}]*?\"client_type\"\\s*:\\s*3")
+                .find(f.readText().replace("\n", ""))?.groupValues?.get(1)
+                ?: Regex("\"client_type\"\\s*:\\s*3[^}]*?\"client_id\"\\s*:\\s*\"([^\"]+)\"")
+                    .find(f.readText().replace("\n", ""))?.groupValues?.get(1) ?: ""
+        }.get()
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$webClientId\"")
     }
 
     buildTypes {
@@ -122,6 +133,11 @@ dependencies {
 
     // Location (SOS GPS)
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // Google Sign-In via Credential Manager (the current API; GoogleSignInClient is deprecated)
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

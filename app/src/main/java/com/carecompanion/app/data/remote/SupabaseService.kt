@@ -213,4 +213,11 @@ interface SupabaseService {
 
     @POST("rest/v1/rpc/rpc_link_elder_by_phone")
     suspend fun rpcLinkElderByPhone(@Body body: Map<String, String> = emptyMap()): ElderDto?
+
+    // ── Invite codes (elder device ↔ profile linking, replaces phone matching) ──
+    @POST("rest/v1/rpc/rpc_create_invite_code")
+    suspend fun rpcCreateInviteCode(@Body body: Map<String, String>): InviteCodeDto?
+
+    @POST("rest/v1/rpc/rpc_redeem_invite_code")
+    suspend fun rpcRedeemInviteCode(@Body body: Map<String, String>): ElderDto?
 }

@@ -64,4 +64,6 @@ open class FakeSupabaseService(
     override suspend fun rpcRemoveMember(body: RemoveMemberRequest) = notUsed()
     override suspend fun rpcResolvePendingLinks(body: Map<String, String>): Int = notUsed()
     override suspend fun rpcLinkElderByPhone(body: Map<String, String>): ElderDto? = notUsed()
+    override suspend fun rpcCreateInviteCode(body: Map<String, String>): InviteCodeDto? = notUsed()
+    override suspend fun rpcRedeemInviteCode(body: Map<String, String>): ElderDto? = notUsed()
 }
