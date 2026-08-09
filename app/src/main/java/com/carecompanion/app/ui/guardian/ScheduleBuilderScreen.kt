@@ -61,11 +61,14 @@ fun ScheduleBuilderScreen(medicineId: String, onDone: () -> Unit, onBack: () -> 
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 // Days
                 CardSection("Days") {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // weight(), not a fixed 40.dp: seven fixed circles plus gaps and the
+                    // card padding came to exactly the width of a 360dp phone, so Sunday
+                    // was clipped off the edge and could never be switched off.
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         dayLabels.forEachIndexed { i, d ->
                             val bit = 1 shl i
                             val on = (days and bit) != 0
-                            Box(Modifier.size(40.dp).clip(CircleShape).background(if (on) CareGreen else Color(0xFFF1F8F2))
+                            Box(Modifier.weight(1f).aspectRatio(1f).clip(CircleShape).background(if (on) CareGreen else Color(0xFFF1F8F2))
                                 .clickable { days = days xor bit }, contentAlignment = Alignment.Center) {
                                 Text(d, color = if (on) Color.White else GuardianTextSub, fontWeight = FontWeight.Bold)
                             }

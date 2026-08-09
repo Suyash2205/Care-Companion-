@@ -44,7 +44,12 @@ class MedicinesViewModel @Inject constructor(
             try {
                 val meds = care.medicines(elderId)
                 val scheds = care.schedules(elderId).groupBy { it.medicineId }
-                _ui.value = MedicinesUiState(false, meds, scheds)
+                // copy(), never a fresh MedicinesUiState: building a new state here reset
+                // `done` back to false. A load finishing just after a save therefore ate
+                // the done=true that the screens navigate on, and the save looked ignored.
+                _ui.value = _ui.value.copy(
+                    loading = false, medicines = meds, schedules = scheds, error = null,
+                )
             } catch (e: Exception) {
                 _ui.value = _ui.value.copy(loading = false, error = e.message)
             }
@@ -98,7 +103,7 @@ class MedicinesViewModel @Inject constructor(
 
     // ── Schedule builder ────────────────────────────────────────────────────
     fun addSchedules(medicineId: String, labels: List<String>, time: String, days: Int, withWater: Boolean, meal: String?) {
-        _ui.value = _ui.value.copy(saving = true)
+        _ui.value = _ui.value.copy(saving = true, error = null)
         viewModelScope.launch {
             try {
                 labels.forEach { label ->
@@ -109,9 +114,22 @@ class MedicinesViewModel @Inject constructor(
                         )
                     )
                 }
+                // medicine_schedules has no water/meal columns - those live on the
+                // medicine. Previously both arguments were accepted and then dropped on
+                // the floor, so the "Take with water" switch and the Before/After meal
+                // chips silently did nothing. Best-effort: a failure here must not lose
+                // the schedules that already saved.
+                _ui.value.medicines.find { it.id == medicineId }?.let { med ->
+                    val updated = med.copy(withLiquid = if (withWater) "water" else null, meal = meal)
+                    if (updated != med) runCatching { care.updateMedicine(medicineId, updated) }
+                }
                 _ui.value = _ui.value.copy(saving = false, done = true)
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(saving = false, error = e.message)
+                // Never leave this null: NoSuchElementException and friends carry no
+                // message, which showed the guardian nothing at all on failure.
+                _ui.value = _ui.value.copy(
+                    saving = false, error = e.message ?: "Couldn't save the schedule. Please try again.",
+                )
             }
         }
     }
