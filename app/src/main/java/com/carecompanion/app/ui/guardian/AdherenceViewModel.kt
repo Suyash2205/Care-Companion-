@@ -61,7 +61,7 @@ class AdherenceViewModel @Inject constructor(
                     perMedicine = perMedicine(logs, meds, scheds),
                 )
             }.onSuccess { _ui.value = it }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 

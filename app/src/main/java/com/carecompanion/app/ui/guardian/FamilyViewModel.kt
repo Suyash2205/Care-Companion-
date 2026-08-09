@@ -35,7 +35,7 @@ class FamilyViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { repo.members(elderId) }
                 .onSuccess { _ui.value = FamilyUiState(false, it) }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 

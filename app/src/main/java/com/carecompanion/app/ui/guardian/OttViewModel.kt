@@ -34,7 +34,7 @@ class OttViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { care.ott(elderId) }
                 .onSuccess { _ui.value = OttUiState(loading = false, shortcuts = it) }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 

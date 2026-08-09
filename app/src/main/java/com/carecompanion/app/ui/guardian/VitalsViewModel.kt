@@ -61,7 +61,7 @@ class VitalsViewModel @Inject constructor(
             }.onSuccess { (all, sev) ->
                 _ui.value = _ui.value.copy(loading = false, all = all, severities = sev, error = null)
             }.onFailure {
-                _ui.value = _ui.value.copy(loading = false, error = it.message)
+                _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }

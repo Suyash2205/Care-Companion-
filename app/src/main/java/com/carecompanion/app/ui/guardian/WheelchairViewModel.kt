@@ -47,7 +47,7 @@ class WheelchairViewModel @Inject constructor(
                         serviceContacts = serviceContacts,
                     )
                 }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 }

@@ -39,7 +39,7 @@ class RemindersViewModel @Inject constructor(
                 val rems = care.reminders(elderId)
                 _ui.value = RemindersUiState(loading = false, categories = cats, reminders = rems)
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message)
+                _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }

@@ -140,6 +140,6 @@ class AddEditElderViewModel @Inject constructor(
         val id = _ui.value.elderId ?: return@launch
         runCatching { elderRepo.setActive(id, active) }
             .onSuccess { _ui.value = _ui.value.copy(isActive = active) }   // in-place toggle, don't exit
-            .onFailure { _ui.value = _ui.value.copy(error = it.message) }
+            .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't save. Please check your connection and try again.") }
     }
 }

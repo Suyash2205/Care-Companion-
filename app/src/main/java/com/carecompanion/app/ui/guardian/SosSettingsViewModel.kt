@@ -51,7 +51,7 @@ class SosSettingsViewModel @Inject constructor(
                     template = template,
                 )
             }.onFailure {
-                _ui.value = _ui.value.copy(loading = false, error = it.message)
+                _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }
@@ -61,7 +61,7 @@ class SosSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { care.updateContact(id, c.copy(isEmergency = !c.isEmergency)) }
                 .onSuccess { load() }
-                .onFailure { _ui.value = _ui.value.copy(error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't save. Please check your connection and try again.") }
         }
     }
 
@@ -69,7 +69,7 @@ class SosSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { elderRepo.updateElderFields(elderId, mapOf("sos_message" to text)) }
                 .onSuccess { _ui.value = _ui.value.copy(template = text) }
-                .onFailure { _ui.value = _ui.value.copy(error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't save. Please check your connection and try again.") }
         }
     }
 
@@ -77,7 +77,7 @@ class SosSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { sos.updateStatus(id, "resolved") }
                 .onSuccess { load() }
-                .onFailure { _ui.value = _ui.value.copy(error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(error = it.message ?: "Couldn't save. Please check your connection and try again.") }
         }
     }
 }

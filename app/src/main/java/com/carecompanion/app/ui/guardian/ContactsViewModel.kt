@@ -40,8 +40,11 @@ class ContactsViewModel @Inject constructor(
         _ui.value = _ui.value.copy(loading = true)
         viewModelScope.launch {
             runCatching { care.contacts(elderId) }
-                .onSuccess { _ui.value = ContactsUiState(false, it) }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                // copy(), never a fresh ContactsUiState - see MedicinesViewModel.load().
+                // Rebuilding the state resets `done`, and the edit screen loads on entry,
+                // so a load landing after a save swallowed the navigation signal.
+                .onSuccess { _ui.value = _ui.value.copy(loading = false, contacts = it, error = null) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 

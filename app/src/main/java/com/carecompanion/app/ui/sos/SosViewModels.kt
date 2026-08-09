@@ -132,7 +132,7 @@ class GuardianSosViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { sosRepo.history(elderId) }
                 .onSuccess { _ui.value = GuardianSosUiState(false, it) }
-                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 

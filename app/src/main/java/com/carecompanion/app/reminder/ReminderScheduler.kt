@@ -95,6 +95,28 @@ object ReminderScheduler {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
     }
 
+    /**
+     * Cancel one dose's alarm and drop it from the persisted set.
+     *
+     * Called when the elder answers a dose. Without this, taking a medicine early left
+     * its alarm armed: an elder who took their 08:00 tablet at 07:45 was still told to
+     * take it at 08:00, which for a confused or forgetful user invites a double dose.
+     * Removing it from the persisted set matters too, or a reboot would re-arm it.
+     */
+    fun cancelDose(context: Context, key: String) {
+        context.getSystemService(AlarmManager::class.java)?.let { am ->
+            val intent = Intent(context, ReminderReceiver::class.java).apply {
+                action = "com.carecompanion.app.DOSE.$key"
+            }
+            val pi = PendingIntent.getBroadcast(
+                context, key.hashCode(), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            runCatching { am.cancel(pi) }
+        }
+        persist(context, load(context).filterNot { it.key == key })
+    }
+
     // ── persistence ──────────────────────────────────────────────────────────
     private fun persist(context: Context, doses: List<DoseAlarm>) {
         val arr = JSONArray()

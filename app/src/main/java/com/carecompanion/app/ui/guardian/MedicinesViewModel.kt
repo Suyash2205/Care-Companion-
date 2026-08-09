@@ -51,7 +51,7 @@ class MedicinesViewModel @Inject constructor(
                     loading = false, medicines = meds, schedules = scheds, error = null,
                 )
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message)
+                _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }

@@ -43,7 +43,7 @@ class ElderVitalsViewModel @Inject constructor(
                 list.forEach { v -> v.id?.let { sev[it] = runCatching { vitals.severity(v.type, v.context, v.value1, v.value2) }.getOrDefault(Severity.NORMAL) } }
                 _ui.value = ElderVitalsUiState(false, list, sev)
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message)
+                _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }
@@ -54,7 +54,7 @@ class ElderVitalsViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { vitals.add(VitalDto(elderId = id, type = type, value1 = v1, value2 = v2, context = context)) }
                 .onSuccess { _ui.value = _ui.value.copy(saving = false); load() }
-                .onFailure { _ui.value = _ui.value.copy(saving = false, error = it.message) }
+                .onFailure { _ui.value = _ui.value.copy(saving = false, error = it.message ?: "Couldn't save. Please check your connection and try again.") }
         }
     }
 }

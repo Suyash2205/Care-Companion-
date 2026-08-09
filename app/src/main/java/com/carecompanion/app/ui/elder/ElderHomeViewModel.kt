@@ -79,7 +79,7 @@ class ElderHomeViewModel @Inject constructor(
                 // Keep reminders working on days the elder never opens the app.
                 com.carecompanion.app.reminder.DailyArmWorker.ensureScheduled(appContext)
             } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message)
+                _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Couldn't load. Please check your connection and try again.")
             }
         }
     }
@@ -174,6 +174,11 @@ class ElderHomeViewModel @Inject constructor(
             occurrenceDate = dose.occurrenceDate, dueAt = dose.dueAt,
             status = newStatus, respondedAt = nowIso(),
         )
+        // The dose is answered, so its reminder must not still fire. Taking an 08:00
+        // tablet at 07:45 previously still produced an 08:00 "time for your medicine"
+        // notification. Key format must match armAlarms/DailyArmWorker exactly.
+        runCatching { ReminderScheduler.cancelDose(appContext, "$scheduleId-${dose.occurrenceDate}") }
+
         viewModelScope.launch {
             runCatching { adherence.record(log) }
                 .onFailure { outbox.enqueue(log) }   // offline → queue for later flush
