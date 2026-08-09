@@ -3,5 +3,9 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <!-- The app draws its own light palette; letting the OS "force dark" it (some
+             OEM skins do this aggressively) inverts backgrounds but not the hard-coded
+             colours, leaving unreadable text. -->
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 </resources>

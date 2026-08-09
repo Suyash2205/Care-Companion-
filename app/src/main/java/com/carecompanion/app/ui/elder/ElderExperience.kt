@@ -228,7 +228,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                     }
                     Spacer(Modifier.weight(1f))
                     Button(onClick = { index = 0; step = 1 }, modifier = Modifier.fillMaxWidth().height(64.dp),
-                        shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4C8BD9))) {
+                        shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = CareGreen, contentColor = Color.White)) {
                         Text(tr(lang, "start_taking"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
