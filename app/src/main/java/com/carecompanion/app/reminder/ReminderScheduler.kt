@@ -65,7 +65,11 @@ object ReminderScheduler {
         // reminder silently REPLACED the other instead of both being shown.
         val key = intent.action?.removePrefix("com.carecompanion.app.DOSE.").orEmpty()
         val notifId = (if (key.isNotBlank()) key else title).hashCode()
-        com.carecompanion.app.notify.Notifications.showReminder(context, notifId, title, body)
+        // Medicine doses deep-link into the take-medicine flow; general reminders (water,
+        // walk) have no such screen, so those still just open the app.
+        val contentIntent = if (key.startsWith("rem-")) null
+        else com.carecompanion.app.notify.Notifications.openMedicinesIntent(context)
+        com.carecompanion.app.notify.Notifications.showReminder(context, notifId, title, body, contentIntent)
     }
 
     /** Re-arm the persisted, still-future doses (called on boot). */

@@ -29,6 +29,31 @@ object Notifications {
         )
     }
 
+    /** Intent extra naming the screen a notification tap should land on. */
+    const val EXTRA_DEST = "cc_dest"
+    const val DEST_MEDICINES = "medicines"
+
+    /**
+     * Tapping a medicine reminder should land on the medicine flow, not the home screen.
+     *
+     * The elder previously had to find "Medicines", then "Start taking", then answer —
+     * three more taps, each one a chance to get lost, and every unconfirmed dose shows up
+     * to the guardian as missed.
+     *
+     * The request code MUST differ from [openAppIntent]'s: with FLAG_UPDATE_CURRENT, two
+     * PendingIntents sharing a request code are the same object, so the second would
+     * rewrite the first and every notification would go to the same place.
+     */
+    fun openMedicinesIntent(context: Context): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra(EXTRA_DEST, DEST_MEDICINES)
+        return PendingIntent.getActivity(
+            context, 1, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     private fun openAppIntent(context: Context): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)

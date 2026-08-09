@@ -5,6 +5,10 @@ import androidx.compose.runtime.Composable
 /** Elder experience entry point, backed by real data (see [ElderExperience]).
  *  Permissions are requested by the one-time PermissionsOnboarding gate. */
 @Composable
-fun ElderApp(onLogout: () -> Unit) {
-    ElderExperience(onLogout = onLogout)
+fun ElderApp(
+    onLogout: () -> Unit,
+    openDest: String? = null,
+    onDestConsumed: () -> Unit = {},
+) {
+    ElderExperience(onLogout = onLogout, openDest = openDest, onDestConsumed = onDestConsumed)
 }

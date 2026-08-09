@@ -1,5 +1,6 @@
 package com.carecompanion.app
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,8 +29,23 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Screen a notification tap asked for. Held as Compose state so a tap arriving while
+     * the app is already open (onNewIntent, thanks to launchMode=singleTop) routes just
+     * as well as a cold start.
+     */
+    private val pendingDest = androidx.compose.runtime.mutableStateOf<String?>(null)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingDest.value = intent.getStringExtra(Notifications.EXTRA_DEST)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingDest.value = intent?.getStringExtra(Notifications.EXTRA_DEST)
         enableEdgeToEdge()
         Notifications.ensureChannels(this)
         setContent {
@@ -51,7 +67,11 @@ class MainActivity : ComponentActivity() {
                                     prefs.edit().putBoolean("done", true).apply(); onboarded = true
                                 }
                             } else if (isElder) {
-                                ElderApp(onLogout = { root.signOut() })
+                                ElderApp(
+                                    onLogout = { root.signOut() },
+                                    openDest = pendingDest.value,
+                                    onDestConsumed = { pendingDest.value = null },
+                                )
                             } else {
                                 GuardianApp(onLogout = { root.signOut() })
                             }

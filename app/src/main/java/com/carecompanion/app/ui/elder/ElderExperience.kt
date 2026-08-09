@@ -56,6 +56,9 @@ private enum class ElderDest { HOME, MEDICINES, CONTACTS, SOS, VITALS, VIDEOS, S
 @Composable
 fun ElderExperience(
     onLogout: () -> Unit,
+    /** Screen a notification tap asked for, e.g. Notifications.DEST_MEDICINES. */
+    openDest: String? = null,
+    onDestConsumed: () -> Unit = {},
     vm: ElderHomeViewModel = hiltViewModel(),
     sosVm: ElderSosViewModel = hiltViewModel(),
     settingsVm: ElderSettingsViewModel = hiltViewModel(),
@@ -66,6 +69,15 @@ fun ElderExperience(
     val contrast by settingsVm.contrast.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
     var dest by remember { mutableStateOf(ElderDest.HOME) }
+
+    // Tapping a medicine reminder lands straight on the take-medicine flow. Consumed
+    // once, so returning home and re-opening the app doesn't jump back here.
+    LaunchedEffect(openDest) {
+        if (openDest == com.carecompanion.app.notify.Notifications.DEST_MEDICINES) {
+            dest = ElderDest.MEDICINES
+            onDestConsumed()
+        }
+    }
 
     // Elder-friendly system-back: from any sub-screen, go home instead of
     // exiting the app (an accidental back-swipe should never kick an elder out).
