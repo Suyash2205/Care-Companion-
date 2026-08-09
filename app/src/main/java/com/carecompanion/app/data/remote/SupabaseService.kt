@@ -220,4 +220,11 @@ interface SupabaseService {
 
     @POST("rest/v1/rpc/rpc_redeem_invite_code")
     suspend fun rpcRedeemInviteCode(@Body body: Map<String, String>): ElderDto?
+
+    // ── Guardian invite codes (replaces the phone-matched "invite by mobile") ──
+    @POST("rest/v1/rpc/rpc_create_guardian_invite")
+    suspend fun rpcCreateGuardianInvite(@Body body: Map<String, String>): InviteCodeDto?
+
+    @POST("rest/v1/rpc/rpc_redeem_guardian_invite")
+    suspend fun rpcRedeemGuardianInvite(@Body body: Map<String, String>): GuardianLinkDto?
 }

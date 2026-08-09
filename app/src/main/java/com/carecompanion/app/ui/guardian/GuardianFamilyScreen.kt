@@ -1,12 +1,12 @@
 package com.carecompanion.app.ui.guardian
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Group
@@ -17,8 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,7 +34,7 @@ fun GuardianFamilyScreen(onBack: () -> Unit, vm: FamilyViewModel = hiltViewModel
     val ui by vm.ui.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.load() }
 
-    var phone by remember { mutableStateOf("") }
+    val ctx = LocalContext.current
     var access by remember { mutableStateOf("view") }
 
     Scaffold(containerColor = GuardianBg) { pad ->
@@ -68,29 +69,73 @@ fun GuardianFamilyScreen(onBack: () -> Unit, vm: FamilyViewModel = hiltViewModel
                         }
                     }
 
-                    // Invite by mobile
+                    // Invite by share code. The old "invite by mobile" matched the
+                    // invitee on users.phone, which Google Sign-In leaves empty for
+                    // everyone, so it could never link anybody - and nothing was sent,
+                    // because the project has no SMS or email integration.
                     Surface(shape = RoundedCornerShape(18.dp), color = Color.White, shadowElevation = 3.dp, modifier = Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                            Text("INVITE BY MOBILE", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GuardianTextSub, letterSpacing = 0.5.sp)
-                            GuardianTextField(
-                                value = phone, onValueChange = { phone = it }, label = "Mobile Number",
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                            Text("ADD A FAMILY MEMBER", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GuardianTextSub, letterSpacing = 0.5.sp)
+                            Text(
+                                "Choose what they can do, then share the code. They sign in with Google and enter it.",
+                                fontSize = 13.sp, color = GuardianTextSub,
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 listOf("view" to "View Only", "edit" to "Can Edit").forEach { (v, l) ->
                                     FilterChip(
-                                        selected = access == v, onClick = { access = v }, label = { Text(l) },
+                                        selected = access == v,
+                                        onClick = { access = v; vm.clearInviteCode() },
+                                        label = { Text(l) },
                                         modifier = Modifier.weight(1f),
                                         colors = FilterChipDefaults.filterChipColors(selectedContainerColor = CareGreen, selectedLabelColor = Color.White)
                                     )
                                 }
                             }
-                            GradientButton(
-                                text = if (ui.inviting) "Sending…" else "Send Invite",
-                                onClick = { if (phone.isNotBlank()) vm.invite(phone, access) },
-                                enabled = !ui.inviting && phone.isNotBlank(),
-                                modifier = Modifier.fillMaxWidth()
-                            )
+
+                            val code = ui.inviteCode
+                            if (code == null) {
+                                GradientButton(
+                                    text = if (ui.inviting) "Creating\u2026" else "Create invite code",
+                                    onClick = { vm.createInviteCode(access) },
+                                    enabled = !ui.inviting,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            } else {
+                                Surface(shape = RoundedCornerShape(14.dp), color = Color(0xFFEAF6EC), modifier = Modifier.fillMaxWidth()) {
+                                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Text(
+                                            code.chunked(1).joinToString("  "),
+                                            fontSize = 30.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp,
+                                            color = Color(0xFF1B5E20), textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth(),
+                                        )
+                                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                            OutlinedButton(
+                                                onClick = {
+                                                    val clip = ctx.getSystemService(android.content.ClipboardManager::class.java)
+                                                    clip?.setPrimaryClip(android.content.ClipData.newPlainText("Care Companion code", code))
+                                                },
+                                                modifier = Modifier.weight(1f),
+                                            ) { Text("Copy") }
+                                            OutlinedButton(
+                                                onClick = {
+                                                    runCatching {
+                                                        ctx.startActivity(Intent.createChooser(
+                                                            Intent(Intent.ACTION_SEND).apply {
+                                                                type = "text/plain"
+                                                                putExtra(Intent.EXTRA_TEXT,
+                                                                    "Join me on Care Companion. Install the app, sign in with Google, " +
+                                                                        "tap Guardian User, then enter this code: $code")
+                                                            }, "Share code"))
+                                                    }
+                                                },
+                                                modifier = Modifier.weight(1f),
+                                            ) { Text("Share") }
+                                        }
+                                        Text("Works once, and expires in 7 days.", fontSize = 11.sp, color = Color(0xFF2E7D32))
+                                    }
+                                }
+                            }
                         }
                     }
 

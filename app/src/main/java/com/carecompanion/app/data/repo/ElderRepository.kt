@@ -74,8 +74,17 @@ class ElderRepository @Inject constructor(
         return links.map { link -> link to users.firstOrNull { it.id == link.guardianId } }
     }
 
-    suspend fun inviteGuardian(elderId: String, phone: String, access: String): GuardianLinkDto =
-        api.rpcInviteGuardian(InviteGuardianRequest(elderId, phone, access))
+    /**
+     * A code that adds another family member at [access]. Replaces the old phone-matched
+     * invite, which could never resolve once sign-in moved to Google and users.phone
+     * became empty for everyone.
+     */
+    suspend fun guardianInviteCode(elderId: String, access: String): InviteCodeDto? =
+        api.rpcCreateGuardianInvite(mapOf("p_elder_id" to elderId, "p_access" to access))
+
+    /** Join the elder's circle using a code another guardian shared. */
+    suspend fun redeemGuardianInvite(code: String): GuardianLinkDto? =
+        api.rpcRedeemGuardianInvite(mapOf("p_code" to code.filter { it.isDigit() }))
 
     suspend fun setMemberAccess(elderId: String, guardianId: String, access: String) =
         api.rpcSetMemberAccess(SetMemberAccessRequest(elderId, guardianId, access))

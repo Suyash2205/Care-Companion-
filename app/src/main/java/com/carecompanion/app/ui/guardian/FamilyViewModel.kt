@@ -18,6 +18,9 @@ data class FamilyUiState(
     val members: List<Pair<GuardianLinkDto, UserDto?>> = emptyList(),
     val inviting: Boolean = false,
     val error: String? = null,
+    /** The share code for the currently chosen access level, once generated. */
+    val inviteCode: String? = null,
+    val inviteAccess: String = "view",
 )
 
 @HiltViewModel
@@ -34,22 +37,36 @@ class FamilyViewModel @Inject constructor(
         _ui.value = _ui.value.copy(loading = true)
         viewModelScope.launch {
             runCatching { repo.members(elderId) }
-                .onSuccess { _ui.value = FamilyUiState(false, it) }
+                // copy(), not a fresh state: rebuilding would drop a code the guardian
+                // is in the middle of reading out.
+                .onSuccess { _ui.value = _ui.value.copy(loading = false, members = it, error = null) }
                 .onFailure { _ui.value = _ui.value.copy(loading = false, error = it.message ?: "Couldn't load. Please check your connection and try again.") }
         }
     }
 
-    fun invite(phone: String, access: String) {
-        _ui.value = _ui.value.copy(inviting = true, error = null)
+    /**
+     * Produce a share code granting [access].
+     *
+     * Replaces the old phone-number invite, which was stranded by the move to Google
+     * Sign-In: it matched the invitee on users.phone, which is now empty for every
+     * account, so every invite sat 'pending' forever — and nothing was ever sent, since
+     * the project has no SMS or email integration at all.
+     */
+    fun createInviteCode(access: String) {
+        _ui.value = _ui.value.copy(inviting = true, error = null, inviteAccess = access, inviteCode = null)
         viewModelScope.launch {
-            // normalize to +91 so it matches how phones are stored for existing users
-            val digits = phone.filter { it.isDigit() || it == '+' }
-            val normalized = if (digits.startsWith("+")) digits else "+91$digits"
-            runCatching { repo.inviteGuardian(elderId, normalized, access) }
-                .onSuccess { _ui.value = _ui.value.copy(inviting = false); load() }
-                .onFailure { _ui.value = _ui.value.copy(inviting = false, error = it.message ?: "Failed to send invite") }
+            runCatching { repo.guardianInviteCode(elderId, access) }
+                .onSuccess { _ui.value = _ui.value.copy(inviting = false, inviteCode = it?.code) }
+                .onFailure {
+                    _ui.value = _ui.value.copy(
+                        inviting = false,
+                        error = it.message ?: "Couldn't create a code. Please check your connection and try again.",
+                    )
+                }
         }
     }
+
+    fun clearInviteCode() { _ui.value = _ui.value.copy(inviteCode = null) }
 
     fun changeAccess(guardianId: String, access: String) = viewModelScope.launch {
         runCatching { repo.setMemberAccess(elderId, guardianId, access) }.onSuccess { load() }

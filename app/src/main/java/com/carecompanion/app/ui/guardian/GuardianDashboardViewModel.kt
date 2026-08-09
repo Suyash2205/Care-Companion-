@@ -19,6 +19,8 @@ data class DashboardUiState(
     val selectedElderId: String? = null,
     val alerts: List<AlertDto> = emptyList(),
     val error: String? = null,
+    val joining: Boolean = false,
+    val joinError: String? = null,
 ) {
     val selectedElder: ElderDto? get() = elders.firstOrNull { it.id == selectedElderId }
     val unreadAlerts: Int get() = alerts.count { !it.read }
@@ -33,6 +35,46 @@ class GuardianDashboardViewModel @Inject constructor(
     private val _ui = MutableStateFlow(DashboardUiState())
     val ui: StateFlow<DashboardUiState> = _ui.asStateFlow()
 
+    /**
+     * Join an elder's circle with a code another guardian shared.
+     *
+     * This is the other half of the guardian invite. The previous "invite by mobile"
+     * matched on users.phone, which Google Sign-In leaves empty for every account, so an
+     * invited person had no way in at all.
+     */
+    fun joinWithCode(code: String) {
+        val digits = code.filter { it.isDigit() }
+        if (digits.length != 6) {
+            _ui.value = _ui.value.copy(joinError = "Please enter all 6 numbers.")
+            return
+        }
+        _ui.value = _ui.value.copy(joining = true, joinError = null)
+        viewModelScope.launch {
+            runCatching { elderRepo.redeemGuardianInvite(digits) }
+                .onSuccess { _ui.value = _ui.value.copy(joining = false); load() }
+                .onFailure {
+                    // The RPC raises messages written to be shown as-is.
+                    val msg = it.message.orEmpty()
+                    _ui.value = _ui.value.copy(
+                        joining = false,
+                        joinError = when {
+                            msg.contains("already been used", true) ->
+                                "That code has already been used. Ask them for a new one."
+                            msg.contains("already own", true) ->
+                                "You already own this profile."
+                            msg.contains("not valid", true) ->
+                                "That code is not valid. Ask them for a new one."
+                            msg.contains("Unable to resolve host", true) || msg.contains("timeout", true) ->
+                                "No internet connection. Connect and try again."
+                            else -> "That code did not work. Please check and try again."
+                        },
+                    )
+                }
+        }
+    }
+
+    fun clearJoinError() { _ui.value = _ui.value.copy(joinError = null) }
+
     fun load() {
         _ui.value = _ui.value.copy(loading = true, error = null)
         viewModelScope.launch {
@@ -41,7 +83,10 @@ class GuardianDashboardViewModel @Inject constructor(
                 val alerts = runCatching { alertsRepo.list() }.getOrDefault(emptyList())
                 val selected = _ui.value.selectedElderId?.takeIf { id -> elders.any { it.id == id } }
                     ?: elders.firstOrNull()?.id
-                _ui.value = DashboardUiState(false, elders, selected, alerts)
+                _ui.value = _ui.value.copy(
+                    loading = false, elders = elders, selectedElderId = selected,
+                    alerts = alerts, error = null,
+                )
             } catch (e: Exception) {
                 _ui.value = _ui.value.copy(loading = false, error = e.message ?: "Failed to load")
             }

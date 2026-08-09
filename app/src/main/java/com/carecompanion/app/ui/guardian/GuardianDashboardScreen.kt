@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +26,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,7 +118,13 @@ fun GuardianDashboardScreen(
 
             when {
                 ui.loading -> Box(Modifier.fillMaxWidth().padding(40.dp), Alignment.Center) { CircularProgressIndicator(color = CareGreen) }
-                ui.elders.isEmpty() -> EmptyElders(onAddElder)
+                ui.elders.isEmpty() -> EmptyElders(
+                    onAddElder = onAddElder,
+                    joining = ui.joining,
+                    joinError = ui.joinError,
+                    onJoin = vm::joinWithCode,
+                    onClearJoinError = vm::clearJoinError,
+                )
                 else -> {
                     val elder = ui.selectedElder
                     if (elder?.id != null) {
@@ -234,9 +245,17 @@ private fun QuickActions(elderId: String, onOpen: (String) -> Unit) {
 }
 
 @Composable
-private fun EmptyElders(onAddElder: () -> Unit) {
+private fun EmptyElders(
+    onAddElder: () -> Unit,
+    joining: Boolean,
+    joinError: String?,
+    onJoin: (String) -> Unit,
+    onClearJoinError: () -> Unit,
+) {
+    var code by remember { mutableStateOf("") }
+
     Column(
-        modifier = Modifier.fillMaxWidth().padding(40.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(modifier = Modifier.size(84.dp).background(Color(0xFFEAF5EA), CircleShape).clickable(onClick = onAddElder), contentAlignment = Alignment.Center) {
@@ -244,5 +263,29 @@ private fun EmptyElders(onAddElder: () -> Unit) {
         }
         Text("Add an elder profile", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = GuardianTextPrimary)
         Text("Tap to create the first profile you'll manage.", fontSize = 14.sp, color = GuardianTextSub)
+
+        Spacer(Modifier.height(20.dp))
+
+        // The other half of the guardian invite: someone who was given a code by the
+        // profile owner joins here. Without this the code had nowhere to be entered.
+        Surface(shape = RoundedCornerShape(18.dp), color = Color.White, shadowElevation = 3.dp, modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("INVITED BY FAMILY?", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GuardianTextSub, letterSpacing = 0.5.sp)
+                Text("Enter the 6-digit code they shared with you.", fontSize = 13.sp, color = GuardianTextSub)
+                GuardianTextField(
+                    value = code,
+                    onValueChange = { if (it.length <= 6) { code = it.filter { c -> c.isDigit() }; onClearJoinError() } },
+                    label = "Invite code",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                )
+                joinError?.let { Text(it, color = Color(0xFFDC2626), fontSize = 13.sp) }
+                GradientButton(
+                    text = if (joining) "Joining\u2026" else "Join",
+                    onClick = { onJoin(code) },
+                    enabled = !joining && code.length == 6,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
     }
 }
