@@ -2,7 +2,6 @@ package com.carecompanion.app.ui.sos
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.telephony.SmsManager
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,16 +23,33 @@ import javax.inject.Inject
 data class SosSendResult(
     val sending: Boolean = false,
     val sent: Boolean = false,
-    val smsCount: Int = 0,
     val locationText: String? = null,
     val error: String? = null,
-    /** True when the alert reached NOBODY — no SMS delivered and the server insert failed. */
+    /**
+     * The alert reached NOBODY. Identical to [serverAlertFailed] today because the server
+     * record is the only automatic channel; kept separate so adding a channel later can
+     * change one without silently changing the other.
+     */
     val nooneReached: Boolean = false,
     /** True when the server record failed, so guardians get no push/dashboard entry. */
     val serverAlertFailed: Boolean = false,
+    /**
+     * The ready-to-send emergency text, including the maps link. Only used for the manual
+     * fallback the elder is offered when [serverAlertFailed] — we never send it silently.
+     */
+    val fallbackMessage: String = "",
 )
 
-/** Elder side: fire the alert — SMS first (works offline), then best-effort DB insert. */
+/**
+ * Elder side: fire the alert by recording it on the server, which pushes to every linked
+ * guardian.
+ *
+ * Deliberately does NOT send SMS itself. Silent background SMS needs the SEND_SMS
+ * permission, which Play restricts to apps whose core purpose is messaging — declaring it
+ * here risks the whole app being blocked from publishing. When the server call fails (the
+ * offline case SMS used to cover) the UI offers a one-tap "send text" that hands a
+ * pre-filled message to the phone's own messaging app instead.
+ */
 @HiltViewModel
 class ElderSosViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -47,9 +63,9 @@ class ElderSosViewModel @Inject constructor(
     fun reset() { _result.value = SosSendResult() }
 
     @SuppressLint("MissingPermission")
-    fun fire(elderId: String, elderName: String, emergencyPhones: List<String>, template: String? = null) {
-        // Re-entrancy guard: a double-tap must not fire two alerts (duplicate SMS to
-        // every contact and a duplicate SOS row, in an already-stressful moment).
+    fun fire(elderId: String, elderName: String, template: String? = null) {
+        // Re-entrancy guard: a double-tap must not fire two alerts (duplicate pushes to
+        // every guardian and a duplicate SOS row, in an already-stressful moment).
         if (_result.value.sending) return
         _result.value = SosSendResult(sending = true)
         viewModelScope.launch {
@@ -63,17 +79,11 @@ class ElderSosViewModel @Inject constructor(
             val mapsLink = loc?.let { "https://maps.google.com/?q=${it.latitude},${it.longitude}" }
             val locText = loc?.let { "Location: %.5f, %.5f".format(it.latitude, it.longitude) }
 
-            // 2) SMS first — the channel that must work without internet
+            // 2) Compose the message once. Not sent from here — it is handed to the
+            //    messaging app only if the elder taps the manual fallback below.
             val base = template?.takeIf { it.isNotBlank() }?.replace("{name}", elderName)
                 ?: "EMERGENCY! $elderName needs help."
             val body = if (mapsLink != null) "$base $mapsLink" else base
-            var smsCount = 0
-            for (phone in emergencyPhones) {
-                try {
-                    smsManager().sendTextMessage(phone, null, body, null, null)
-                    smsCount++
-                } catch (_: Exception) { /* best-effort per recipient */ }
-            }
 
             // 3) Server record — this is what reaches guardians (dashboard + FCM push),
             //    so a failure here is NOT cosmetic: retry briefly before giving up.
@@ -86,25 +96,18 @@ class ElderSosViewModel @Inject constructor(
                 if (!serverOk && attempt < 2) kotlinx.coroutines.delay(1500L * (attempt + 1))
             }
 
-            // Tell the elder the TRUTH. Previously this always claimed "Alert Sent!" even
-            // when zero SMS went out (permission denied / no emergency contacts) and the
-            // server insert failed — i.e. nobody had been contacted at all.
+            // Tell the elder the TRUTH — never show a reassuring tick over a failed alert.
+            // When this fails the UI switches to the manual text/call fallback.
             _result.value = SosSendResult(
                 sending = false,
                 sent = true,
-                smsCount = smsCount,
                 locationText = locText,
                 serverAlertFailed = !serverOk,
-                nooneReached = smsCount == 0 && !serverOk,
+                nooneReached = !serverOk,
+                fallbackMessage = body,
             )
         }
     }
-
-    @Suppress("DEPRECATION")
-    private fun smsManager(): SmsManager =
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S)
-            appContext.getSystemService(SmsManager::class.java)
-        else SmsManager.getDefault()
 }
 
 data class GuardianSosUiState(

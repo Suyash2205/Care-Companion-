@@ -593,13 +593,15 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
     var countdown by remember { mutableStateOf(5) }
     var fired by remember { mutableStateOf(false) }
     val ctx = LocalContext.current
-    val emergencyPhones = ui.contacts.filter { it.isEmergency }.map { it.phone }.ifEmpty { ui.contacts.map { it.phone } }
-    val primaryPhone = emergencyPhones.firstOrNull()
+    // Contacts (not just phones) — the offline fallback needs their names on the buttons.
+    val emergencyContacts = ui.contacts.filter { it.isEmergency }.ifEmpty { ui.contacts }
+    val primaryContact = emergencyContacts.firstOrNull()
+    val primaryPhone = primaryContact?.phone
 
     LaunchedEffect(Unit) {
         sosVm.reset()   // clear any prior "sent" result so this SOS starts fresh (visible countdown + CANCEL)
         while (countdown > 0 && !fired) { delay(1000); countdown-- }
-        if (!fired) { fired = true; ui.elder?.id?.let { sosVm.fire(it, ui.elder.name, emergencyPhones, ui.elder.sosMessage) } }
+        if (!fired) { fired = true; ui.elder?.id?.let { sosVm.fire(it, ui.elder.name, ui.elder.sosMessage) } }
     }
 
     if (!result.sent) {
@@ -649,16 +651,43 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
             Spacer(Modifier.height(20.dp))
             Surface(shape = RoundedCornerShape(16.dp), color = Color.White, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SentRow(String.format(Locale.getDefault(), tr(lang, "sms_sent_to"), result.smsCount))
+                    if (!failed) SentRow(tr(lang, "guardians_pushed"))
                     SentRow(result.locationText ?: tr(lang, "location_shared"))
                     SentRow(tr(lang, if (result.serverAlertFailed) "alert_not_logged" else "alert_logged"))
                 }
             }
             Spacer(Modifier.height(20.dp))
+
+            // The alert never left this phone (almost always: no internet). Offer the two
+            // things that still work offline, pre-filled, one tap each. We deliberately
+            // do NOT send the SMS ourselves — that needs a Play-restricted permission.
+            if (failed && primaryContact != null) {
+                Text(tr(lang, "fallback_help"), fontSize = 16.sp, color = hc(Color(0xFF555555)),
+                    textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 12.dp))
+                Button(
+                    onClick = {
+                        runCatching {
+                            ctx.startActivity(
+                                Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:${primaryContact.phone}"))
+                                    .putExtra("sms_body", result.fallbackMessage)
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(96.dp), shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                ) {
+                    Icon(Icons.Outlined.Message, contentDescription = null, modifier = Modifier.size(28.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Text(String.format(Locale.getDefault(), tr(lang, "send_text_to"), primaryContact.name),
+                        fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+
             if (primaryPhone != null) Button(onClick = { ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$primaryPhone"))) },
                 modifier = Modifier.fillMaxWidth().height(96.dp), shape = RoundedCornerShape(16.dp), colors = ButtonDefaults.buttonColors(containerColor = CareGreen)) {
                 Icon(Icons.Outlined.Call, contentDescription = null, modifier = Modifier.size(28.dp)); Spacer(Modifier.width(10.dp))
-                Text(String.format(Locale.getDefault(), tr(lang, "call_family"), ui.contacts.firstOrNull { it.phone == primaryPhone }?.name ?: ""), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(String.format(Locale.getDefault(), tr(lang, "call_family"), primaryContact?.name ?: ""), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
             Spacer(Modifier.height(12.dp))
             OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth().height(64.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFD32F2F))) {

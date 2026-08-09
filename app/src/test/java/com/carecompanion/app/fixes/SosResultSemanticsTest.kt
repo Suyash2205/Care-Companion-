@@ -3,22 +3,24 @@ package com.carecompanion.app.fixes
 import com.carecompanion.app.ui.sos.SosSendResult
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
  * Tests the truth-reporting semantics of [SosSendResult] — the fix for an elder always
- * being told "Alert Sent!" even when zero SMS went out AND the server insert failed
- * (i.e. nobody was actually contacted).
+ * being told "Alert Sent!" even when the alert had actually reached nobody.
  *
- * LIMITATION: [ElderSosViewModel] is a `@HiltViewModel` that needs an injected
- * `android.content.Context` and `SosRepository`, and its `fire()` reaches real Android
- * framework classes (`LocationServices`, `SmsManager`) that are not meaningfully fakeable
- * on a plain JVM/Robolectric unit test without a much larger fixture (fake location
- * client, fake SmsManager shadow, Hilt test component). Per the instructions, that is NOT
- * faked here — this class only asserts the pure data-class semantics that the view model
- * is documented to produce, which is genuinely reachable and worth locking down: the
- * default (pre-fire) state, and that `nooneReached` / `serverAlertFailed` express exactly
- * the states the fix's doc comment describes.
+ * Since silent SMS was removed (SEND_SMS is a Play-restricted permission), the server
+ * record is the only automatic channel, so `nooneReached` and `serverAlertFailed` now
+ * move together. They are kept as separate fields deliberately, and the tests below pin
+ * the invariant the UI depends on: the green tick appears only when the alert really was
+ * delivered, and the manual text/call fallback appears exactly when it was not.
+ *
+ * LIMITATION: `ElderSosViewModel` is a `@HiltViewModel` needing an injected Context and
+ * `SosRepository`, and its `fire()` reaches real framework classes (`LocationServices`)
+ * that are not meaningfully fakeable on a plain JVM test without a much larger fixture.
+ * That is NOT faked here — this class asserts the pure data-class semantics the view model
+ * is documented to produce.
  */
 class SosResultSemanticsTest {
 
@@ -28,33 +30,45 @@ class SosResultSemanticsTest {
 
         assertFalse(result.sending)
         assertFalse(result.sent)
-        assertEquals(0, result.smsCount)
         assertEquals(null, result.locationText)
         assertEquals(null, result.error)
+        assertEquals("", result.fallbackMessage)
         assertFalse("must not claim no-one-was-reached before anything happened", result.nooneReached)
         assertFalse("must not claim server failure before anything happened", result.serverAlertFailed)
     }
 
     @Test
-    fun `nooneReached is true only when zero SMS went out AND the server insert failed`() {
-        val trulyNobodyReached = SosSendResult(sent = true, smsCount = 0, serverAlertFailed = true, nooneReached = true)
-        assertEquals(true, trulyNobodyReached.nooneReached)
+    fun `a delivered alert reports success and needs no fallback`() {
+        val delivered = SosSendResult(sent = true, serverAlertFailed = false, nooneReached = false)
 
-        // SMS delivered even though the server failed -> at least the family got texted.
-        val smsOnly = SosSendResult(sent = true, smsCount = 2, serverAlertFailed = true, nooneReached = false)
-        assertFalse("SMS delivered means nooneReached must be false, even if the server failed", smsOnly.nooneReached)
-
-        // Server succeeded even though no SMS went out -> guardians still got the dashboard/push alert.
-        val serverOnly = SosSendResult(sent = true, smsCount = 0, serverAlertFailed = false, nooneReached = false)
-        assertFalse("server success means nooneReached must be false, even with zero SMS", serverOnly.nooneReached)
+        assertTrue(delivered.sent)
+        assertFalse("server succeeded -> guardians got the push, so never warn", delivered.nooneReached)
+        assertFalse(delivered.serverAlertFailed)
     }
 
     @Test
-    fun `serverAlertFailed independently reflects the server outcome regardless of SMS count`() {
-        val failedWithSms = SosSendResult(sent = true, smsCount = 3, serverAlertFailed = true, nooneReached = false)
-        assertEquals(true, failedWithSms.serverAlertFailed)
+    fun `a failed alert reports failure and carries the message for the manual fallback`() {
+        val body = "EMERGENCY! Kamala needs help. https://maps.google.com/?q=19.07,72.87"
+        val failed = SosSendResult(
+            sent = true, serverAlertFailed = true, nooneReached = true, fallbackMessage = body,
+        )
 
-        val succeededWithSms = SosSendResult(sent = true, smsCount = 3, serverAlertFailed = false, nooneReached = false)
-        assertFalse(succeededWithSms.serverAlertFailed)
+        assertTrue("server failed -> nobody was reached automatically", failed.nooneReached)
+        assertTrue(failed.serverAlertFailed)
+        assertEquals(
+            "the offline fallback can only pre-fill the SMS if the body survives on the result",
+            body, failed.fallbackMessage,
+        )
+    }
+
+    @Test
+    fun `nooneReached tracks the server outcome now that SMS is not sent by the app`() {
+        // Guards the invariant the SOS screen relies on: it picks the warning UI purely
+        // from nooneReached, so that flag must never disagree with serverAlertFailed.
+        val ok = SosSendResult(sent = true, serverAlertFailed = false, nooneReached = false)
+        val bad = SosSendResult(sent = true, serverAlertFailed = true, nooneReached = true)
+
+        assertEquals(ok.serverAlertFailed, ok.nooneReached)
+        assertEquals(bad.serverAlertFailed, bad.nooneReached)
     }
 }

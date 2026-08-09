@@ -8,8 +8,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -17,16 +15,28 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!--
-      SEND_SMS / CALL_PHONE implicitly require telephony hardware, which makes Google Play
-      exclude tablets and Chromebooks from installing the app. The SOS SMS and the dialer
-      are a graceful degradation, not a hard requirement (the alert also reaches guardians
-      over the network), so telephony is declared OPTIONAL to keep those devices eligible.
+      Telephony is explicitly OPTIONAL so Play keeps tablets and Chromebooks eligible.
+      The SOS reaches guardians over the network; the dialer and messaging hand-offs are a
+      graceful degradation for the offline case, not a hard requirement.
     -->
+    <!-- Package visibility (API 30+): we hand the SOS fallback to the phone's own
+         messaging and dialer apps rather than sending/calling ourselves. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+    </queries>
+
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <application
         android:name=".CareCompanionApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"

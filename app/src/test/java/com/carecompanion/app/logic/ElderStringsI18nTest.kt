@@ -20,18 +20,18 @@ class ElderStringsI18nTest {
     // present in source but missing here — or vice versa — should be reconciled on sight).
     private val allKeys = listOf(
         "namaste", "at_home", "sos", "sos_hint", "medicines", "contacts", "vitals", "videos",
-        "due_today", "settings", "logout", "back",
-        "take_medicine", "todays_medicines", "start_taking", "medicine_of", "did_you_take",
-        "not_taken", "taken", "no_medicines_today", "great_job", "finished_medicines", "back_to_home",
-        "emergency_alert", "sending_in", "sending", "cancel_im_ok", "location_shared_note",
-        "alert_sent", "family_notified", "sms_sent_to", "location_shared", "alert_logged",
-        "call_family", "im_safe", "no_contacts", "call_who", "call_now_btn", "cancel_btn",
-        "tap_to_call", "no_videos",
-        "add_reading", "my_readings", "blood_pressure", "sugar", "temperature", "pulse",
-        "ctx_fasting", "ctx_post_meal", "systolic", "diastolic", "save_reading", "saved_auto_time",
-        "normal", "warning", "high", "no_readings",
-        "text_size", "language", "high_contrast", "small", "medium", "large", "preview_text",
-        "open", "not_installed",
+        "due_today", "settings", "enter_code_title", "enter_code_sub", "connect_btn",
+        "enter_code_help", "logout", "back", "take_medicine", "todays_medicines", "start_taking",
+        "medicine_of", "did_you_take", "not_taken", "taken", "no_medicines_today", "great_job",
+        "finished_medicines", "back_to_home", "emergency_alert", "sending_in", "sending",
+        "cancel_im_ok", "location_shared_note", "alert_sent", "family_notified", "guardians_pushed",
+        "send_text_to", "fallback_help", "location_shared", "alert_logged", "alert_failed",
+        "call_family_now", "alert_not_logged", "call_family", "im_safe", "no_contacts", "call_who",
+        "call_now_btn", "cancel_btn", "tap_to_call", "no_videos", "add_reading", "my_readings",
+        "blood_pressure", "sugar", "temperature", "pulse", "ctx_fasting", "ctx_post_meal",
+        "systolic", "diastolic", "save_reading", "saved_auto_time", "normal", "warning", "high",
+        "no_readings", "text_size", "language", "high_contrast", "small", "medium", "large",
+        "preview_text", "open", "not_installed"
     )
 
     private val allLangs = ElderLang.entries.toList()
@@ -96,7 +96,7 @@ class ElderStringsI18nTest {
     }
 
     @Test fun `keys with format specifiers actually have at least one in English`() {
-        val withSpecifiers = listOf("due_today", "medicine_of", "sending_in", "sms_sent_to", "call_family", "call_who")
+        val withSpecifiers = listOf("due_today", "medicine_of", "sending_in", "send_text_to", "call_family", "call_who")
         for (key in withSpecifiers) {
             assertTrue("$key expected to contain a specifier", specifierRegex.containsMatchIn(tr(ElderLang.EN, key)))
         }

@@ -43,3 +43,9 @@ app/build/
 *.iml
 .idea/
 /CareCompanion.apk
+
+# Play upload signing — never commit
+keystore.properties
+keystore/
+*.jks
+*.keystore

@@ -62,7 +62,10 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "location_shared_note" to m("Your location will be shared with your family", "आपका स्थान परिवार को भेजा जाएगा", "तुमचे स्थान कुटुंबाला पाठवले जाईल", "તમારું સ્થાન પરિવારને મોકલાશે"),
     "alert_sent" to m("Alert Sent!", "अलर्ट भेजा गया!", "इशारा पाठवला!", "ચેતવણી મોકલાઈ!"),
     "family_notified" to m("Your family has been notified", "आपके परिवार को सूचित किया गया", "तुमच्या कुटुंबाला कळवले", "તમારા પરિવારને જાણ કરાઈ"),
-    "sms_sent_to" to m("SMS with location sent to %d contact(s)", "स्थान सहित SMS %d संपर्कों को भेजा", "स्थानासह SMS %d संपर्कांना पाठवला", "સ્થાન સાથે SMS %d સંપર્કોને મોકલ્યો"),
+    "guardians_pushed" to m("Sent to your family's phones", "परिवार के फ़ोन पर भेजा गया", "कुटुंबाच्या फोनवर पाठवले", "પરિવારના ફોન પર મોકલાયું"),
+    // Manual fallback, shown only when the alert could not be delivered online.
+    "send_text_to" to m("Send text to %s", "%s को मैसेज भेजें", "%s ला मेसेज पाठवा", "%s ને મેસેજ મોકલો"),
+    "fallback_help" to m("Tap below — then press send in the message app", "नीचे दबाएँ — फिर मैसेज ऐप में भेजें दबाएँ", "खाली दाबा — मग मेसेज अ‍ॅपमध्ये पाठवा दाबा", "નીચે દબાવો — પછી મેસેજ એપમાં મોકલો દબાવો"),
     "location_shared" to m("Location shared", "स्थान भेजा गया", "स्थान पाठवले", "સ્થાન મોકલ્યું"),
     "alert_logged" to m("Alert logged with your family", "परिवार के पास अलर्ट दर्ज", "कुटुंबाकडे इशारा नोंदवला", "પરિવાર પાસે ચેતવણી નોંધાઈ"),
     // Shown when the alert genuinely reached no one (no SMS sent AND the server record failed).

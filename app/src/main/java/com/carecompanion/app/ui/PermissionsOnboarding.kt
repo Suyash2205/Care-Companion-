@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,8 +33,6 @@ fun PermissionsOnboarding(isElder: Boolean, onDone: () -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
         if (isElder) {
             add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.SEND_SMS)
-            add(Manifest.permission.CALL_PHONE)
         }
     }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { onDone() }
@@ -56,7 +53,6 @@ fun PermissionsOnboarding(isElder: Boolean, onDone: () -> Unit) {
             PermRow(Icons.Outlined.Notifications, "Notifications", "Reminders and emergency alerts.")
             if (isElder) {
                 PermRow(Icons.Outlined.LocationOn, "Location", "Shared with family only when you press SOS.")
-                PermRow(Icons.Outlined.Sms, "SMS & Calls", "Sends an SOS text and lets you call contacts.")
             }
             Spacer(Modifier.height(32.dp))
             Button(
