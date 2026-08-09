@@ -74,8 +74,11 @@ class ElderHomeViewModel @Inject constructor(
                 val today = todayDate()
                 val logs = runCatching { adherence.forDate(eid, today) }.getOrDefault(emptyList())
                 val doses = buildDoses(meds, scheds, today, logs)
+                // The guardian's general reminders (water, walk, vitals) are armed here
+                // too - nothing else in the app or on the server delivered them.
+                val reminders = runCatching { care.reminders(eid) }.getOrDefault(emptyList())
                 _ui.value = ElderUiState(false, elder, doses, contacts, ott)
-                armAlarms(doses)
+                armAlarms(doses, reminders)
                 // Keep reminders working on days the elder never opens the app.
                 com.carecompanion.app.reminder.DailyArmWorker.ensureScheduled(appContext)
             } catch (e: Exception) {
@@ -99,8 +102,15 @@ class ElderHomeViewModel @Inject constructor(
             }
     }
 
-    /** Arm on-device notifications for today's still-pending doses. */
-    private fun armAlarms(doses: List<Dose>) {
+    /**
+     * Arm on-device notifications for today's still-pending doses AND the guardian's
+     * general reminders.
+     *
+     * Both go through a SINGLE scheduleDoses() call on purpose: that call replaces the
+     * persisted set wholesale, so arming them in two calls would leave only the second
+     * batch surviving a reboot.
+     */
+    private fun armAlarms(doses: List<Dose>, reminders: List<com.carecompanion.app.data.model.ReminderDto>) {
         val alarms = doses.filter { it.status == "pending" }.map { d ->
             val chips = listOfNotNull(
                 d.medicine.dosage.ifBlank { null }, d.schedule.label,
@@ -116,7 +126,9 @@ class ElderHomeViewModel @Inject constructor(
                 body = chips.ifBlank { "It's time to take your medicine." },
             )
         }
-        runCatching { ReminderScheduler.scheduleDoses(appContext, alarms) }
+        val todayBit = 1 shl todayIndexMonday0()
+        val all = alarms + ReminderScheduler.remindersToAlarms(reminders, todayBit, todayDate())
+        runCatching { ReminderScheduler.scheduleDoses(appContext, all) }
     }
 
     /**

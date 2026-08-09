@@ -72,7 +72,12 @@ class DailyArmWorker @AssistedInject constructor(
                 )
             }
 
-        ReminderScheduler.scheduleDoses(applicationContext, alarms)
+        // General reminders (water, walk, vitals) ride the same alarm path. Combined
+        // into ONE scheduleDoses() call because that call replaces the persisted set.
+        val reminders = runCatching { care.reminders(eid) }.getOrDefault(emptyList())
+        val all = alarms + ReminderScheduler.remindersToAlarms(reminders, todayBit, today)
+
+        ReminderScheduler.scheduleDoses(applicationContext, all)
         Result.success()
     }.getOrElse { Result.retry() }
 

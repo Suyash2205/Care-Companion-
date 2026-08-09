@@ -96,6 +96,37 @@ object ReminderScheduler {
     }
 
     /**
+     * Turn the guardian's general reminders (water, walk, vitals…) into today's alarms.
+     *
+     * These were being saved by the guardian and then delivered by nothing at all: no
+     * alarm was armed on the elder's device and no server job scanned the table, so a
+     * "drink water at 11:00" reminder simply never arrived.
+     *
+     * A reminder can carry several times, so the key includes the time as well as the id.
+     * The "rem-" prefix keeps these from colliding with dose keys, which are
+     * "<scheduleId>-<date>" — a collision would mean one silently replacing the other,
+     * because the key's hash is used as both the PendingIntent request code and the
+     * notification id.
+     */
+    fun remindersToAlarms(
+        reminders: List<com.carecompanion.app.data.model.ReminderDto>,
+        todayBit: Int,
+        today: String,
+    ): List<DoseAlarm> = reminders
+        .filter { it.enabled && (it.days and todayBit) != 0 }
+        .flatMap { r ->
+            r.times.mapNotNull { t ->
+                val id = r.id ?: return@mapNotNull null
+                DoseAlarm(
+                    key = "rem-$id-$t-$today",
+                    timeMillis = timeMillisToday(t),
+                    title = r.title,
+                    body = "It's time.",
+                )
+            }
+        }
+
+    /**
      * Cancel one dose's alarm and drop it from the persisted set.
      *
      * Called when the elder answers a dose. Without this, taking a medicine early left
