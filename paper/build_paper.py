@@ -1,5 +1,5 @@
 """
-build_paper.py — typesets the Care Companion paper in IEEE conference format.
+build_paper.py — typesets the CareCompanion paper in IEEE conference format.
 
 IEEE two-column geometry on US Letter: 0.625 in side margins, 3.5 in columns with a
 0.25 in gutter, Times throughout. No LaTeX required.
@@ -12,8 +12,9 @@ from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import (BaseDocTemplate, Frame, Image, KeepTogether, NextPageTemplate,
-                                PageBreak, PageTemplate, Paragraph, Spacer, Table, TableStyle)
+from reportlab.platypus import (BaseDocTemplate, Frame, FrameBreak, Image, KeepTogether,
+                                NextPageTemplate, PageBreak, PageTemplate, Paragraph, Spacer,
+                                Table, TableStyle)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIGS = os.path.join(HERE, "figs")
@@ -96,8 +97,8 @@ def footer(canvas, doc):
 def build(story):
     doc = BaseDocTemplate(OUT, pagesize=LETTER, leftMargin=ML, rightMargin=MR,
                           topMargin=MT, bottomMargin=MB,
-                          title="Asymmetric Dual-Surface Design for Caregiver-Mediated Elder Care",
-                          author="Care Companion")
+                          title="CareCompanion: A Dual-Surface Elder Care System",
+                          author="CareCompanion")
     body_h = PH - MT - MB
     first_col_h = body_h - TITLE_H
     banner = Frame(ML, PH - MT - TITLE_H, COLW * 2 + GUT, TITLE_H, id="banner",
@@ -117,12 +118,18 @@ def story():
     F = []; A = F.append
 
     # ---------- title block ----------
-    A(Paragraph("Asymmetric Dual-Surface Design for Caregiver-Mediated "
-                "Elder Care: Fail-Honest Alerting and Out-of-Band Device Binding", TITLE))
-    A(Paragraph("[Author One], [Author Two], [Author Three]", AUTHOR))
-    A(Paragraph("Department of Computer Engineering, K. J. Somaiya School of Engineering, "
-                "Somaiya Vidyavihar University, Mumbai, India", AFFIL))
-    A(Paragraph("{author.one, author.two, author.three}@somaiya.edu", AFFIL))
+    A(Paragraph("CareCompanion: A Dual-Surface Elder Care System with "
+                "Fail-Honest Alerting and Secure Device Binding", TITLE))
+    # AUTHORS: replace with the group's full names before submission. Left as visible
+    # placeholders deliberately — author attribution is not something to guess at.
+    A(Paragraph("[Full Name 1], [Full Name 2], [Full Name 3]", AUTHOR))
+    A(Paragraph("Department of Artificial Intelligence and Data Science", AFFIL))
+    A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
+                "Mumbai, India", AFFIL))
+    A(Paragraph("{name1, name2, name3}@somaiya.edu", AFFIL))
+    # End the full-width banner here so the abstract begins in the left column, as IEEE
+    # sets it, rather than running across both columns.
+    A(FrameBreak())
     A(NextPageTemplate("rest"))
 
     # ---------- abstract ----------
@@ -130,11 +137,12 @@ def story():
         "<i>Abstract</i>&mdash;Mobile applications intended to help older adults manage "
         "medication and summon help are typically evaluated on the legibility of the older "
         "adult's interface. We argue that a second property matters at least as much and is "
-        "rarely examined: whether the system tells the truth when it fails. We present Care "
-        "Companion, a deployed Android system for caregiver-mediated elder care built on three "
+        "rarely examined: whether the system tells the truth when it fails. We present "
+        "CareCompanion, an implemented Android system for caregiver-mediated elder care built "
+        "on three "
         "design commitments. First, an <i>asymmetric dual-surface</i> architecture places all "
         "configuration on the caregiver's device and leaves the older adult a zero-configuration "
-        "surface of six screens; measured from the source, the elder surface has a median "
+        "surface of seven screens; measured from the source, the elder surface has a median "
         "declared text size of 20&nbsp;sp against 13&nbsp;sp on the caregiver surface, and every "
         "primary control equals or exceeds 64&nbsp;dp against a 48&nbsp;dp platform minimum. "
         "Second, <i>out-of-band device binding</i> resolves an identity gap created by federated "
@@ -154,18 +162,22 @@ def story():
 
     # ---------------- I. INTRODUCTION ----------------
     A(H("I", "Introduction"))
-    A(P("Population ageing is arriving faster in India than the infrastructure to support it. "
-        "The United Nations Population Fund projects that India's population aged 60 and over "
-        "will grow by 134% between 2022 and 2050, and the population aged 80 and over by 279% "
-        "[1]. At the same time, national smartphone penetration remains near 35% [2], and among "
-        "older adults in rural India ownership is lower still, with shared handsets and limited "
-        "digital literacy the norm rather than the exception [3], [4].", BODY0))
-    A(P("Medication non-adherence in this group is both common and consequential, affecting a "
-        "majority of older adults managing chronic disease. Randomised evidence suggests mobile "
+    A(P("India is experiencing rapid population ageing, creating growing demand for accessible "
+        "and scalable elder-care support. The United Nations Population Fund projects that "
+        "India's population aged 60 and over will grow by 134% between 2022 and 2050, and the "
+        "population aged 80 and over by 279% [1]. Digital access, however, remains uneven across "
+        "age groups: although mobile-phone use is widespread nationally, internet use declines "
+        "substantially with age [2], and among older adults in rural India — particularly women "
+        "— shared handsets and limited digital literacy are the norm rather than the exception "
+        "[3], [4].", BODY0))
+    A(P("Medication non-adherence is a significant concern among older adults managing chronic "
+        "conditions and polypharmacy. Randomised evidence suggests mobile "
         "reminder tools help but do not solve the problem: a trial of a drug-management "
         "application among older adults with polypharmacy reported improved adherence and "
-        "reduced readmission [5], and a 2026 systematic review of reminder technologies for "
-        "home-dwelling older citizens reports positive but heterogeneous effects [6]."))
+        "reduced readmission [5], while a 2026 systematic review of reminder technologies for "
+        "home-dwelling older citizens reports beneficial effects for some outcomes but "
+        "emphasises that the overall evidence remains heterogeneous and that further "
+        "high-quality research is required [6]."))
     A(P("The usability literature is clear about what makes an interface hard for an older adult. "
         "Small text is repeatedly the single most-cited barrier; touch targets are too small for "
         "reduced dexterity; icons are misread; and navigation depth exceeds working memory [7], "
@@ -251,19 +263,22 @@ def story():
         "what fail-honest alerting addresses.", BODY0))
     A(SH("E", "Gap"))
     A(P("Across these strands, interface legibility for the older adult and outcome efficacy are "
-        "well covered; delivery honesty and deployability under platform policy are not. To our "
-        "knowledge, no prior elder-care system reports a defect taxonomy of its own silent "
-        "failures, nor treats application-store permission policy as a design constraint that "
-        "shapes the emergency path.", BODY0))
+        "well covered; delivery honesty and deployability under platform policy are not. Few "
+        "studies in the reviewed elder-care literature explicitly report a taxonomy of silent "
+        "implementation failures, or treat application-store permission policy as an "
+        "architectural design constraint on the emergency path.", BODY0))
     # ---------------- III. SYSTEM DESIGN ----------------
     A(H("III", "System Design"))
     A(SH("A", "Asymmetric dual-surface architecture"))
     A(P("The system presents two Android surfaces backed by one record. The caregiver surface "
         "carries the full management vocabulary: profiles, medicines, schedules, reminders, "
-        "contacts, vitals, adherence history, shortcuts, shared access, and an emergency monitor "
-        "across eleven screens. The elder surface carries six: an alarm control, today's "
-        "medicines, contacts, vitals entry, media shortcuts, and a settings screen containing "
-        "three controls.", BODY0))
+        "contacts, vitals, adherence history, shortcuts, shared access, and an emergency "
+        "monitor across seventeen navigation destinations. The elder surface carries seven: an "
+        "alarm control, today's medicines, contacts, vitals entry, media shortcuts, a home "
+        "screen, and a settings screen containing three controls, plus a one-time binding "
+        "screen seen only at set-up. Contacts on the elder surface are <i>photo-first</i>: "
+        "family members are presented as photographs rather than text labels, so recognition "
+        "does not depend on reading a name.", BODY0))
     A(fig("fig_arch", 1,
           "System structure. Two clients of deliberately unequal complexity share one care "
           "record behind a per-row access boundary that derives identity from the caller's "
@@ -323,7 +338,8 @@ def story():
         "estimates of up to 85% of call-centre traffic arising from accidental activation [17] "
         "— and it costs a genuine emergency five seconds."))
     A(P("If the period expires, the client attempts to record the alarm on the server, which is "
-        "what reaches caregivers, with bounded retry and exponential backoff. The terminal state "
+        "what reaches caregivers, using bounded retry with an increasing delay between "
+        "attempts. The terminal state "
         "is then selected by whether that record was <i>acknowledged</i>, not by whether it was "
         "attempted. On acknowledgement, the interface confirms delivery. On failure it states "
         "plainly that the alarm was not delivered and presents two large controls: one opens the "
@@ -331,7 +347,8 @@ def story():
         "pre-composed, and one dials the primary contact."))
     A(P("An earlier revision of this screen displayed a success confirmation unconditionally. It "
         "was possible for an older adult to be shown a green tick and the words <i>your family "
-        "has been notified</i> when no message had been sent and the server record had failed. "
+        "has been notified</i> when the emergency event had not in fact reached the "
+        "caregiver-facing system. "
         "We regard this class of defect as the most serious a care system can contain, because "
         "it converts a recoverable failure into an unrecoverable one: a user who believes help "
         "is coming stops seeking it."))
@@ -359,10 +376,10 @@ def story():
 
     A(SH("E", "Permission-minimal degradation"))
     A(P("Emergency features in the research literature routinely assume the application may send "
-        "a short message directly. Current application-store policy makes this assumption "
-        "undeployable: messaging and call-log permissions are restricted to applications whose "
-        "core function is messaging or telephony, and a care application declaring them faces "
-        "removal or rejection [18], [19].", BODY0))
+        "a short message directly. Current Google Play policy substantially restricts this: "
+        "messaging and call-log permissions are limited to applications whose primary function "
+        "is messaging or telephony, and a care application declaring them is likely to face "
+        "review or rejection [18], [19].", BODY0))
     A(P("We therefore removed direct message-sending and direct dialling entirely. The emergency "
         "path reaches caregivers over the network; where a message is warranted, the application "
         "hands a pre-composed message to the device's own messaging application through a "
@@ -380,10 +397,11 @@ def story():
         "adults in India, particularly older women with lower English literacy [3], [4].", BODY0))
     # ---------------- IV. IMPLEMENTATION ----------------
     A(H("IV", "Implementation"))
-    A(P("The clients are native Android written in Kotlin with a declarative UI toolkit, "
-        "targeting API level 36 with a minimum of API 24. The server is managed PostgreSQL with "
-        "row-level security, reached over a generated REST interface; privileged operations are "
-        "database routines executing with definer rights. Push delivery uses data-only messages, "
+    A(P("Both clients are native Android applications written in Kotlin using Jetpack Compose, "
+        "targeting API level 36 with a minimum of API 24. Persistence and access control are "
+        "provided by Supabase-hosted PostgreSQL with row-level security, reached over its "
+        "generated REST interface; privileged operations are database routines executing with "
+        "definer rights. Push delivery uses Firebase Cloud Messaging with data-only messages, "
         "since notification-payload messages bypass the application's own handler when the "
         "application is backgrounded and would prevent the client from applying its own delivery "
         "rules — including the rule that emergency alerts are exempt from the application's "
@@ -430,18 +448,20 @@ def story():
         "when either is increased.", BODY0))
     A(fig("fig_targets", 4,
           "Height of the primary control on each elder screen, parsed from source. Every primary "
-          "control exceeds the 48&nbsp;dp platform minimum and the 44&nbsp;dp WCAG 2.2 AAA "
-          "target-size criterion; the median is 76&nbsp;dp and the emergency control is "
+          "control exceeds the 48&nbsp;dp platform minimum and the widely cited 44&times;44 "
+          "target-size recommendation; the median is 76&nbsp;dp and the emergency control is "
           "130&nbsp;dp."))
     A(P("Fig. 4 reports the height of the primary control on each elder screen. The smallest is "
-        "64&nbsp;dp, one third above the 48&nbsp;dp platform minimum [20] and well above the "
-        "44&nbsp;dp WCAG 2.2 AAA target-size criterion [21]; the median is 76&nbsp;dp. The "
+        "64&nbsp;dp, one third above the 48&nbsp;dp platform minimum [20] and comfortably above "
+        "the widely cited 44&times;44 target-size recommendation associated with WCAG 2.2 AAA "
+        "[21], noting that WCAG is specified in CSS pixels rather than Android density-independent "
+        "pixels, so the comparison is indicative rather than exact; the median is 76&nbsp;dp. The "
         "emergency control is 130&nbsp;dp, roughly 2.7 times the platform minimum, reflecting "
         "its priority. We report this as conformance evidence, not as a usability result: "
         "meeting a sizing guideline is necessary, not sufficient, and only a study with older "
         "adults can establish sufficiency.", BODY0))
 
-    A(SH("B", "Interaction cost"))
+    A(SH("B", "Task interaction cost"))
     A(fig("fig_taps", 5,
           "Taps to completion for core tasks on the elder surface, counted from the notification "
           "or from the home screen. Deep-linking the medication reminder removed one tap from "
@@ -460,7 +480,9 @@ def story():
         "conducted a structured audit: a line-by-line review of all 83 source files together "
         "with targeted inspection of the database schema and access policies. We recorded every "
         "defect found and classified each by whether a user could have detected it from the "
-        "interface alone.", BODY0))
+        "interface alone. Every defect reported here was subsequently corrected, and each "
+        "correction is traceable to a commit in the project's version-control history "
+        "together with the regression test added for it.", BODY0))
     A(fig("fig_defects", 6,
           "Defects found in the audit window, by class. Eight of thirteen (62%, red) would have "
           "failed with no user-visible signal: the interface either reported success or reported "
@@ -477,7 +499,9 @@ def story():
         "reminders were never armed as alarms on the older adult's device and no server job "
         "scanned for them. The invitation path depended on the telephone-number assumption "
         "broken by federated sign-in (Section III-B). In both cases the caregiver's interface "
-        "behaved as though the feature worked.",
+        "behaved as though the feature worked. Both were subsequently repaired: general "
+        "reminders are now armed through the same scheduling path as medication doses, and the "
+        "invitation path was replaced by the binding primitive of Section III-B.",
         "<b>Lost state (3).</b> Three view models rebuilt their state object when a background "
         "refresh completed, discarding a transient completion flag that the screen used to "
         "navigate. A save that had already succeeded on the server therefore appeared to do "
@@ -507,8 +531,10 @@ def story():
     A(P("The application declares eleven permissions, none of them in a restricted group. Two "
         "restricted permissions present in an earlier revision were removed in favour of the "
         "user-mediated path of Section III-E. The release artefact is 20&nbsp;MB and targets the "
-        "current required API level. We note this because a research prototype that cannot be "
-        "listed cannot be studied longitudinally in the field.", BODY0))
+        "currently required API level. The permission model was designed to remain compatible "
+        "with current Google Play policy; the application has not been published to the store. "
+        "We report this because a prototype that cannot be distributed cannot be studied "
+        "longitudinally in the field.", BODY0))
 
     A(SH("E", "Threats to validity"))
     A(P("The defect study has a single observer and no inter-rater agreement, so the "
@@ -548,13 +574,13 @@ def story():
         "submission time, is a practical contribution of this work.", BODY0))
 
     # ---------------- VII. SCALABILITY ----------------
-    A(H("VII", "Scalability and Deployment Path"))
-    A(P("The backend is a managed relational database with per-row access policies, a stateless "
-        "REST layer, and a push service. Growth in the number of care circles is horizontal: "
-        "circles are disjoint, queries are indexed by profile, and no operation requires a "
-        "cross-tenant scan. The heaviest recurring server task is a scheduled scan for "
-        "unanswered doses, whose cost is proportional to active profiles with due doses rather "
-        "than to total users.", BODY0))
+    A(H("VII", "Scalability Considerations and Future Deployment"))
+    A(P("The architecture is designed to support independent care circles: circles are disjoint, "
+        "queries are scoped to a profile, and no routine operation requires a cross-tenant "
+        "scan, so growth in the number of circles should be horizontal. The heaviest recurring "
+        "server task is a scheduled scan for unanswered doses, whose cost is proportional to "
+        "active profiles with due doses rather than to total users. Large-scale performance has "
+        "not been benchmarked; the following is architectural analysis rather than measurement.", BODY0))
     A(P("Three properties keep per-user cost low. Reminder scheduling is performed on the "
         "device, so the server is not a timing authority and carries no per-dose timer. "
         "Adherence writes are small, append-only, and queue locally when offline. Media is "
@@ -563,8 +589,7 @@ def story():
         "requires re-synchronisation on session restore, which we implement; a single scheduled "
         "scan is a single point of failure and would need partitioning; and per-row policy "
         "evaluation grows with policy count, currently thirty-three across seventeen tables, "
-        "which is well within normal operating range but should be benchmarked before a large "
-        "deployment."))
+        "which should be benchmarked before any large deployment."))
     A(P("<b>Path to evaluation.</b> The immediate next step is not a feature. It is a study. We "
         "plan a dyad field deployment with older adults and their caregivers, measuring "
         "delivery-level outcomes the literature usually assumes: proportion of scheduled "
@@ -597,7 +622,7 @@ def story():
 
     # ---------------- IX. CONCLUSION ----------------
     A(H("IX", "Conclusion"))
-    A(P("We presented Care Companion, a caregiver-mediated elder-care system built on three "
+    A(P("We presented CareCompanion, a caregiver-mediated elder-care system built on three "
         "commitments: an asymmetric dual-surface architecture that buys the older adult an "
         "accessibility budget by removing configuration from their device; out-of-band device "
         "binding that repairs an identity gap federated sign-in introduces; and fail-honest "
@@ -606,9 +631,10 @@ def story():
         "every primary control at or above 64&nbsp;dp — and our audit shows why the honesty "
         "discipline matters: 62% of the defects in a feature-complete system would have failed "
         "without any user-visible signal, including two features stored faithfully and delivered "
-        "to nobody. For a system whose purpose is to be relied upon in an emergency, we argue "
-        "that being honest about failure is not a secondary quality attribute but a primary "
-        "design requirement. What remains is to put it in front of the people it was built for."))
+        "to nobody. These results suggest that elder-care systems should be evaluated not only "
+        "for accessibility and functionality, but also for whether users receive truthful "
+        "feedback when critical operations fail. Future work will evaluate CareCompanion with "
+        "older adults and caregivers in real-world use."))
 
     # ---------------- REFERENCES ----------------
     A(H("", "References"))
@@ -620,8 +646,9 @@ def story():
         "D. Chakraborty and C. Garg, “Navigating technology: Mobile media usage and "
         "reticence among older adults in rural India,” <i>Mobile Media &amp; "
         "Communication</i>, vol. 14, pp. 31–49, 2025.",
-        "“Beyond digital literacy: A structural model analysis of technology acceptance "
-        "among elderly persons,” <i>Humanities and Social Sciences Communications</i>, 2026.",
+        "A. Khare, R. Mukherjee, and M. Bedarkar, “Beyond digital literacy: A structural "
+        "model analysis of technology acceptance among elderly persons,” <i>Humanities and "
+        "Social Sciences Communications</i>, vol. 13, art. 794, 2026.",
         "H. Poorcheraghi, R. Negarandeh, S. Pashaeypoor, and J. Jorian, “Effect of using a "
         "mobile drug management application on medication adherence and hospital readmission "
         "among elderly patients with polypharmacy: A randomized controlled trial,” <i>BMC "

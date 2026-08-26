@@ -81,7 +81,7 @@ def fig_targets():
     names = [n for n, _ in PRIMARY][::-1]; vals = [v for _, v in PRIMARY][::-1]
     ax.barh(names, vals, color=GREEN, height=0.62)
     l1 = ax.axvline(48, color=RED, ls="--", lw=1.0, label="Material minimum, 48 dp")
-    l2 = ax.axvline(44, color=GREY, ls=":", lw=1.0, label="WCAG 2.2 AAA, 44 dp")
+    l2 = ax.axvline(44, color=GREY, ls=":", lw=1.0, label="44$\\times$44 guidance (WCAG 2.2 AAA)")
     ax.legend(handles=[l1, l2], frameon=False, loc="lower right", fontsize=6.4)
     for i, v in enumerate(vals):
         ax.text(v + 2, i, f"{v}", va="center", fontsize=6.8)
