@@ -49,3 +49,6 @@ keystore.properties
 keystore/
 *.jks
 *.keystore
+
+# Paper build environment
+paper/.venv/
