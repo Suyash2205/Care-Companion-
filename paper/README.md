@@ -20,8 +20,8 @@ numbers. Figs. 1, 2 and 5 are diagrams; Fig. 6 is the recorded defect log.
 
 ## Before submitting
 
-- Replace the placeholder author names and email addresses on page 1. Everything else
-  in the title block is final.
+- Add email addresses to the title block if your faculty requires them; they are
+  currently omitted. Names, roll numbers and both departments are confirmed.
 - The paper reports no user study, because none has been run. Section VIII says so
   explicitly. Do not add usability or clinical claims without collecting the data.
 
