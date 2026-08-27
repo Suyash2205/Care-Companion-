@@ -130,6 +130,9 @@ def story():
                 "<super>2</super>Department of Electronics and Computer Engineering", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
+    # Named as supervisors, not as authors — the group's own deck lists them this way.
+    A(Paragraph("Project Guide: Sonali Wankhede&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;"
+                "Project Co-Guide: Balwant Kumar Singh", ROLLNO))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
     # sets it, rather than running across both columns.
     A(FrameBreak())
