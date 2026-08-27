@@ -98,7 +98,7 @@ def footer(canvas, doc):
 def build(story):
     doc = BaseDocTemplate(OUT, pagesize=LETTER, leftMargin=ML, rightMargin=MR,
                           topMargin=MT, bottomMargin=MB,
-                          title="CareCompanion: A Dual-Surface Elder Care System",
+                          title="CareCompanion: Assistive Companion Mobile Application for Elderly and Disabled Users",
                           author="CareCompanion")
     body_h = PH - MT - MB
     first_col_h = body_h - TITLE_H
@@ -119,8 +119,8 @@ def story():
     F = []; A = F.append
 
     # ---------- title block ----------
-    A(Paragraph("CareCompanion: A Dual-Surface Elder Care System with "
-                "Fail-Honest Alerting and Secure Device Binding", TITLE))
+    A(Paragraph("CareCompanion: Assistive Companion Mobile Application "
+                "for Elderly and Disabled Users", TITLE))
     # Names and roll numbers taken from the group's own project deck (Group ID 6).
     # The two departments are marked separately because the group spans both.
     A(Paragraph("Devanshi Pandey<super>2</super>, Suyash Humne<super>1</super>, "
@@ -131,8 +131,8 @@ def story():
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
     # Named as supervisors, not as authors — the group's own deck lists them this way.
-    A(Paragraph("Project Guide: Sonali Wankhede&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;"
-                "Project Co-Guide: Balwant Kumar Singh", ROLLNO))
+    A(Paragraph("Project Guide: Sonali Wankhede (IT/AIDS)&nbsp;&nbsp;&nbsp;&bull;"
+                "&nbsp;&nbsp;&nbsp;Project Co-Guide: Balwant Kumar Singh (EXCP)", ROLLNO))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
     # sets it, rather than running across both columns.
     A(FrameBreak())
