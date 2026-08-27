@@ -39,6 +39,7 @@ def st(name, **kw):
 TITLE   = st("title", fontName="Times-Bold", fontSize=20, leading=23, alignment=TA_CENTER, spaceAfter=9)
 AUTHOR  = st("author", fontSize=10.5, leading=13, alignment=TA_CENTER)
 AFFIL   = st("affil", fontName="Times-Italic", fontSize=9, leading=11, alignment=TA_CENTER)
+ROLLNO  = st("rollno", fontSize=9, leading=11.5, alignment=TA_CENTER)
 ABSTRACT= st("abs", fontName="Times-Bold", fontSize=8.6, leading=10.4, alignment=TA_JUSTIFY, spaceAfter=5)
 IDXTERMS= st("idx", fontName="Times-Bold", fontSize=8.6, leading=10.4, alignment=TA_JUSTIFY, spaceAfter=4)
 H1      = st("h1", fontSize=9.6, leading=12, alignment=TA_CENTER, spaceBefore=9, spaceAfter=4)
@@ -120,13 +121,15 @@ def story():
     # ---------- title block ----------
     A(Paragraph("CareCompanion: A Dual-Surface Elder Care System with "
                 "Fail-Honest Alerting and Secure Device Binding", TITLE))
-    # AUTHORS: replace with the group's full names before submission. Left as visible
-    # placeholders deliberately — author attribution is not something to guess at.
-    A(Paragraph("[Full Name 1], [Full Name 2], [Full Name 3]", AUTHOR))
-    A(Paragraph("Department of Artificial Intelligence and Data Science", AFFIL))
+    # Names and roll numbers taken from the group's own project deck (Group ID 6).
+    # The two departments are marked separately because the group spans both.
+    A(Paragraph("Devanshi Pandey<super>1</super>, Suyash Humne<super>2</super>, "
+                "Deon Menezes<super>2</super>", AUTHOR))
+    A(Paragraph("16014023016&nbsp;&nbsp;&nbsp;16014223085&nbsp;&nbsp;&nbsp;16014223030", ROLLNO))
+    A(Paragraph("<super>1</super>Department of Electronics and Computer Engineering&nbsp;&nbsp;"
+                "<super>2</super>Department of Artificial Intelligence and Data Science", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
-    A(Paragraph("{name1, name2, name3}@somaiya.edu", AFFIL))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
     # sets it, rather than running across both columns.
     A(FrameBreak())
