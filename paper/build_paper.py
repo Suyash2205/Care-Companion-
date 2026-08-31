@@ -127,8 +127,8 @@ def story():
     # numbers are inline because only the three students have them.
     A(Paragraph("Devanshi Pandey, Suyash Humne, Deon Menezes, "
                 "Sonali Wankhede, Balwant Kumar Singh", AUTHOR))
-    A(Paragraph("Departments of Artificial Intelligence and Data Science, Information "
-                "Technology, and Electronics and Computer Engineering", AFFIL))
+    A(Paragraph("Department of Information Technology, "
+                "Department of Electronics and Computer Engineering", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
