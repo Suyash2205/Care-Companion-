@@ -37,7 +37,8 @@ def st(name, **kw):
     return ParagraphStyle(name, **kw)
 
 TITLE   = st("title", fontName="Times-Bold", fontSize=20, leading=23, alignment=TA_CENTER, spaceAfter=9)
-AUTHOR  = st("author", fontSize=10.5, leading=13, alignment=TA_CENTER)
+AUTHOR  = st("author", fontSize=10.5, leading=13, alignment=TA_CENTER,
+              hyphenationLang="", embeddedHyphenation=0)
 AFFIL   = st("affil", fontName="Times-Italic", fontSize=9, leading=11, alignment=TA_CENTER)
 ROLLNO  = st("rollno", fontSize=9, leading=11.5, alignment=TA_CENTER)
 ABSTRACT= st("abs", fontName="Times-Bold", fontSize=8.6, leading=10.4, alignment=TA_JUSTIFY, spaceAfter=5)
@@ -125,10 +126,13 @@ def story():
     # The two departments are marked separately because the group spans both.
     # All five share one affiliation, so IEEE omits the superscripts entirely. Roll
     # numbers are inline because only the three students have them.
-    A(Paragraph("Devanshi Pandey, Suyash Humne, Deon Menezes, "
-                "Sonali Wankhede, Balwant Kumar Singh", AUTHOR))
+    # Students and supervisors on separate lines: as one run the byline wrapped and
+    # hyphenated "Project Co-Guide" across the break.
+    A(Paragraph("Devanshi Pandey, Suyash Humne, Deon Menezes", AUTHOR))
     A(Paragraph("16014023016&nbsp;&nbsp;&bull;&nbsp;&nbsp;16014223085&nbsp;&nbsp;&bull;"
                 "&nbsp;&nbsp;16014223030", ROLLNO))
+    A(Paragraph("Sonali Wankhede (Project Guide), "
+                "Balwant Kumar Singh (Project Co-Guide)", AUTHOR))
     A(Paragraph("Departments of Artificial Intelligence and Data Science, Information "
                 "Technology, and Electronics and Computer Engineering", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
