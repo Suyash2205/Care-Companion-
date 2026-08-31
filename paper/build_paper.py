@@ -123,16 +123,16 @@ def story():
                 "for Elderly and Disabled Users", TITLE))
     # Names and roll numbers taken from the group's own project deck (Group ID 6).
     # The two departments are marked separately because the group spans both.
-    A(Paragraph("Devanshi Pandey<super>2</super>, Suyash Humne<super>1</super>, "
-                "Deon Menezes<super>1</super>", AUTHOR))
-    A(Paragraph("16014023016&nbsp;&nbsp;&nbsp;16014223085&nbsp;&nbsp;&nbsp;16014223030", ROLLNO))
-    A(Paragraph("<super>1</super>Department of Artificial Intelligence and Data Science&nbsp;&nbsp;"
-                "<super>2</super>Department of Electronics and Computer Engineering", AFFIL))
+    # All five share one affiliation, so IEEE omits the superscripts entirely. Roll
+    # numbers are inline because only the three students have them.
+    A(Paragraph("Devanshi Pandey, Suyash Humne, Deon Menezes, "
+                "Sonali Wankhede, Balwant Kumar Singh", AUTHOR))
+    A(Paragraph("16014023016&nbsp;&nbsp;&bull;&nbsp;&nbsp;16014223085&nbsp;&nbsp;&bull;"
+                "&nbsp;&nbsp;16014223030", ROLLNO))
+    A(Paragraph("Departments of Artificial Intelligence and Data Science, Information "
+                "Technology, and Electronics and Computer Engineering", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
-    # Named as supervisors, not as authors — the group's own deck lists them this way.
-    A(Paragraph("Project Guide: Sonali Wankhede (IT/AIDS)&nbsp;&nbsp;&nbsp;&bull;"
-                "&nbsp;&nbsp;&nbsp;Project Co-Guide: Balwant Kumar Singh (EXCP)", ROLLNO))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
     # sets it, rather than running across both columns.
     A(FrameBreak())
