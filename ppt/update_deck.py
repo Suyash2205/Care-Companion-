@@ -282,14 +282,21 @@ def slide_paper(prs):
 
 def slide_future(prs):
     s = branded_slide(prs, "Future Scope")
+    # Stock tracking and its low-stock alert are one feature, so they share a card.
+    # That frees a slot for the AI work, which now takes two.
     card_grid(s, [
-        ["Medicine Stock Database", "Track quantity in hand; stock falls as doses are taken"],
-        ["Low-Stock Alerts", "Guardian notified before a medicine runs out, to restock in time"],
+        ["Medicine Stock Database",
+         "Track quantity in hand; stock falls as doses are taken and the guardian is "
+         "alerted before a medicine runs out"],
+        ["AI Voice Assistant",
+         "Speech recognition and a language model let elders confirm doses by speaking "
+         "in Hindi, Marathi or Gujarati, and the app replies in their language"],
+        ["Conversational Insights",
+         "Guardians ask questions of the care data and receive spoken adherence summaries"],
         ["iOS Application", "Extend CareCompanion to iPhone users"],
         ["Google Play Release", "Publish for public distribution and real-world use"],
         ["User Study", "Evaluate with elderly participants and their caregivers"],
-        ["Voice & Vernacular Input", "Speech support for users who find typing difficult"],
-    ], size=11)
+    ], size=10)
     return s
 
 
