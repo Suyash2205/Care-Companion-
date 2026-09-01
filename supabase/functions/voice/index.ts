@@ -73,23 +73,8 @@ Rules that matter:
 - If the transcript is empty, garbled, or off-topic, return unclear.
 - Never guess. A wrong "taken" writes a false medication record.
 
-Reply only with JSON.`;
-
-const SCHEMA = {
-  type: "json_schema",
-  json_schema: {
-    name: "dose_intent",
-    schema: {
-      type: "object",
-      properties: {
-        intent: { type: "string", enum: ["taken", "not_taken", "repeat", "unclear"] },
-        confident: { type: "boolean" },
-      },
-      required: ["intent", "confident"],
-      additionalProperties: false,
-    },
-  },
-};
+Answer with exactly one word and nothing else: TAKEN, NOT_TAKEN, REPEAT or UNCLEAR.
+If you are not certain, answer UNCLEAR.`;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -121,6 +106,22 @@ async function transcribe(wav: Uint8Array, langCode: string): Promise<string> {
   return (body.transcript ?? "").trim();
 }
 
+/**
+ * Find the verdict in the model's reply.
+ *
+ * Reads the LAST label in the text: a reasoning model names several while weighing
+ * them up, and the conclusion is what it settles on at the end.
+ */
+function readIntent(text?: string | null): Intent | null {
+  if (!text) return null;
+  const found = [...text.toUpperCase().matchAll(/\b(NOT_TAKEN|TAKEN|REPEAT|UNCLEAR)\b/g)];
+  if (!found.length) return null;
+  const last = found[found.length - 1][1];
+  return last === "NOT_TAKEN" ? "not_taken"
+    : last === "TAKEN" ? "taken"
+    : last === "REPEAT" ? "repeat" : "unclear";
+}
+
 async function classify(transcript: string, medicine: string): Promise<Intent> {
   if (!transcript) return "unclear";
   const res = await fetch(CHAT_URL, {
@@ -133,8 +134,11 @@ async function classify(transcript: string, medicine: string): Promise<Intent> {
     body: JSON.stringify({
       model: "sarvam-105b",
       temperature: 0,
-      max_tokens: 60,
-      response_format: SCHEMA,
+      // This model reasons before answering, and the reasoning is billed and counted
+      // as output. A tight cap spends the whole budget thinking and returns
+      // finish_reason="length" with a null content. Keep effort low and leave room.
+      reasoning_effort: "low",
+      max_tokens: 1200,
       messages: [
         { role: "system", content: SYSTEM },
         {
@@ -144,15 +148,11 @@ async function classify(transcript: string, medicine: string): Promise<Intent> {
       ],
     }),
   });
-  if (!res.ok) throw new Error(`llm ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const body = await res.json();
-  const raw = body?.choices?.[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(raw);
-  // An unconfident answer is treated as no answer. Better a second question than a
-  // wrong entry in a medication record.
-  if (!parsed.confident) return "unclear";
-  const intent = parsed.intent as Intent;
-  return ["taken", "not_taken", "repeat", "unclear"].includes(intent) ? intent : "unclear";
+  if (!res.ok) return "unclear";
+  const body = await res.json().catch(() => null);
+  const msg = body?.choices?.[0]?.message ?? {};
+  // Prefer the answer; fall back to the reasoning only if the answer was cut off.
+  return readIntent(msg.content) ?? readIntent(msg.reasoning_content) ?? "unclear";
 }
 
 Deno.serve(async (req) => {
@@ -171,6 +171,8 @@ Deno.serve(async (req) => {
 
     const langKey = LANGS[lang] ? lang : "en";
     const transcript = await transcribe(b64ToBytes(audio), LANGS[langKey]);
+    // classify() never throws, so a classification problem still returns what was
+    // heard. Losing the transcript would have made this impossible to diagnose.
     const intent = await classify(transcript, medicine);
 
     return json({
