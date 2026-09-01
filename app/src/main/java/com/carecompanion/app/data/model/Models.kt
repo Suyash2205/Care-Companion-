@@ -204,3 +204,26 @@ data class InviteCodeDto(
     @SerialName("expires_at") val expiresAt: String? = null,
     @SerialName("redeemed_at") val redeemedAt: String? = null,
 )
+
+/** Request to the `voice` edge function: base64 WAV plus context for the classifier. */
+@Serializable
+data class VoiceIntentRequest(
+    val audio: String,
+    val lang: String,
+    val medicine: String = "",
+)
+
+/**
+ * What the elder was understood to have said.
+ *
+ * [configured] is false when the backend has no speech key yet, which lets the app
+ * hide the microphone rather than offer a button that cannot work.
+ */
+@Serializable
+data class VoiceIntentResponse(
+    val intent: String = "unclear",     // taken | not_taken | repeat | unclear
+    val transcript: String = "",
+    val reply: String = "",
+    val configured: Boolean = true,
+    val error: String? = null,
+)

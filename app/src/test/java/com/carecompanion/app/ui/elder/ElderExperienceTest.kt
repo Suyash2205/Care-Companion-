@@ -48,7 +48,10 @@ class ElderExperienceTest {
         val vm = ElderFixtures.homeViewModel(context, contacts, ott, medicines, schedules)
         val sosVm = ElderFixtures.sosViewModel(context)
         val settingsVm = ElderFixtures.settingsViewModel(context, settingsStore)
-        compose.setContent { ElderExperience(onLogout = {}, vm = vm, sosVm = sosVm, settingsVm = settingsVm) }
+        val voiceVm = ElderFixtures.voiceViewModel(context)
+        compose.setContent {
+            ElderExperience(onLogout = {}, vm = vm, sosVm = sosVm, settingsVm = settingsVm, voiceVm = voiceVm)
+        }
         compose.waitForIdle()
     }
 

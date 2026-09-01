@@ -51,6 +51,12 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "not_taken" to m("Not taken", "नहीं ली", "नाही घेतले", "નથી લીધી"),
     "taken" to m("Taken", "ली", "घेतले", "લીધી"),
     "no_medicines_today" to m("No medicines due today", "आज कोई दवा नहीं", "आज औषध नाही", "આજે દવા નથી"),
+    // Voice answering (spoken confirmation of a dose)
+    "voice_ask" to m("Did you take %s?", "क्या आपने %s ली?", "तुम्ही %s घेतली का?", "શું તમે %s લીધી?"),
+    "voice_listening" to m("Listening…", "सुन रहे हैं…", "ऐकत आहे…", "સાંભળી રહ્યા છીએ…"),
+    "voice_thinking" to m("One moment…", "एक पल…", "एक क्षण…", "એક ક્ષણ…"),
+    "voice_tap_speak" to m("Tap to answer by voice", "बोलकर जवाब देने के लिए दबाएँ", "बोलून उत्तर देण्यासाठी दाबा", "બોલીને જવાબ આપવા દબાવો"),
+    "voice_unclear" to m("I didn't catch that — please tap a button", "समझ नहीं आया — कृपया बटन दबाएँ", "समजले नाही — कृपया बटण दाबा", "સમજાયું નહીં — કૃપા કરીને બટન દબાવો"),
     "great_job" to m("Great job!", "बहुत अच्छा!", "छान!", "શાબાશ!"),
     "finished_medicines" to m("You finished today's medicines.", "आज की सभी दवाइयाँ पूरी हुईं।", "आजची सर्व औषधे पूर्ण झाली.", "આજની બધી દવાઓ પૂરી થઈ."),
     "back_to_home" to m("Back to home", "होम पर जाएँ", "होमवर जा", "હોમ પર જાઓ"),

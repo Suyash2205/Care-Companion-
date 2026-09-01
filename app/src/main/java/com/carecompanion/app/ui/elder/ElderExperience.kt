@@ -3,6 +3,8 @@ package com.carecompanion.app.ui.elder
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -62,6 +64,7 @@ fun ElderExperience(
     vm: ElderHomeViewModel = hiltViewModel(),
     sosVm: ElderSosViewModel = hiltViewModel(),
     settingsVm: ElderSettingsViewModel = hiltViewModel(),
+    voiceVm: VoiceDoseViewModel = hiltViewModel(),
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val lang by settingsVm.lang.collectAsStateWithLifecycle()
@@ -108,7 +111,7 @@ fun ElderExperience(
                 }
                 when (dest) {
                     ElderDest.HOME -> ElderHome(ui, onOpen = { dest = it }, onLogout = onLogout)
-                    ElderDest.MEDICINES -> MedicineFlow(vm, onBack = { dest = ElderDest.HOME })
+                    ElderDest.MEDICINES -> MedicineFlow(vm, onBack = { dest = ElderDest.HOME }, voiceVm = voiceVm)
                     ElderDest.CONTACTS -> ElderContacts(ui.contacts, onBack = { dest = ElderDest.HOME })
                     ElderDest.SOS -> SosFlow(ui, sosVm, onBack = { dest = ElderDest.HOME })
                     ElderDest.VITALS -> ElderVitals(onBack = { dest = ElderDest.HOME })
@@ -211,9 +214,24 @@ private fun ElderHeader(title: String, onBack: () -> Unit) {
 
 // ── Medicine step-through ────────────────────────────────────────────────────
 @Composable
-private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
+private fun MedicineFlow(
+    vm: ElderHomeViewModel,
+    onBack: () -> Unit,
+    voiceVm: VoiceDoseViewModel,
+) {
     val ui by vm.ui.collectAsStateWithLifecycle()
+    val voice by voiceVm.ui.collectAsStateWithLifecycle()
     val lang = LocalElderLang.current
+    var micGranted by remember { mutableStateOf(false) }
+    val ctx = LocalContext.current
+    LaunchedEffect(Unit) {
+        micGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+            ctx, android.Manifest.permission.RECORD_AUDIO,
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
+    val askMic = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted -> micGranted = granted }
     var step by remember { mutableStateOf(0) }
     var index by remember { mutableStateOf(0) }
     val doses = ui.doses
@@ -253,6 +271,7 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                 if (doses.isEmpty()) return@Column
                 AnimatedContent(targetState = index.coerceIn(0, doses.lastIndex), transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(200)) }, label = "dose") { idx ->
                 val dose = doses[idx.coerceIn(0, doses.lastIndex)]
+                DisposableEffect(dose.schedule.id) { onDispose { voiceVm.cancel() } }
                 Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(String.format(Locale.getDefault(), tr(lang, "medicine_of"), idx + 1, doses.size), fontSize = 18.sp, color = hc(Color(0xFF666666)))
                     Box(Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFFFFF8E1)), contentAlignment = Alignment.Center) {
@@ -265,6 +284,24 @@ private fun MedicineFlow(vm: ElderHomeViewModel, onBack: () -> Unit) {
                     Text(chips, fontSize = 18.sp, color = hc(Color(0xFF555555)))
                     Spacer(Modifier.weight(1f))
                     Text(tr(lang, "did_you_take"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+
+                    // Answering by voice. The buttons below stay live throughout —
+                    // recognition is least reliable for exactly these users, and a dose
+                    // left unanswered is reported to the guardian as missed.
+                    val advance = { taken: Boolean ->
+                        vm.recordDose(dose, taken)
+                        if (idx < doses.lastIndex) index = idx + 1 else step = 2
+                    }
+                    val prompt = String.format(Locale.getDefault(), tr(lang, "voice_ask"), dose.medicine.name)
+                    VoiceAnswerRow(
+                        phase = voice.phase,
+                        lang = lang,
+                        onSpeak = {
+                            if (!micGranted) askMic.launch(android.Manifest.permission.RECORD_AUDIO)
+                            else voiceVm.ask(prompt, dose.medicine.name, lang.code) { advance(it) }
+                        },
+                    )
+
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(onClick = { vm.recordDose(dose, false); if (idx < doses.lastIndex) index = idx + 1 else step = 2 },
                             modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(14.dp),
@@ -705,6 +742,48 @@ private fun SosFlow(ui: ElderUiState, sosVm: ElderSosViewModel, onBack: () -> Un
             OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth().height(64.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFD32F2F))) {
                 Text(tr(lang, "im_safe"), fontSize = 18.sp)
             }
+        }
+    }
+}
+
+/**
+ * The voice affordance on the dose screen: a status line and a microphone.
+ *
+ * Hidden entirely when the device cannot speak this language or the backend has no
+ * speech key — an offer that cannot work is worse than no offer.
+ */
+@Composable
+private fun VoiceAnswerRow(phase: VoicePhase, lang: ElderLang, onSpeak: () -> Unit) {
+    if (phase == VoicePhase.UNAVAILABLE) return
+    val label = when (phase) {
+        VoicePhase.SPEAKING, VoicePhase.LISTENING -> tr(lang, "voice_listening")
+        VoicePhase.THINKING -> tr(lang, "voice_thinking")
+        VoicePhase.UNCLEAR -> tr(lang, "voice_unclear")
+        else -> tr(lang, "voice_tap_speak")
+    }
+    val active = phase == VoicePhase.LISTENING || phase == VoicePhase.SPEAKING
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp))
+            .background(if (active) Color(0xFFEAF6EC) else Color(0xFFF4F6F4))
+            .clickable(enabled = phase != VoicePhase.THINKING, onClick = onSpeak)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(52.dp).clip(CircleShape)
+                .background(if (active) CareGreen else Color(0xFFE3E8E3)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                Icons.Outlined.Mic, contentDescription = tr(lang, "voice_tap_speak"),
+                tint = if (active) Color.White else Color(0xFF555555),
+                modifier = Modifier.size(28.dp),
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(label, fontSize = 17.sp, color = hc(Color(0xFF444444)), modifier = Modifier.weight(1f))
+        if (phase == VoicePhase.THINKING) {
+            CircularProgressIndicator(color = CareGreen, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
         }
     }
 }

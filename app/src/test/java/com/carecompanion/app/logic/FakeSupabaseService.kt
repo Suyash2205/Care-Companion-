@@ -68,4 +68,5 @@ open class FakeSupabaseService(
     override suspend fun rpcRedeemInviteCode(body: Map<String, String>): ElderDto? = notUsed()
     override suspend fun rpcCreateGuardianInvite(body: Map<String, String>): InviteCodeDto? = notUsed()
     override suspend fun rpcRedeemGuardianInvite(body: Map<String, String>): GuardianLinkDto? = notUsed()
+    override suspend fun voiceIntent(body: VoiceIntentRequest): VoiceIntentResponse = notUsed()
 }

@@ -227,4 +227,8 @@ interface SupabaseService {
 
     @POST("rest/v1/rpc/rpc_redeem_guardian_invite")
     suspend fun rpcRedeemGuardianInvite(@Body body: Map<String, String>): GuardianLinkDto?
+
+    // ── Voice intent (edge function; the speech API key stays server-side) ──
+    @POST("functions/v1/voice")
+    suspend fun voiceIntent(@Body body: VoiceIntentRequest): VoiceIntentResponse
 }

@@ -76,4 +76,11 @@ object ElderFixtures {
         val auth = com.carecompanion.app.auth.FirebaseAuthManager(context)
         return ElderSettingsViewModel(store, api, auth)
     }
+
+    /** Voice controller backed by the same scripted service the other fixtures use. */
+    fun voiceViewModel(context: android.content.Context): VoiceDoseViewModel =
+        VoiceDoseViewModel(
+            context,
+            com.carecompanion.app.data.repo.VoiceRepository(ScriptedSupabaseService()),
+        )
 }
