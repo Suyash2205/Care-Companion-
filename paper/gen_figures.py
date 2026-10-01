@@ -30,10 +30,30 @@ plt.rcParams.update({
 GREEN, BLUE, RED, GREY = "#2E7D32", "#3B6EA5", "#C0392B", "#8A8A8A"
 
 
+# Figure number in the IMPACT submission, for the required
+# PaperNumber-FigureNumber.tif naming. Paper number is assigned on acceptance;
+# 00 is a placeholder until then.
+TIF_NUMBER = {
+    "fig_arch": 1, "fig_failhonest": 2, "fig_typescale": 3,
+    "fig_targets": 4, "fig_taps": 5, "fig_defects": 6,
+}
+PAPER_NUMBER = "00"
+
+
 def save(fig, name):
-    """PDF for archival, PNG at print resolution for embedding in the typeset paper."""
+    """PDF for archival, PNG for the typeset paper, TIF for the IMPACT submission.
+
+    The conference asks for figures as separate TIF files at 600 dpi, named
+    PaperNumber-FigureNumber.tif, rather than only embedded in the manuscript.
+    """
     fig.savefig(os.path.join(FIGS, name + ".pdf"))
     fig.savefig(os.path.join(FIGS, name + ".png"), dpi=400)
+    n = TIF_NUMBER.get(name)
+    if n:
+        tif_dir = os.path.join(FIGS, "tif")
+        os.makedirs(tif_dir, exist_ok=True)
+        fig.savefig(os.path.join(tif_dir, f"{PAPER_NUMBER}-{n:02d}.tif"),
+                    dpi=600, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def read(paths):
@@ -160,8 +180,8 @@ def fig_arch():
                                      color=color, linestyle=ls, mutation_scale=7,
                                      shrinkA=1, shrinkB=1))
 
-    box(0.1, 5.3, 4.3, 1.9, "Caregiver surface\nfull configuration\n11 screens", "#EAF1F8", BLUE, bold=True)
-    box(5.6, 5.3, 4.3, 1.9, "Elder surface\nzero configuration\n6 screens, large targets", "#EAF6EC", GREEN, bold=True)
+    box(0.1, 5.3, 4.3, 1.9, "Caregiver surface\nfull configuration\n17 destinations", "#EAF1F8", BLUE, bold=True)
+    box(5.6, 5.3, 4.3, 1.9, "Elder surface\nzero configuration\n7 screens, large targets", "#EAF6EC", GREEN, bold=True)
     box(2.4, 3.35, 5.2, 1.0, "Row-level access boundary\n(identity from token, enforced per row)", "#FFF6E0", "#B8860B")
     box(0.1, 1.5, 4.3, 1.25, "Care record\nprofiles · medicines\nschedules · vitals", "#F2F2F2", "#666")
     box(5.6, 1.5, 4.3, 1.25, "Delivery\npush · alarms\nperiodic re-arm", "#F2F2F2", "#666")

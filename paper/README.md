@@ -2,13 +2,31 @@
 
 Reproducible build of the paper and every figure in it.
 
+## Two formats
+
+| File | Format | For |
+| --- | --- | --- |
+| `CareCompanion-IEEE-Paper.pdf` | IEEE two-column, US Letter | the ICISS 2027 submission |
+| `CareCompanion-IMPACT.docx` | IMPACT template: single-column A4, Word | the IMPACT submission |
+
+The IMPACT template is single-column A4 Word with no header or footer, Times New Roman
+throughout (16 pt title, 11 pt body, 10 pt abstract and references), US spelling, numbered
+sections, and figures supplied separately as 600 dpi TIF. That is different enough from
+IEEE two-column that it is a separate builder, `build_paper_impact.py`, rather than a
+switch in the IEEE one. `Paper-Template-IMPACT.docx` and `IMPACT-guidelines.docx` are the
+sources those rules come from.
+
+The builder checks the limits it has to meet on every run: abstract 200 words, conclusions
+250 to 500, running head 45 characters.
+
 ## Build
 
 ```bash
 python3 -m venv .venv
 ./.venv/bin/pip install matplotlib reportlab pyphen
 ./.venv/bin/python gen_figures.py    # figures, parsed from ../app source
-./.venv/bin/python build_paper.py    # -> CareCompanion-IEEE-Paper.pdf
+./.venv/bin/python build_paper.py          # -> CareCompanion-IEEE-Paper.pdf
+./.venv/bin/python build_paper_impact.py   # -> CareCompanion-IMPACT.docx
 ```
 
 ## Why the figures are generated, not drawn
