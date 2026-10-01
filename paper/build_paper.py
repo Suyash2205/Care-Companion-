@@ -131,6 +131,9 @@ def story():
                 "Department of Electronics and Computer Engineering", AFFIL))
     A(Paragraph("K. J. Somaiya School of Engineering, Somaiya Vidyavihar University, "
                 "Mumbai, India", AFFIL))
+    A(Paragraph("devanshi.pandey@somaiya.edu &middot; suyash.humne@somaiya.edu &middot; "
+                "deon.m@somaiya.edu &middot; sonali.w@somaiya.edu &middot; "
+                "balwantkumar@somaiya.edu", AFFIL))
     # End the full-width banner here so the abstract begins in the left column, as IEEE
     # sets it, rather than running across both columns.
     A(FrameBreak())

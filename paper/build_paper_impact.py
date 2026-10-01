@@ -683,10 +683,9 @@ def build():
     para(doc, "³ Department of Information Technology, K. J. Somaiya School of "
               "Engineering, Somaiya Vidyavihar University, Mumbai, India",
          size=10, align="center", space_after=2)
-    # TODO before submission: replace with the real institutional addresses.
     para(doc, "devanshi.pandey@somaiya.edu, suyash.humne@somaiya.edu, "
-              "deon.menezes@somaiya.edu, sonali.wankhede@somaiya.edu, "
-              "balwant.singh@somaiya.edu", size=10, align="center", space_after=2)
+              "deon.m@somaiya.edu, sonali.w@somaiya.edu, balwantkumar@somaiya.edu",
+         size=10, align="center", space_after=2)
     para(doc, "*Corresponding author: Suyash Humne (suyash.humne@somaiya.edu)",
          size=10, align="center", space_after=2)
     para(doc, f"Running head: {RUNNING_HEAD}", size=10, align="center", space_after=10)
