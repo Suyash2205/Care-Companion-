@@ -31,13 +31,12 @@ GREEN, BLUE, RED, GREY = "#2E7D32", "#3B6EA5", "#C0392B", "#8A8A8A"
 
 
 # Figure number in the IMPACT submission, for the required
-# PaperNumber-FigureNumber.tif naming. Paper number is assigned on acceptance;
-# 00 is a placeholder until then.
+# PaperNumber-FigureNumber.tif naming. IMPACT-2027 assigned 676 on acceptance.
 TIF_NUMBER = {
     "fig_arch": 1, "fig_failhonest": 2, "fig_typescale": 3,
     "fig_targets": 4, "fig_taps": 5, "fig_defects": 6,
 }
-PAPER_NUMBER = "00"
+PAPER_NUMBER = "676"
 
 
 def save(fig, name):

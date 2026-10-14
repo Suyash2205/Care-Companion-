@@ -302,7 +302,7 @@ METHOD = [
         "If the period expires, the client records the alarm on the server, which is what "
         "reaches caregivers, using bounded retry with an increasing delay between "
         "attempts. The terminal state is then selected by whether that record was "
-        "acknowledged, not by whether it was attempted. On acknowledgement the interface "
+        "acknowledged, not by whether it was attempted. On acknowledgment the interface "
         "confirms delivery. On failure it states plainly that the alarm was not delivered "
         "and presents two large controls: one opens the device's own messaging "
         "application with the emergency text and a location link already composed, and "
@@ -571,7 +571,7 @@ CONCLUSIONS = [
     "immediate priority is a dyad field deployment with older adults and their "
     "caregivers, measuring the delivery-level outcomes the literature usually assumes: "
     "the proportion of scheduled reminders actually presented by the device, the time "
-    "from alarm activation to caregiver acknowledgement, and the frequency of the "
+    "from alarm activation to caregiver acknowledgment, and the frequency of the "
     "degraded emergency path. These are precisely the quantities the fail-honest "
     "instrumentation can record truthfully, which is the point of building it that way. "
     "Second, a spoken interaction layer in the four supported languages has since been "
@@ -764,7 +764,7 @@ def build():
     for p in CONCLUSIONS:
         para(doc, p)
 
-    heading(doc, "Acknowledgements")
+    heading(doc, "Acknowledgments")
     para(doc, "The authors thank the Department of Artificial Intelligence and Data "
               "Science and the Department of Electronics and Computer Engineering at K. "
               "J. Somaiya School of Engineering for their guidance and support "
