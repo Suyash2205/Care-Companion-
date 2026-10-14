@@ -52,3 +52,7 @@ keystore/
 
 # Paper build environment
 paper/.venv/
+
+# Python bytecode (figure/paper build scripts)
+__pycache__/
+*.pyc
