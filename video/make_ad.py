@@ -1,13 +1,23 @@
 """
-make_ad.py — Task 27, the product advertisement video.
+make_ad.py — Task 27, the product advertisement.
 
-Every phone screen shown in this film is a real screenshot of the running application.
-Nothing is a mock-up and nothing is generated. The narration deliberately makes no claim
-about speed, accuracy or health outcomes, because none of those has been measured.
+Honesty rules this film keeps:
+  * every phone screen is a real screenshot of the running application;
+  * the elder's telephone number is masked, and so is one line from an older build
+    that no longer exists in the app;
+  * the narration claims nothing that has not been measured.
+
+Craft notes:
+  * There is no `zoompan` anywhere. Its integer rounding on a near-static zoom is what
+    made the first cut jitter left and right. All movement comes either from the
+    generated ambient footage underneath, or from overlays that travel and then settle.
+  * The background is one continuous plate for the whole film, blurred and tinted per
+    scene, so the picture is always alive instead of cutting between flat slides.
+  * The score is synthesised in make_music.py, so nothing here is licensed from anyone.
 
     python video/make_ad.py
 """
-import os, subprocess, json, textwrap, shutil, math
+import os, subprocess, json, shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -16,348 +26,416 @@ ICON = os.path.join(ROOT, "app/src/main/res/mipmap-xxxhdpi/ic_launcher.png")
 WORK = os.path.join(HERE, "build")
 OUTDIR = os.path.expanduser("~/Desktop/CareCompanion-Tasks-20-27")
 OUT = os.path.join(OUTDIR, "Task-27-CareCompanion-Advertisement.mp4")
+PLATE = os.path.join(HERE, "bg_open.mp4")          # MiniMax H3, image-to-video
 os.makedirs(WORK, exist_ok=True)
 os.makedirs(OUTDIR, exist_ok=True)
 
-W, H = 1920, 1080
-SS = 2                      # supersample, then downscale for clean type
-VOICE = "Tara"              # Indian-English system voice
-FPS = 30
+W, H, FPS = 1920, 1080, 30
+SS = 2                                              # draw at 2x, downsample for clean type
+VOICE = "Tara"
+XF = 0.5                                            # cross-dissolve between scenes
 
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 CREAM = (247, 245, 240)
-INK = (24, 32, 26)
+INK = (22, 30, 24)
 GREEN = (46, 125, 50)
-GREEN_DARK = (20, 62, 26)
-SUB = (104, 112, 104)
-RED = (192, 57, 43)
+SUB_D = (196, 214, 198)
+SUB_L = (108, 118, 108)
+WHITE = (255, 255, 255)
+AMBER = (214, 170, 92)
 
 AV = "/System/Library/Fonts/Avenir Next.ttc"
 def font(size, index=2):
-    """Avenir Next: 0 regular-ish … index picks the weight inside the .ttc."""
-    return ImageFont.truetype(AV, size * SS, index=index)
-
-F_HUGE = lambda s=96: font(s, 6)      # Demi Bold
-F_BOLD = lambda s=58: font(s, 6)
-F_REG = lambda s=40: font(s, 2)
-F_SMALL = lambda s=26: font(s, 2)
+    return ImageFont.truetype(AV, int(size * SS), index=index)
+DEMI = lambda s: font(s, 6)
+REG = lambda s: font(s, 2)
 
 
-def canvas(bg=CREAM):
-    return Image.new("RGB", (W * SS, H * SS), bg)
+# ───────────────────────── drawing helpers ─────────────────────────
+def blank():
+    return Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
 
 
-def wrap_text(draw, text, fnt, max_w):
-    words, lines, cur = text.split(), [], ""
-    for w in words:
-        trial = (cur + " " + w).strip()
-        if draw.textlength(trial, font=fnt) <= max_w:
+def save_layer(img, name):
+    p = os.path.join(WORK, name + ".png")
+    img.resize((W, H), Image.LANCZOS).save(p)
+    return p
+
+
+def wrap(d, text, fnt, max_w):
+    out, cur = [], ""
+    for word in text.split():
+        trial = (cur + " " + word).strip()
+        if d.textlength(trial, font=fnt) <= max_w:
             cur = trial
         else:
-            if cur:
-                lines.append(cur)
-            cur = w
+            out.append(cur); cur = word
     if cur:
-        lines.append(cur)
-    return lines
+        out.append(cur)
+    return out
 
 
-def draw_block(img, text, fnt, x, y, max_w, fill=INK, leading=1.22, anchor="lt"):
+def text_lines(text, fnt, max_w):
+    return wrap(ImageDraw.Draw(blank()), text, fnt, max_w)
+
+
+def put(img, lines, fnt, x, y, fill, leading=1.16, center=False):
     d = ImageDraw.Draw(img)
-    lines = wrap_text(d, text, fnt, max_w)
     lh = int(fnt.size * leading)
-    total = lh * len(lines)
-    yy = y - total // 2 if anchor.endswith("m") else y
-    for ln in lines:
-        xx = x - d.textlength(ln, font=fnt) / 2 if anchor.startswith("c") else x
-        d.text((xx, yy), ln, font=fnt, fill=fill)
-        yy += lh
-    return yy
+    for i, ln in enumerate(lines):
+        xx = x - d.textlength(ln, font=fnt) / 2 if center else x
+        d.text((xx, y + i * lh), ln, font=fnt, fill=fill)
+    return y + len(lines) * lh
 
 
-# The screenshots are from the team's own test profiles, but the advertisement is a
-# public film: the elder's telephone number is masked before it ever reaches a frame.
+# Screenshots are the team's own test profiles, but this is a public film.
 REDACT = {
     "guardian/01-add-elder-profile.png": [(44, 1152, 650, 1252)],
     "guardian/02-edit-elder-profile-connect-code.png": [(96, 548, 660, 628)],
-    # This capture is from an older build. The line it shows about SMS no longer exists
-    # in the product at all, so it is masked rather than shown as current behaviour.
+    # From an older build; the line it shows about SMS is not in the product any more.
     "elder/04-sos-alert-sent.png": [(55, 818, 680, 915)],
 }
 
 
-def phone(shot_rel, height_px):
-    """A screenshot inside a simple phone body, returned with its own alpha."""
-    src = Image.open(os.path.join(SHOTS, shot_rel)).convert("RGB")
-    for box in REDACT.get(shot_rel, []):
-        region = src.crop(box)
-        small = region.resize((max(1, region.width // 26), max(1, region.height // 14)),
-                              Image.BILINEAR)
-        src.paste(small.resize(region.size, Image.NEAREST), box)
-    bezel = int(height_px * 0.013)
-    radius = int(height_px * 0.052)
+def phone(rel, height_px):
+    src = Image.open(os.path.join(SHOTS, rel)).convert("RGB")
+    for box in REDACT.get(rel, []):
+        r = src.crop(box)
+        small = r.resize((max(1, r.width // 26), max(1, r.height // 14)), Image.BILINEAR)
+        src.paste(small.resize(r.size, Image.NEAREST), box)
+    bez = int(height_px * 0.013)
+    rad = int(height_px * 0.052)
     sw = int(src.width * height_px / src.height)
     src = src.resize((sw, height_px), Image.LANCZOS)
-    bw, bh = sw + 2 * bezel, height_px + 2 * bezel
-    body = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
+    body = Image.new("RGBA", (sw + 2 * bez, height_px + 2 * bez), (0, 0, 0, 0))
     d = ImageDraw.Draw(body)
-    d.rounded_rectangle([0, 0, bw - 1, bh - 1], radius=radius, fill=(16, 18, 16, 255))
+    d.rounded_rectangle([0, 0, body.width - 1, body.height - 1], radius=rad,
+                        fill=(14, 17, 15, 255))
     mask = Image.new("L", (sw, height_px), 0)
     ImageDraw.Draw(mask).rounded_rectangle([0, 0, sw - 1, height_px - 1],
-                                           radius=int(radius * 0.82), fill=255)
-    body.paste(src, (bezel, bezel), mask)
+                                           radius=int(rad * 0.82), fill=255)
+    body.paste(src, (bez, bez), mask)
     return body
 
 
-def shadowed(img, base, pos, blur=26, offset=(0, 14), opacity=70):
-    """Paste img onto base with a soft shadow."""
+def with_shadow(base, img, pos, blur=30, dy=18, opacity=92):
     sh = Image.new("RGBA", base.size, (0, 0, 0, 0))
-    solid = Image.new("RGBA", img.size, (0, 0, 0, opacity))
-    sh.paste(solid, (pos[0] + offset[0] * SS, pos[1] + offset[1] * SS), img)
-    sh = sh.filter(ImageFilter.GaussianBlur(blur * SS / 2))
-    base.alpha_composite(sh)
-    base.alpha_composite(img.convert("RGBA"), pos)
+    sh.paste(Image.new("RGBA", img.size, (0, 0, 0, opacity)),
+             (pos[0], pos[1] + dy * SS), img)
+    base.alpha_composite(sh.filter(ImageFilter.GaussianBlur(blur * SS / 2)))
+    base.alpha_composite(img, pos)
 
 
-def finish(img, name):
-    out = img.convert("RGB").resize((W, H), Image.LANCZOS)
+def scrim(rgb, alpha, name):
+    img = Image.new("RGBA", (W, H), rgb + (alpha,))
     p = os.path.join(WORK, name + ".png")
-    out.save(p)
+    img.save(p)
     return p
 
 
-def rule(img, x, y, w, color=GREEN, thick=6):
-    ImageDraw.Draw(img).rectangle([x, y, x + w * SS, y + thick * SS], fill=color)
+# ───────────────────────── scene layers ─────────────────────────
+def rule_layer(name, color=GREEN, x=150, y=368, w=112):
+    img = blank()
+    ImageDraw.Draw(img).rectangle(
+        [x * SS, y * SS, (x + w) * SS, (y + 7) * SS], fill=color)
+    return save_layer(img, name)
 
 
-# ───────────────────────────── scenes ─────────────────────────────
-def scene_title():
-    img = canvas(CREAM).convert("RGBA")
-    d = ImageDraw.Draw(img)
-    d.rectangle([0, 0, W * SS, 10 * SS], fill=GREEN)
-    icon = Image.open(ICON).convert("RGBA").resize((150 * SS, 150 * SS), Image.LANCZOS)
-    shadowed(icon, img, ((W // 2 - 75) * SS, 300 * SS), blur=20, opacity=50)
-    draw_block(img, "CareCompanion", F_HUGE(104), (W // 2) * SS, 500 * SS,
-               1500 * SS, INK, anchor="ct")
-    draw_block(img, "For the elders we cannot be beside every day",
-               F_REG(38), (W // 2) * SS, 640 * SS, 1400 * SS, SUB, anchor="ct")
-    return finish(img, "s01")
+def headline_layer(name, text, size, x, y, fill, max_w, center=False):
+    img = blank()
+    fnt = DEMI(size)
+    lines = text_lines(text, fnt, max_w * SS)
+    end = put(img, lines, fnt, x * SS, y * SS, fill, 1.14, center)
+    return save_layer(img, name), end / SS
 
 
-def scene_statement(line, sub=None, accent=GREEN, name="s"):
-    img = canvas(CREAM).convert("RGBA")
-    rule(img, 160 * SS, 300 * SS, 120, accent)
-    y = draw_block(img, line, F_BOLD(72), 160 * SS, 380 * SS, 1600 * SS, INK)
-    if sub:
-        draw_block(img, sub, F_REG(38), 160 * SS, y + 46 * SS, 1500 * SS, SUB)
-    return finish(img, name)
+def body_layer(name, text, size, x, y, fill, max_w, center=False, weight=2):
+    img = blank()
+    fnt = font(size, weight)
+    lines = text_lines(text, fnt, max_w * SS)
+    end = put(img, lines, fnt, x * SS, y * SS, fill, 1.36, center)
+    return save_layer(img, name), end / SS
 
 
-def scene_shot(headline, body, shots_rel, name, note=None):
-    """Headline and copy on the left, one or two real screenshots on the right."""
-    img = canvas(CREAM).convert("RGBA")
-    rule(img, 130 * SS, 300 * SS, 100)
-    y = draw_block(img, headline, F_BOLD(62), 130 * SS, 362 * SS, 820 * SS, INK)
-    y = draw_block(img, body, F_REG(34), 130 * SS, y + 36 * SS, 820 * SS, SUB, leading=1.34)
-    if note:
-        draw_block(img, note, F_SMALL(24), 130 * SS, y + 30 * SS, 820 * SS, GREEN)
-    avail_w = (W - 1120 - 70) * SS
+def phones_layer(name, rels, height, dark):
+    """The phone row, placed in the right-hand third (or centred when it is alone)."""
+    img = blank()
     gap = 46 * SS
-    height = 820 * SS
-    ph = [phone(s, height) for s in shots_rel]
+    avail = int((W - 1060 - 90) * SS)
+    ph = [phone(r, int(height * SS)) for r in rels]
     total = sum(p.width for p in ph) + gap * (len(ph) - 1)
-    if total > avail_w:                      # scale the row down to fit the frame
-        k = avail_w / total
-        height = int(height * k)
-        ph = [phone(s, height) for s in shots_rel]
+    if total > avail:
+        k = avail / total
+        ph = [phone(r, int(height * SS * k)) for r in rels]
         total = sum(p.width for p in ph) + gap * (len(ph) - 1)
-    x = (1120 * SS) + ((W - 1120) * SS - total) // 2
+    x = int(1060 * SS + ((W - 1060) * SS - total) / 2)
     for p in ph:
-        shadowed(p, img, (x, (H * SS - p.height) // 2))
+        with_shadow(img, p, (x, (H * SS - p.height) // 2),
+                    opacity=120 if dark else 86)
         x += p.width + gap
-    return finish(img, name)
+    return save_layer(img, name)
 
 
-def overlay_title():
-    """Opening card as a transparent overlay, to sit over the generated footage."""
-    img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
-    scrim = Image.new("RGBA", (W * SS, H * SS), (12, 32, 16, 150))
-    img.alpha_composite(scrim)
-    icon = Image.open(ICON).convert("RGBA").resize((150 * SS, 150 * SS), Image.LANCZOS)
-    img.alpha_composite(icon, ((W // 2 - 75) * SS, 330 * SS))
-    draw_block(img, "CareCompanion", F_HUGE(104), (W // 2) * SS, 530 * SS,
-               1500 * SS, (255, 255, 255), anchor="ct")
-    draw_block(img, "For the elders we cannot be beside every day",
-               F_REG(38), (W // 2) * SS, 672 * SS, 1400 * SS, (205, 224, 206), anchor="ct")
-    p = os.path.join(WORK, "ov01.png")
-    img.resize((W, H), Image.LANCZOS).save(p)
-    return p
-
-
-def overlay_close():
-    """Closing card as a transparent overlay."""
-    img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
-    img.alpha_composite(Image.new("RGBA", (W * SS, H * SS), (10, 28, 14, 186)))
-    icon = Image.open(ICON).convert("RGBA").resize((120 * SS, 120 * SS), Image.LANCZOS)
-    img.alpha_composite(icon, ((W // 2 - 60) * SS, 310 * SS))
-    draw_block(img, "CareCompanion", F_HUGE(92), (W // 2) * SS, 480 * SS, 1500 * SS,
-               (255, 255, 255), anchor="ct")
-    draw_block(img, "Built so a family can be there, even when they are not in the room.",
-               F_REG(36), (W // 2) * SS, 610 * SS, 1300 * SS, (214, 230, 214), anchor="ct")
-    draw_block(img,
-               "Not a medical device. It does not give medical advice and does not replace "
-               "calling a doctor or the emergency services.",
-               F_SMALL(24), (W // 2) * SS, 820 * SS, 1200 * SS, (168, 192, 170), anchor="ct")
-    p = os.path.join(WORK, "ov09.png")
-    img.resize((W, H), Image.LANCZOS).save(p)
-    return p
-
-
-def scene_close():
-    img = canvas(GREEN_DARK).convert("RGBA")
-    icon = Image.open(ICON).convert("RGBA").resize((120 * SS, 120 * SS), Image.LANCZOS)
-    img.alpha_composite(icon, ((W // 2 - 60) * SS, 330 * SS))
-    draw_block(img, "CareCompanion", F_HUGE(92), (W // 2) * SS, 500 * SS, 1500 * SS,
-               (255, 255, 255), anchor="ct")
-    draw_block(img, "Built so a family can be there, even when they are not in the room.",
-               F_REG(36), (W // 2) * SS, 630 * SS, 1300 * SS, (210, 225, 210), anchor="ct")
-    draw_block(img,
-               "Not a medical device. It does not give medical advice and does not replace "
-               "calling a doctor or the emergency services.",
-               F_SMALL(24), (W // 2) * SS, 830 * SS, 1200 * SS, (160, 185, 162), anchor="ct")
-    return finish(img, "s09")
+def brand_layer(name, tagline, small=None):
+    img = blank()
+    icon = Image.open(ICON).convert("RGBA").resize((148 * SS, 148 * SS), Image.LANCZOS)
+    img.alpha_composite(icon, ((W // 2 - 74) * SS, 318 * SS))
+    put(img, ["CareCompanion"], DEMI(104), (W // 2) * SS, 512 * SS, WHITE, center=True)
+    put(img, text_lines(tagline, REG(38), 1300 * SS), REG(38),
+        (W // 2) * SS, 668 * SS, SUB_D, 1.35, center=True)
+    if small:
+        put(img, text_lines(small, REG(23), 1150 * SS), REG(23),
+            (W // 2) * SS, 842 * SS, (150, 172, 152), 1.4, center=True)
+    return save_layer(img, name)
 
 
 # ───────────────────────── the film ─────────────────────────
-SCENES = [
-    dict(name="s01", make=overlay_title, bg=("bg_open.mp4", False),
-         vo="This is CareCompanion."),
-    dict(name="s02",
-         make=lambda: scene_statement(
-             "More of our elders are living on their own.",
-             "The family is often in another city, another state, another country.",
-             name="s02"),
-         vo="More of our elders are living on their own, while the family is in another "
-            "city, or another country."),
-    dict(name="s03",
-         make=lambda: scene_statement(
-             "A missed dose. A number they cannot find. A fall with nobody in the room.",
-             "The small things are the ones that go wrong first.",
-             accent=RED, name="s03"),
-         vo="A missed dose. A number they cannot find. A fall, with nobody in the room. "
-            "The small things go wrong first."),
-    dict(name="s04",
-         make=lambda: scene_shot(
-             "One app. Two sides.",
-             "The family sets everything up on their own phone: the elder's profile, their "
-             "medicines, the people they call.",
-             ["guardian/01-add-elder-profile.png"], "s04"),
-         vo="CareCompanion is one app with two sides. The family sets everything up on "
-            "their own phone."),
-    dict(name="s05",
-         make=lambda: scene_shot(
-             "Connected with six digits.",
-             "A code from the family's phone, typed into the elder's. That is the whole "
-             "setup.",
-             ["guardian/02-edit-elder-profile-connect-code.png",
-              "elder/01-enter-connect-code.png"], "s05"),
-         vo="A six digit code links the two phones. That is the whole setup."),
-    dict(name="s06",
-         make=lambda: scene_shot(
-             "Their side is deliberately bigger.",
-             "Larger type. Larger buttons. A contact is a face to tap, not a name to find "
-             "in a list.",
-             ["elder/02-contacts-tap-photo-to-call.png", "elder/03-videos.png"], "s06",
-             note="Measured: the elder's screens use larger type and larger controls "
-                  "throughout."),
-         vo="Their side is deliberately bigger. Larger type, larger buttons, and a contact "
-            "is a face to tap, not a name to find in a list."),
-    dict(name="s07",
-         make=lambda: scene_statement(
-             "At the right time, it reminds them to take their medicine.",
-             "And if they have already taken it, it does not ask again.",
-             name="s07"),
-         vo="At the right time, it reminds them to take their medicine. And if they have "
-            "already taken it, it does not ask them again."),
-    dict(name="s08",
-         make=lambda: scene_shot(
-             "If something is wrong, one button.",
-             "The elder presses SOS. The family sees the alert, with the time and the place "
-             "it was raised.",
-             ["elder/04-sos-alert-sent.png", "guardian/07-sos-alerts.png"], "s08",
-             note="The elder's screen reports only what the app actually did."),
-         vo="If something is wrong, one button. The family sees the alert, with the time "
-            "and the place it was raised."),
-    dict(name="s09", make=overlay_close, bg=("bg_open.mp4", True),
-         vo="CareCompanion. Built so a family can be there, even when they are not in the "
-            "room."),
-]
+def scene(name, kind, vo, layers, lead=0.55, tail=1.15, minimum=3.5):
+    return dict(name=name, kind=kind, vo=vo, layers=layers,
+                lead=lead, tail=tail, minimum=minimum)
 
 
-def run(cmd, **kw):
-    return subprocess.run(cmd, check=True, capture_output=True, text=True, **kw)
+def build_layers():
+    """Returns the scene list. Each layer is (png, delay_s, rise_px)."""
+    S = []
+
+    S.append(scene("s01", "open", "This is CareCompanion.", [
+        (brand_layer("l01", "For the elders we cannot be beside every day"), 0.25, 34),
+    ], minimum=4.2))
+
+    h, y = headline_layer("l02a", "More of our elders are living alone.", 76,
+                          150, 430, WHITE, 1540)
+    b, _ = body_layer("l02b", "The family is a city away. Sometimes a country away.", 38,
+                      150, y + 34, SUB_D, 1280)
+    S.append(scene("s02", "dark",
+                   "More of our elders are living alone, and the family is a city away. "
+                   "Sometimes a country away.",
+                   [(rule_layer("l02r", GREEN, 150, 406, 112), 0.15, 0), (h, 0.32, 40), (b, 0.62, 30)]))
+
+    h, y = headline_layer("l03a", "A missed dose. A number they cannot find.", 76,
+                          150, 430, WHITE, 1540)
+    b, _ = body_layer("l03b", "A fall, with nobody in the room.", 40,
+                      150, y + 34, (236, 186, 176), 1280)
+    S.append(scene("s03", "dark",
+                   "A missed dose. A number they cannot find. A fall, with nobody in "
+                   "the room.",
+                   [(rule_layer("l03r", (192, 83, 70), 150, 406, 112), 0.15, 0), (h, 0.3, 40),
+                    (b, 0.72, 30)]))
+
+    h, y = headline_layer("l04a", "One app. Two sides.", 70, 140, 384, INK, 800)
+    b, _ = body_layer("l04b",
+                      "The family sets everything up on their own phone — the elder's "
+                      "profile, their medicines, the people they call.", 33,
+                      140, y + 30, SUB_L, 790)
+    S.append(scene("s04", "cream",
+                   "One app, two sides. The family sets everything up on their own phone.",
+                   [(rule_layer("l04r", GREEN, 140, 352, 96), 0.1, 0), (h, 0.26, 36),
+                    (b, 0.54, 26),
+                    (phones_layer("l04p", ["guardian/01-add-elder-profile.png"], 790,
+                                  False), 0.34, 44)]))
+
+    h, y = headline_layer("l05a", "Six digits, and they are connected.", 70,
+                          140, 384, INK, 800)
+    b, _ = body_layer("l05b", "A code from the family's phone, typed into the elder's. "
+                              "That is the whole setup.", 33, 140, y + 30, SUB_L, 790)
+    S.append(scene("s05", "cream",
+                   "Six digits, and the two phones are connected. That is the whole setup.",
+                   [(rule_layer("l05r", GREEN, 140, 352, 96), 0.1, 0), (h, 0.26, 36),
+                    (b, 0.54, 26),
+                    (phones_layer("l05p",
+                                  ["guardian/02-edit-elder-profile-connect-code.png",
+                                   "elder/01-enter-connect-code.png"], 780, False),
+                     0.34, 44)]))
+
+    h, y = headline_layer("l06a", "Their side is bigger. On purpose.", 70,
+                          140, 352, INK, 800)
+    b, y2 = body_layer("l06b", "Larger type. Larger buttons. A contact is a face to tap, "
+                               "not a name to find in a list.", 33, 140, y + 30, SUB_L, 790)
+    n, _ = body_layer("l06c", "Measured: the elder's screens use larger type and larger "
+                              "controls throughout.", 24, 140, y2 + 26, GREEN, 760, weight=6)
+    S.append(scene("s06", "cream",
+                   "Their side is bigger, on purpose. Larger type, larger buttons, and a "
+                   "contact is a face to tap, not a name to find in a list.",
+                   [(rule_layer("l06r", GREEN, 140, 320, 96), 0.1, 0), (h, 0.26, 36),
+                    (b, 0.54, 26), (n, 0.86, 20),
+                    (phones_layer("l06p", ["elder/02-contacts-tap-photo-to-call.png",
+                                           "elder/03-videos.png"], 780, False),
+                     0.34, 44)]))
+
+    h, y = headline_layer("l07a", "It remembers the medicine,", 76, 150, 430, WHITE, 1500)
+    b, _ = body_layer("l07b", "so they do not have to. And if they have already taken it, "
+                              "it does not ask again.", 38, 150, y + 34, SUB_D, 1280)
+    S.append(scene("s07", "dark",
+                   "It remembers the medicine, so they do not have to. And if they have "
+                   "already taken it, it does not ask again.",
+                   [(rule_layer("l07r", GREEN, 150, 406, 112), 0.15, 0), (h, 0.3, 40), (b, 0.6, 30)]))
+
+    h, y = headline_layer("l08a", "One button, if something is wrong.", 66,
+                          140, 376, WHITE, 800)
+    b, y2 = body_layer("l08b", "The family sees the alert, with the time and the place it "
+                               "was raised.", 33, 140, y + 30, SUB_D, 780)
+    n, _ = body_layer("l08c", "The elder's screen reports only what the app actually did.",
+                      24, 140, y2 + 26, AMBER, 760, weight=6)
+    S.append(scene("s08", "dark",
+                   "One button, if something is wrong. The family sees the alert, with the "
+                   "time and the place it was raised.",
+                   [(rule_layer("l08r", AMBER, 140, 344, 96), 0.1, 0), (h, 0.26, 36),
+                    (b, 0.54, 26), (n, 0.86, 20),
+                    (phones_layer("l08p", ["elder/04-sos-alert-sent.png",
+                                           "guardian/07-sos-alerts.png"], 780, True),
+                     0.34, 44)]))
+
+    S.append(scene("s09", "close",
+                   "CareCompanion. Built so a family can be there, even when they are not "
+                   "in the room.",
+                   [(brand_layer("l09",
+                                 "Built so a family can be there, even when they are not "
+                                 "in the room.",
+                                 "Not a medical device. It does not give medical advice and "
+                                 "does not replace calling a doctor or the emergency "
+                                 "services."), 0.2, 30)],
+                   minimum=5.4))
+    return S
 
 
-def narrate(scene):
-    aiff = os.path.join(WORK, scene["name"] + ".aiff")
-    wav = os.path.join(WORK, scene["name"] + ".wav")
-    run(["say", "-v", VOICE, "-r", "168", "-o", aiff, scene["vo"]])
+# ───────────────────────── encoding ─────────────────────────
+def run(cmd):
+    return subprocess.run(cmd, check=True, capture_output=True, text=True)
+
+
+def duration(path):
+    return float(json.loads(run(["ffprobe", "-v", "quiet", "-print_format", "json",
+                                 "-show_format", path]).stdout)["format"]["duration"])
+
+
+def narrate(sc):
+    aiff = os.path.join(WORK, sc["name"] + ".aiff")
+    wav = os.path.join(WORK, sc["name"] + ".wav")
+    run(["say", "-v", VOICE, "-r", "166", "-o", aiff, sc["vo"]])
     run(["ffmpeg", "-y", "-i", aiff, "-ar", "48000", "-ac", "2", wav])
-    dur = float(json.loads(run([
-        "ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", wav
-    ]).stdout)["format"]["duration"])
-    return wav, dur
+    return wav, duration(wav)
+
+
+def background_plate():
+    """One continuous moving plate: the generated clip, ping-ponged and slowed."""
+    out = os.path.join(WORK, "plate.mp4")
+    run(["ffmpeg", "-y", "-i", PLATE, "-filter_complex",
+         "[0:v]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0,"
+         f"setpts=2.6*PTS,scale={W}:{H}:flags=lanczos,fps={FPS},format=yuv420p[v]",
+         "-map", "[v]", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "17", out])
+    return out, duration(out)
+
+
+STYLE = {                      # blur sigma, scrim colour, scrim alpha
+    "open":  (9,  (10, 28, 14), 142),
+    "dark":  (14, (11, 26, 15), 178),
+    "cream": (26, CREAM, 224),
+    "close": (11, (9, 24, 12), 192),
+}
+
+
+def ease_y(delay, rise, dur=0.75):
+    """Overlay y expression: starts `rise` px low, settles to 0 with a cubic ease-out."""
+    if rise == 0:
+        return "0"
+    return (f"{rise}*pow(1-min(1\\,max(0\\,(t-{delay:.2f})/{dur}))\\,3)")
+
+
+def build_scene(sc, plate, plate_dur, index):
+    blur, col, alpha = STYLE[sc["kind"]]
+    wav, vdur = narrate(sc)
+    dur = max(round(vdur + sc["lead"] + sc["tail"], 2), sc["minimum"])
+    sp = scrim(col, alpha, f"scrim_{sc['kind']}")
+    start = round((index * 6.3) % max(plate_dur - dur - 0.2, 0.1), 2)
+
+    inputs = ["-ss", str(start), "-stream_loop", "-1", "-i", plate,
+              "-loop", "1", "-i", sp]
+    for png, _, _ in sc["layers"]:
+        inputs += ["-loop", "1", "-i", png]
+
+    parts = [f"[0:v]gblur=sigma={blur},eq=saturation={0.75 if sc['kind']=='cream' else 1.05}"
+             f":brightness={-0.02 if sc['kind']=='cream' else 0.0},fps={FPS}[bg]",
+             "[1:v]format=rgba[sc]",
+             "[bg][sc]overlay=0:0[b0]"]
+    prev = "b0"
+    for i, (png, delay, rise) in enumerate(sc["layers"]):
+        idx = i + 2
+        parts.append(f"[{idx}:v]format=rgba,fade=in:st={delay:.2f}:d=0.62:alpha=1[e{i}]")
+        nxt = f"b{i+1}"
+        parts.append(f"[{prev}][e{i}]overlay=x=0:y='{ease_y(delay, rise)}'[{nxt}]")
+        prev = nxt
+    # a gentle dip from black on the first scene only
+    if index == 0:
+        parts.append(f"[{prev}]fade=in:st=0:d=0.9,format=yuv420p[v]")
+    else:
+        parts.append(f"[{prev}]format=yuv420p[v]")
+
+    clip = os.path.join(WORK, sc["name"] + "_v.mp4")
+    run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(parts),
+         "-map", "[v]", "-t", str(dur), "-an",
+         "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", clip])
+    return clip, dur, wav
 
 
 def main():
     if shutil.which("ffmpeg") is None:
         raise SystemExit("ffmpeg is required")
-    clips = []
-    for sc in SCENES:
-        png = sc["make"]()
-        wav, vdur = narrate(sc)
-        dur = max(round(vdur + 1.25, 2), 3.6)
-        clip = os.path.join(WORK, sc["name"] + ".mp4")
-        if sc.get("bg"):
-            # Generated ambient footage (MiniMax H3, image-to-video on an abstract still),
-            # slowed to the scene length, with the card drawn over it as real text.
-            src, reverse = sc["bg"]
-            src = os.path.join(HERE, src)
-            srcdur = float(json.loads(run([
-                "ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", src
-            ]).stdout)["format"]["duration"])
-            rev = "reverse," if reverse else ""
-            vf = (f"[0:v]{rev}setpts={dur / srcdur:.4f}*PTS,fps={FPS},"
-                  f"scale={W}:{H}:flags=lanczos,format=yuv420p[bgv];"
-                  f"[bgv][1:v]overlay=0:0,format=yuv420p[v];"
-                  f"[2:a]adelay=450|450,apad[a]")
-            run(["ffmpeg", "-y", "-i", src, "-loop", "1", "-i", png, "-i", wav,
-                 "-filter_complex", vf, "-map", "[v]", "-map", "[a]", "-t", str(dur),
-                 "-c:v", "libx264", "-preset", "medium", "-crf", "19",
-                 "-c:a", "aac", "-b:a", "192k", "-shortest", clip])
-        else:
-            # Slow push-in over the still, with the narration placed 0.45 s in.
-            zoom = f"zoompan=z='min(1.06,1+0.06*on/{int(dur*FPS)})':d={int(dur*FPS)}:" \
-                   f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS}"
-            run(["ffmpeg", "-y", "-loop", "1", "-i", png, "-i", wav,
-                 "-filter_complex",
-                 f"[0:v]{zoom},format=yuv420p[v];"
-                 f"[1:a]adelay=450|450,apad[a]",
-                 "-map", "[v]", "-map", "[a]", "-t", str(dur),
-                 "-c:v", "libx264", "-preset", "medium", "-crf", "19",
-                 "-c:a", "aac", "-b:a", "192k", "-shortest", clip])
-        clips.append((clip, dur))
-        print(f"  {sc['name']}  {dur:5.2f}s  vo {vdur:5.2f}s")
+    plate, plate_dur = background_plate()
+    scenes = build_layers()
 
-    lst = os.path.join(WORK, "concat.txt")
-    with open(lst, "w") as fh:
-        for c, _ in clips:
-            fh.write(f"file '{c}'\n")
-    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", lst,
-         "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-pix_fmt", "yuv420p",
-         "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", OUT])
-    total = sum(d for _, d in clips)
+    clips, durs, wavs = [], [], []
+    for i, sc in enumerate(scenes):
+        clip, dur, wav = build_scene(sc, plate, plate_dur, i)
+        clips.append(clip); durs.append(dur); wavs.append((wav, sc["lead"]))
+        print(f"  {sc['name']}  {dur:5.2f}s")
+
+    # cross-dissolve the scenes together
+    inputs = []
+    for c in clips:
+        inputs += ["-i", c]
+    chain, prev, acc = [], "0:v", 0.0
+    starts = []
+    for i in range(1, len(clips)):
+        acc += durs[i - 1] - XF
+        starts.append(acc)
+        out = f"x{i}"
+        chain.append(f"[{prev}][{i}:v]xfade=transition=fade:duration={XF}:"
+                     f"offset={acc:.3f}[{out}]")
+        prev = out
+    total = sum(durs) - XF * (len(clips) - 1)
+    silent = os.path.join(WORK, "silent.mp4")
+    run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(chain),
+         "-map", f"[{prev}]", "-t", f"{total:.2f}",
+         "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
+         silent])
+
+    # score, then the narration placed on the same timeline
+    music = os.path.join(WORK, "score.wav")
+    run([os.path.join(ROOT, "paper/.venv/bin/python"),
+         os.path.join(HERE, "make_music.py"), f"{total:.2f}", music])
+
+    offsets = [0.0] + starts
+    ainputs, afilters, labels = ["-i", music], [], []
+    afilters.append("[1:a]volume=0.30[m]")  # input 0 is the silent picture
+    labels.append("[m]")
+    for k, ((wav, lead), off) in enumerate(zip(wavs, offsets)):
+        ainputs += ["-i", wav]
+        ms = int((off + lead) * 1000)
+        afilters.append(f"[{k+2}:a]adelay={ms}|{ms},volume=1.5[v{k}]")
+        labels.append(f"[v{k}]")
+    # amix attenuates by the input count; loudnorm then brings the mix to the level a
+    # web advertisement is expected to sit at (about -16 LUFS) instead of -28.
+    afilters.append("".join(labels) +
+                    f"amix=inputs={len(labels)}:duration=longest:dropout_transition=0:"
+                    f"normalize=0,"
+                    f"loudnorm=I=-16:TP=-1.5:LRA=11,alimiter=limit=0.95,"
+                    f"aresample=48000[a]")
+
+    run(["ffmpeg", "-y", "-i", silent, *ainputs,
+         "-filter_complex", ";".join(afilters),
+         "-map", "0:v", "-map", "[a]", "-t", f"{total:.2f}",
+         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", OUT])
     print(f"Wrote: {OUT}  ({total:.1f} s)")
 
 
