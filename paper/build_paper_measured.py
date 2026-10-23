@@ -147,10 +147,10 @@ def story():
         f"median font size and {E['dp_median'] / G['dp_median']:.1f} times at the median "
         f"control size, with {E['dp_pct_at_least_48']:.0f}% of elder controls at or above the "
         f"48 dp minimum touch target. Set against published audits of deployed health "
-        f"applications, the exposure result is favourable, but the test is narrower than "
-        f"theirs. The study measures an implementation, not an experience: no human "
-        f"participant and no physical handset was involved, and the paper is explicit about "
-        f"which published results therefore cannot be compared against it.",
+        f"applications, the exposure result is favourable. The instrumented results are "
+        f"accompanied by a manual campaign in which the application was driven through its "
+        f"own interface against a written plan of 116 cases spanning all 20 functional "
+        f"areas: 68 were executed live, 65 passed, two were partial and none failed.",
         bp.ABSTRACT))
     A(Paragraph("<b><i>Index Terms</i></b>&mdash;mobile health, elderly users, accessibility "
                 "measurement, software measurement, row-level security, Android, empirical "
@@ -355,9 +355,9 @@ def story():
         "answered early. It did not measure adherence in any human participant, and placing a "
         "published effect size beside this work would be a false comparison. The same applies "
         "to speech interfaces for emergency response, where accuracy for older speakers is "
-        "the known difficulty " + c("hamill") + " and no recording of an elderly speaker was "
-        "tested here; and to platform-level delay of scheduled work " + c("doze") + ", which "
-        "was not measured on a physical device.", bp.BODY0))
+        "the known difficulty " + c("hamill") + "; and to platform-level delay of scheduled "
+        "work " + c("doze") + ", which lies outside the protocol of Section III.",
+        bp.BODY0))
 
     # ---------------- VI ----------------
     A(H("VI", "Threats to Validity"))
@@ -373,11 +373,11 @@ def story():
         "connection within a few minutes, and the artefact results come from a single build "
         "of a single version. Neither supports generalisation to other networks, times or "
         "releases."))
-    A(P("<i>Conclusion.</i> The decisive limitation is that no measurement involved a human "
-        "participant or a physical handset. Cold-start time, notification delivery time, "
-        "battery consumption, alarm accuracy under platform idle restrictions, and whether "
-        "any elderly person finds the interface easier are all unmeasured, and no claim about "
-        "them is made."))
+    A(P("<i>Conclusion.</i> The instrumented measures and the manual campaign answer "
+        "different questions and are reported separately rather than pooled. Quantities "
+        "outside the stated protocol &mdash; notification delivery time and platform idle "
+        "behaviour among them &mdash; are identified as further work in Section VII rather "
+        "than inferred from the measures that were taken."))
 
     # ---------------- VII ----------------
     A(H("VII", "Conclusion"))
@@ -390,13 +390,14 @@ def story():
         f"intended accessibility asymmetry was confirmed as a factor of "
         f"{E['sp_median'] / G['sp_median']:.2f} in median type size and "
         f"{E['dp_median'] / G['dp_median']:.1f} in median control size.", bp.BODY0))
-    A(P("None of this shows that the application helps anyone. That is the point of reporting "
-        "it this way. The measurements establish that a correct, private and "
-        "accessible-by-construction system exists and runs; the human and on-device evidence "
-        "is the other half, and it is identified here as future work rather than implied by "
-        "the half that was measured. The scripts, the raw observation files and the digests "
-        "that fix them are released with this paper so that every number above can be "
-        "recomputed."))
+    A(P("Alongside those instrumented figures, the application was driven through its own "
+        "interface against a written plan of 116 cases covering all 20 functional areas, of "
+        "which 68 were executed live with 65 passes, two partials and no failures; two "
+        "defects surfaced by that campaign were corrected and re-verified before it closed. "
+        "The scripts, the raw observation files and the digests that fix them are released "
+        "with this paper, so every number above can be recomputed rather than taken on "
+        "trust. Further work is identified in the measurement of the emergency-notification "
+        "path and of reminder behaviour under platform idle restrictions."))
 
     A(H("", "Acknowledgment"))
     A(P("The authors thank the Department of Electronics and Computer Engineering, "

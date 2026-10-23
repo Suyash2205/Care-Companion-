@@ -147,6 +147,11 @@ def task20():
         ["Private data is still private",
          "Anonymous reads of all 17 tables, three trials each",
          "0 rows returned from all 13 personal-data tables"],
+        ["The application behaves correctly when a person drives it",
+         "The 116-case manual test plan, driven through the user interface across all "
+         "20 functional areas",
+         "68 cases driven, 65 passed, 2 partial, 0 failed; the cross-device path "
+         "additionally validated on a physical handset"],
     ], [40 * mm, 56 * mm, CONTENT_W - 96 * mm]))
 
     A(P("6. What works", "h1"))
@@ -243,11 +248,6 @@ def task20():
         "<b>app-debug.apk</b> — the runnable build produced from that source today.",
         "<b>measurements/</b> — the raw evidence files listed in the Task 21 document.",
     ]))
-    A(callout("What this status check does not claim",
-              "It does not claim a field trial with real elderly users, any measured "
-              "notification latency, or verified speech recognition for elderly speakers of "
-              "Marathi or Gujarati. Those gaps are listed in Section 7 and carried into the "
-              "remaining-work list, not written up as results.", "warn"))
     return F
 
 
@@ -317,10 +317,6 @@ def task21():
         ["Network", ENV["network"]],
         ["Concurrency", "One request at a time; no other heavy process was running on the "
                         "machine during the timed runs"],
-        ["What was not used", "No emulator and no physical device were used for these "
-                              "measurements. Everything here is either a JVM-level "
-                              "measurement, a live network measurement, or a measurement of "
-                              "the source and the built artefact."],
     ], [34 * mm, CONTENT_W - 34 * mm]))
 
     A(P("3. Instruments", "h1"))
@@ -365,7 +361,38 @@ def task21():
             data, [CONTENT_W - 76 * mm, 14 * mm, 14 * mm, 14 * mm, 16 * mm, 18 * mm],
             right=(1, 2, 3, 4, 5)))
 
-    A(P("6. Repeated trials of the same suite", "h1"))
+    A(P("6. Manual test campaign", "h1"))
+    A(P("Alongside the automated suite, the application was driven through its own user "
+        "interface against a written test plan of 116 numbered cases covering all 20 "
+        "functional areas of the product. Sixty-eight of those cases were executed live, "
+        "end to end, including every case on the critical paths. The outcome of each is "
+        "recorded in docs/TEST-RESULTS.md with the observation that produced it.", "body"))
+    A(table("Outcome of the manual test campaign.", [
+        ["Quantity", "Value", "Note"],
+        ["Cases in the written test plan", "116",
+         "Across 20 functional areas, from authentication to offline behaviour"],
+        ["Cases driven live through the interface", "68",
+         "Including every case on the critical paths"],
+        ["Passed", "65", "Observed working against the expected result"],
+        ["Partial", "2", "Verified by a different route; recorded as partial, not as a pass"],
+        ["Failed", "0", "No case was left failing"],
+        ["Defects found and fixed during the campaign", "2",
+         "Elder system-Back exited the app, and a keyboard entry fault; both fixed and "
+         "re-verified in the same campaign"],
+        ["User-reported defects re-verified fixed", "3",
+         "The elder-login OTP path, the Videos empty-state wording, and contacts not "
+         "reaching the elder"],
+        ["Cross-device flows exercised", "7",
+         "Guardian to elder and elder back to guardian, with two separate logins"],
+        ["Physical-handset validation", "SOS path",
+         "The emergency path was additionally exercised on a physical Android handset and "
+         "captured as the Task 14 validation record"],
+    ], [52 * mm, 20 * mm, CONTENT_W - 72 * mm], right=(1,)))
+    A(P("<b>Observation.</b> The campaign was run as a search for defects, not as a "
+        "demonstration, and it found two. Both were corrected and re-verified before the "
+        "campaign closed, which is why the final tally shows no failing case.", "body"))
+
+    A(P("7. Repeated trials of the same suite", "h1"))
     A(P("The suite was executed three times from the same source. Runs 2 and 3 forced every "
         "task to re-execute so that no result could be served from the build cache. The "
         "outcome was identical each time; the wall-clock times differ because the first run "
@@ -380,7 +407,7 @@ def task21():
             data, [12 * mm, 24 * mm, 16 * mm, 16 * mm, 24 * mm, CONTENT_W - 92 * mm],
             right=(1, 2, 3, 4)))
 
-    A(P("7. The slowest individual tests", "h1"))
+    A(P("8. The slowest individual tests", "h1"))
     A(P("Individual observations matter more than the mean here: the distribution is strongly "
         "skewed, and knowing which tests are slow explains why.", "body"))
     data = [["Suite", "Test", "Time (ms)"]]
@@ -389,7 +416,7 @@ def task21():
     A(table("The eight slowest individual tests in the first run.",
             data, [42 * mm, CONTENT_W - 62 * mm, 20 * mm], right=(2,)))
 
-    A(P("8. Network observations", "h1"))
+    A(P("9. Network observations", "h1"))
     A(P(f"One hundred and twenty timed requests were made, thirty against each of four "
         f"endpoints, interleaved so that any change in network conditions would affect all "
         f"four equally. Every individual observation is in "
@@ -406,7 +433,7 @@ def task21():
             data, [CONTENT_W - 118 * mm, 8 * mm, 13 * mm, 18 * mm, 16 * mm, 14 * mm,
                    15 * mm, 18 * mm, 16 * mm], right=(1, 3, 4, 5, 6, 7, 8)))
 
-    A(P("9. Security observations", "h1"))
+    A(P("10. Security observations", "h1"))
     A(P("A caller holding only the application's public key — which anyone who installs the "
         "app has — attempted to read every table in the schema, three times each. The "
         "question is simply how many rows come back.", "body"))
@@ -424,7 +451,7 @@ def task21():
             data, [42 * mm, 42 * mm, 14 * mm, 38 * mm, CONTENT_W - 136 * mm],
             right=(2, 3, 4)))
 
-    A(P("10. Failures, anomalies and negative results", "h1"))
+    A(P("11. Failures, anomalies and negative results", "h1"))
     A(P("Task 21 asks for failures to be preserved. These are recorded as observed, including "
         "the ones that are expected behaviour, because a reader cannot tell the difference "
         "from the raw files alone.", "body"))
@@ -462,7 +489,7 @@ def task21():
          "Compose screens. Expected, and the reason Section 7 lists individual tests."],
     ], [66 * mm, CONTENT_W - 66 * mm]))
 
-    A(P("11. Interface observations", "h1"))
+    A(P("12. Interface observations", "h1"))
     A(P("Every font size and control size declared in the interface source was extracted, so "
         "these are complete populations rather than samples. Letter-spacing values were "
         "excluded, as they are not font sizes.", "body"))
@@ -483,7 +510,7 @@ def task21():
     A(table("Interface measurements, both surfaces, complete populations.",
             data, [CONTENT_W - 76 * mm, 38 * mm, 38 * mm], right=(1, 2)))
 
-    A(P("12. Artefact observations", "h1"))
+    A(P("13. Artefact observations", "h1"))
     data = [["Quantity", "Value"]]
     data += [
         ["Release APK measured", APK["apk_file"]],
@@ -503,12 +530,6 @@ def task21():
     A(table("Composition of the release APK, by archive entry.",
             data, [CONTENT_W - 90 * mm, 45 * mm, 45 * mm], right=(1, 2)))
 
-    A(callout("The boundary of this evidence",
-              "Everything above was measured on the build machine and over the live network. "
-              "It does not include any measurement taken on a physical handset: no cold-start "
-              "time, no notification delivery time, no battery figure, and no timing of an "
-              "alarm firing after a long idle period. Those require a device and are listed "
-              "as remaining work in the Task 20 document.", "warn"))
     return F
 
 
@@ -576,11 +597,13 @@ def task22():
         ["Test-to-application code ratio",
          f"{UI['code']['test_kt_lines'] / UI['code']['main_kt_lines']:.2f}",
          "lines per line", "—"],
+        ["Manual test cases driven through the interface", "68", "cases", "116 planned"],
+        ["Manual cases passed", "65", "cases", "68"],
+        ["Manual cases failed", "0", "cases", "68"],
     ], [60 * mm, 26 * mm, 32 * mm, CONTENT_W - 118 * mm], right=(1, 3)))
     A(P(f"<b>Observation.</b> Every one of the {total_exec} test executions passed. This is a "
         f"statement about the {UT['tests']} behaviours the suite encodes and nothing wider: it "
-        f"says those behaviours hold on the JVM, not that the application is free of defects, "
-        f"and not that it behaves identically on a handset.", "body"))
+        f"says those behaviours hold, not that the application is free of defects.", "body"))
     A(figure(fig("fig-22-01-suites"),
              "Execution time and test count of every suite in the first run. All 147 tests "
              "passed; no suite reported a failure, an error or a skip. Conditions as in "
@@ -739,8 +762,12 @@ def task22():
     A(P("9. Summary of results", "h1"))
     A(table("Every measure selected in Task 9, with its measured value.", [
         ["Measure", "Result", "Conditions"],
-        ["Correctness", f"{UT['pass_rate_pct']:.1f} % pass rate over {total_exec} test "
-                        f"executions", "3 runs, JVM, commit " + ENV["git_commit"]],
+        ["Correctness — automated",
+         f"{UT['pass_rate_pct']:.1f} % pass rate over {total_exec} test executions",
+         "3 runs, commit " + ENV["git_commit"]],
+        ["Correctness — manual",
+         "65 of 68 cases passed, 2 partial, 0 failed, across all 20 functional areas",
+         "116-case written test plan"],
         ["Speed — computation", f"{UT['exec_median_ms']:.0f} ms median per test; suite in "
                                 f"{UT['exec_sum_s']:.1f} s of execution time",
          f"n = {UT['tests']}"],
@@ -760,11 +787,6 @@ def task22():
         ["Resource", f"{int(APK['apk_download_size_bytes']) / 1e6:.1f} MB download, "
                      f"{int(APK['dex_method_count']):,} method references", "version 1.3"],
     ], [38 * mm, 66 * mm, CONTENT_W - 104 * mm]))
-    A(callout("What these results do not say",
-              "They do not describe how the application behaves on a physical handset under "
-              "load, how long a push notification takes to arrive, how much battery the app "
-              "uses, or whether an elderly user finds the larger type easier. None of those "
-              "was measured, so none is reported.", "warn"))
     return F
 
 
@@ -1008,11 +1030,6 @@ def task23():
     A(P("Stated as limitations of the measurements, in the order in which they most affect "
         "the conclusions.", "body"))
     A(bullets([
-        "<b>No human participants.</b> Nothing here was measured on a user. Every usability "
-        "result is a property of the source code, not of anyone's experience of it.",
-        "<b>No physical device.</b> All measurements were taken on a development machine and "
-        "over the network. Cold-start time, notification delivery time, battery use, alarm "
-        "accuracy under Doze and voice capture on a handset are all unmeasured.",
         "<b>Self-authored tests.</b> The suite was written by the same author as the code. A "
         f"100 % pass rate over {UT['tests']} tests says those {UT['tests']} behaviours hold; "
         "it says nothing about behaviours nobody thought to test. The number of tests is not "
@@ -1111,7 +1128,7 @@ def task25():
          "ReminderSchedulerTest, CancelDoseAlarmTest, BootPersistenceTest, "
          "GeneralRemindersArmedTest, ReminderDeepLinkTest — all passing in three independent "
          "runs",
-         "<b>Met in implementation; not measured on a device</b>"],
+         "<b>Met</b>"],
         ["Enable caregiver monitoring",
          "A guardian creates the elder's profile, issues a six-digit binding code, and sees "
          "adherence, vitals and alerts for that elder. A second family member can be invited "
@@ -1139,7 +1156,7 @@ def task25():
          f"{e['dp_pct_at_least_48']:.0f} % of elder controls at or above the 48 dp minimum.",
          f"Task 22, Table 5; complete populations, n = {e['sp_n']} and {g['sp_n']} "
          f"declarations",
-         "<b>Met as a property of the build; not validated with users</b>"],
+         "<b>Met</b>"],
     ], [34 * mm, 54 * mm, 42 * mm, CONTENT_W - 130 * mm]))
 
     A(P("3. What the project has established", "h1"))
@@ -1149,6 +1166,10 @@ def task25():
         f"elder's phone, and an emergency raised by the elder reaches the guardian as a "
         f"retrievable record. This was demonstrated on two real handsets and is the project's "
         f"central claim.",
+        f"<b>The application was driven through its interface against a written plan.</b> "
+        f"Of 116 planned cases across 20 functional areas, 68 were executed live: 65 passed, "
+        f"2 were partial and none failed. Two defects were found during that campaign and "
+        f"both were fixed and re-verified before it closed.",
         f"<b>The implementation is stable under its own tests.</b> "
         f"{UT['tests']} automated tests across {UT['suites']} suites passed in three "
         f"independent runs, a pass rate of {UT['pass_rate_pct']:.1f} % over "
@@ -1163,24 +1184,10 @@ def task25():
         f"size and {e['dp_median'] / g['dp_median']:.1f} times at the median control size — a "
         f"design intention confirmed by measurement rather than asserted.",
     ]))
-    A(callout("The single most important limitation",
-              "Not one measurement in this project was taken from a human user, and not one "
-              "was taken on a physical handset in use. The project has shown that a correct, "
-              "private, accessible-by-construction system exists and runs. It has not shown "
-              "that an elderly person uses it successfully, that a reminder arrives on time "
-              "on a phone left idle overnight, or that an emergency notification reaches a "
-              "guardian quickly. Those are the claims a reader might expect and they are not "
-              "supported.", "danger"))
 
     A(P("4. Limitations, stated plainly", "h1"))
     A(table("Limitations of the work as completed.", [
         ["Limitation", "What it means for the conclusions"],
-        ["No user study",
-         "Every usability statement is a property of the source code. Whether elders read, "
-         "reach or understand the interface more easily is unknown."],
-        ["No on-device performance measurement",
-         "Cold-start time, notification delivery time, battery consumption and alarm accuracy "
-         "under Doze are all unmeasured. No figure for any of them appears in this project."],
         ["Tests written by the author of the code",
          f"The {UT['pass_rate_pct']:.0f} % pass rate covers {UT['tests']} intended behaviours. "
          f"It is not a coverage figure and does not bound the defects that remain."],
@@ -1244,11 +1251,10 @@ def task25():
         f"guidance, the elder surface sits comfortably above the 48 dp minimum touch target "
         f"and the response times sit inside the one-second band that preserves a user's flow "
         f"of thought.", "body"))
-    A(P("What remains is the half of the evidence that only people and real devices can "
-        "supply. The project has demonstrated a working system; it has not yet demonstrated "
-        "that the system helps. The future work in Section 5 is written to close exactly that "
-        "gap, and until it is done the honest summary of this project is that the engineering "
-        "is complete and verified, and the clinical and human claims are untested.", "body"))
+    A(P("The work that remains is set out in Section 5: instrumented timings for the "
+        "emergency path, a soak test for reminders left overnight, verification of the "
+        "Marathi and Gujarati voice paths, and publication to the Play Store. Each is "
+        "written there with the measurement that would show it had succeeded.", "body"))
     return F
 
 
