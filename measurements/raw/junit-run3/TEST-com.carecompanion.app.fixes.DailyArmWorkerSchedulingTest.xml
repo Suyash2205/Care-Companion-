@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:01:59" hostname="Suyash-MacBook-Pro-2.local" time="4.284">
+  <properties/>
+  <testcase name="calling ensureScheduled twice does not create duplicates (KEEP policy)" classname="com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest" time="3.97"/>
+  <testcase name="cancel stops the scheduled work" classname="com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest" time="0.152"/>
+  <testcase name="ensureScheduled enqueues unique periodic work under the expected name" classname="com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest" time="0.162"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

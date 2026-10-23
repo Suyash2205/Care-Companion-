@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.notify.BootPersistenceTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:02:04" hostname="Suyash-MacBook-Pro-2.local" time="0.344">
+  <properties/>
+  <testcase name="delivering ACTION_BOOT_COMPLETED re-arms the persisted future doses" classname="com.carecompanion.app.notify.BootPersistenceTest" time="0.1"/>
+  <testcase name="boot re-arm does not resurrect doses whose time has already passed" classname="com.carecompanion.app.notify.BootPersistenceTest" time="0.12"/>
+  <testcase name="boot re-arm ignores a non-boot intent" classname="com.carecompanion.app.notify.BootPersistenceTest" time="0.021"/>
+  <testcase name="BootReceiver is declared in the manifest for ACTION_BOOT_COMPLETED" classname="com.carecompanion.app.notify.BootPersistenceTest" time="0.063"/>
+  <testcase name="persisted doses are day-stamped so a stale day is not restored" classname="com.carecompanion.app.notify.BootPersistenceTest" time="0.036"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

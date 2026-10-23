@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.data.OutboxOfflineDurabilityTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:31" hostname="Suyash-MacBook-Pro-2.local" time="5.437">
+  <properties/>
+  <testcase name="5c - flush while server errors retains the item (never silently dropped)" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="5.262"/>
+  <testcase name="5a - enqueue while offline persists the item" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="0.032"/>
+  <testcase name="5d - flush with server success sends the item and empties the queue" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="0.037"/>
+  <testcase name="mixed flush - only the still-failing item remains queued, the recovered one is gone" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="0.036"/>
+  <testcase name="5b - enqueued item survives a new OutboxStore instance (restart)" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="0.029"/>
+  <testcase name="5e - multiple queued items all flush and no duplicates remain" classname="com.carecompanion.app.data.OutboxOfflineDurabilityTest" time="0.041"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

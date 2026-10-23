@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.logic.DtoRoundTripTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:43" hostname="Suyash-MacBook-Pro-2.local" time="0.004">
+  <properties/>
+  <testcase name="UserDto round-trips and ignores unknown keys" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.001"/>
+  <testcase name="SosEventDto and AlertDto tolerate null optional geolocation and read fields" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.001"/>
+  <testcase name="VitalDto round-trips and value2 (diastolic) can be absent" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <testcase name="ContactDto and OttShortcutDto round-trip with defaults" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.001"/>
+  <testcase name="MedicineScheduleDto round-trips days bitmask and defaults" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <testcase name="VitalThresholdDto round-trips and tolerates missing warn bounds" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <testcase name="AdherenceLogDto ignores unknown keys and tolerates null responded_at" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <testcase name="ReminderDto round-trips list-typed times field and interval fields" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.001"/>
+  <testcase name="ElderDto tolerates nulls in optional fields and unknown keys" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <testcase name="MedicineDto round-trips with defaults for absent optional fields" classname="com.carecompanion.app.logic.DtoRoundTripTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

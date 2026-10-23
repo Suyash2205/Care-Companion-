@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.data.NetworkFailureTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:01:52" hostname="Suyash-MacBook-Pro-2.local" time="1.059">
+  <properties/>
+  <testcase name="connection dropped at start fails gracefully as IOException" classname="com.carecompanion.app.data.NetworkFailureTest" time="0.005"/>
+  <testcase name="no response before client timeout fails gracefully as IOException" classname="com.carecompanion.app.data.NetworkFailureTest" time="1.025"/>
+  <testcase name="connection dropped mid-response body fails gracefully as IOException" classname="com.carecompanion.app.data.NetworkFailureTest" time="0.006"/>
+  <testcase name="unresolvable host fails gracefully as IOException (offline simulation)" classname="com.carecompanion.app.data.NetworkFailureTest" time="0.022"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Oct 23, 2026 8:31:53 PM okhttp3.mockwebserver.MockWebServer$SocketHandler handle
+WARNING: MockWebServer[53482] connection from /127.0.0.1 didn't make a request
+]]></system-err>
+</testsuite>

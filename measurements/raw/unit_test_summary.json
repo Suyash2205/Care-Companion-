@@ -1,0 +1,58 @@
+{
+  "run_date": "2026-10-23T14:57:51",
+  "suites": 24,
+  "tests": 147,
+  "passed": 147,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "pass_rate_pct": 100.0,
+  "exec_sum_s": 12.81,
+  "exec_mean_ms": 87.2,
+  "exec_median_ms": 9.0,
+  "exec_max_ms": 2903.0,
+  "exec_min_ms": 0.0,
+  "slowest": [
+    {
+      "suite": "OutboxOfflineDurabilityTest",
+      "test": "5c - flush while server errors retains the item (never silently dropped)",
+      "ms": 2903.0
+    },
+    {
+      "suite": "DailyArmWorkerSchedulingTest",
+      "test": "calling ensureScheduled twice does not create duplicates (KEEP policy)",
+      "ms": 2887.0
+    },
+    {
+      "suite": "CancelDoseAlarmTest",
+      "test": "cancelling an unknown key is a harmless no-op",
+      "ms": 1749.0
+    },
+    {
+      "suite": "ElderExperienceTest",
+      "test": "no videos shows the no-videos message, not the no-contacts message",
+      "ms": 1601.0
+    },
+    {
+      "suite": "NetworkFailureTest",
+      "test": "no response before client timeout fails gracefully as IOException",
+      "ms": 1040.0
+    },
+    {
+      "suite": "HttpErrorCodeTest",
+      "test": "error status is surfaced as a catchable HttpException with the right code[status=401]",
+      "ms": 426.0
+    },
+    {
+      "suite": "ElderExperienceTest",
+      "test": "contacts render with names and tapping opens a call confirmation, not a dial",
+      "ms": 278.0
+    },
+    {
+      "suite": "AuthInterceptorRetryTest",
+      "test": "signed-out 401 is not retried (no fresher token exists to fetch)",
+      "ms": 178.0
+    }
+  ],
+  "failing": []
+}

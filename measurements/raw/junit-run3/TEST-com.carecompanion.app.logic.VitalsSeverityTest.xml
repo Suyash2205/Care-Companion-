@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.logic.VitalsSeverityTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:02:04" hostname="Suyash-MacBook-Pro-2.local" time="0.081">
+  <properties/>
+  <testcase name="pulse boundaries" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.031"/>
+  <testcase name="unknown vital type with no threshold row at all defaults to NORMAL" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.003"/>
+  <testcase name="sugar post-meal uses a different (higher) threshold than fasting" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.003"/>
+  <testcase name="bp 140 over 90 crosses into warning" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.003"/>
+  <testcase name="bp 139 over 89 is normal (both within normal range)" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.002"/>
+  <testcase name="sugar with unknown context falls back to any threshold for that type" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.011"/>
+  <testcase name="bp severity is worst-of systolic and diastolic" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.004"/>
+  <testcase name="temperature boundaries" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.004"/>
+  <testcase name="thresholds are cached after first load (network hit only once)" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.009"/>
+  <testcase name="sugar fasting boundaries" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.004"/>
+  <testcase name="bp with null diastolic treats diastolic as normal" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.003"/>
+  <testcase name="bp 159 over 99 is still warning, 160 over 100 is high" classname="com.carecompanion.app.logic.VitalsSeverityTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

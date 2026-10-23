@@ -1,0 +1,50 @@
+{
+  "rest_root": {
+    "n": 30,
+    "mean_ms": 104.7,
+    "median_ms": 64.3,
+    "sd_ms": 94.4,
+    "min_ms": 37.2,
+    "max_ms": 416.8,
+    "p95_ms": 303.6,
+    "http": {
+      "401": 30
+    }
+  },
+  "rls_denied_select": {
+    "n": 30,
+    "mean_ms": 180.8,
+    "median_ms": 127.8,
+    "sd_ms": 160.3,
+    "min_ms": 52.0,
+    "max_ms": 767.6,
+    "p95_ms": 439.7,
+    "http": {
+      "200": 30
+    }
+  },
+  "auth_settings": {
+    "n": 30,
+    "mean_ms": 134.8,
+    "median_ms": 107.0,
+    "sd_ms": 94.7,
+    "min_ms": 43.3,
+    "max_ms": 495.8,
+    "p95_ms": 288.5,
+    "http": {
+      "200": 30
+    }
+  },
+  "edge_push_preflight": {
+    "n": 30,
+    "mean_ms": 247.5,
+    "median_ms": 191.8,
+    "sd_ms": 149.8,
+    "min_ms": 118.1,
+    "max_ms": 704.3,
+    "p95_ms": 482.6,
+    "http": {
+      "500": 30
+    }
+  }
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.notify.ReminderNotificationTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:43" hostname="Suyash-MacBook-Pro-2.local" time="0.055">
+  <properties/>
+  <testcase name="reminders channel exists and is IMPORTANCE_HIGH so it actually alerts the elder" classname="com.carecompanion.app.notify.ReminderNotificationTest" time="0.01"/>
+  <testcase name="reminder falls back to a safe default title-body when extras are missing" classname="com.carecompanion.app.notify.ReminderNotificationTest" time="0.011"/>
+  <testcase name="alerts channel (SOS + missed-dose) also exists and is IMPORTANCE_HIGH" classname="com.carecompanion.app.notify.ReminderNotificationTest" time="0.009"/>
+  <testcase name="posting a reminder notification implicitly creates the channels if missing" classname="com.carecompanion.app.notify.ReminderNotificationTest" time="0.01"/>
+  <testcase name="firing the alarm receiver posts a notification with correct title and non-empty body" classname="com.carecompanion.app.notify.ReminderNotificationTest" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.data.MalformedResponseTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:29" hostname="Suyash-MacBook-Pro-2.local" time="0.131">
+  <properties/>
+  <testcase name="invalid json for a list endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.024"/>
+  <testcase name="null body for a single-object endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.023"/>
+  <testcase name="empty array body for a list endpoint is a valid degenerate case, not a crash" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.018"/>
+  <testcase name="empty object body for a list endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.012"/>
+  <testcase name="html error page for a list endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.019"/>
+  <testcase name="empty object body for a single-object endpoint fails gracefully (missing required field)" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.014"/>
+  <testcase name="null body for a list endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.009"/>
+  <testcase name="array body for a single-object endpoint fails gracefully, not crashes" classname="com.carecompanion.app.data.MalformedResponseTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

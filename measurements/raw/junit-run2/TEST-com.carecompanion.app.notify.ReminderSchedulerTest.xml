@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.notify.ReminderSchedulerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:43" hostname="Suyash-MacBook-Pro-2.local" time="0.082">
+  <properties/>
+  <testcase name="timeMillisToday maps HH-MM onto today at that local hour and minute" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.011"/>
+  <testcase name="alarms are armed as wakeup alarms so they fire with the screen off" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.011"/>
+  <testcase name="armed doses are persisted so they can be re-armed after a reboot" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.01"/>
+  <testcase name="timeMillisToday falls back to 08-00 for malformed input instead of throwing" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.009"/>
+  <testcase name="arming the same dose set twice does not stack duplicate alarms" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.01"/>
+  <testcase name="each future dose registers one alarm at its exact trigger time" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.01"/>
+  <testcase name="an empty dose list arms nothing and does not crash" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.01"/>
+  <testcase name="a dose whose time has already passed today is not armed" classname="com.carecompanion.app.notify.ReminderSchedulerTest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

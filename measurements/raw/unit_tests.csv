@@ -1,0 +1,148 @@
+suite,test,time_s,status
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=401],0.426,pass
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=403],0.006,pass
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=404],0.005,pass
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=409],0.005,pass
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=500],0.006,pass
+com.carecompanion.app.data.HttpErrorCodeTest,error status is surfaced as a catchable HttpException with the right code[status=503],0.005,pass
+com.carecompanion.app.data.MalformedResponseTest,"invalid json for a list endpoint fails gracefully, not crashes",0.013,pass
+com.carecompanion.app.data.MalformedResponseTest,"null body for a single-object endpoint fails gracefully, not crashes",0.013,pass
+com.carecompanion.app.data.MalformedResponseTest,"empty array body for a list endpoint is a valid degenerate case, not a crash",0.005,pass
+com.carecompanion.app.data.MalformedResponseTest,"empty object body for a list endpoint fails gracefully, not crashes",0.005,pass
+com.carecompanion.app.data.MalformedResponseTest,"html error page for a list endpoint fails gracefully, not crashes",0.005,pass
+com.carecompanion.app.data.MalformedResponseTest,empty object body for a single-object endpoint fails gracefully (missing required field),0.009,pass
+com.carecompanion.app.data.MalformedResponseTest,"null body for a list endpoint fails gracefully, not crashes",0.006,pass
+com.carecompanion.app.data.MalformedResponseTest,"array body for a single-object endpoint fails gracefully, not crashes",0.007,pass
+com.carecompanion.app.data.NetworkFailureTest,connection dropped at start fails gracefully as IOException,0.006,pass
+com.carecompanion.app.data.NetworkFailureTest,no response before client timeout fails gracefully as IOException,1.04,pass
+com.carecompanion.app.data.NetworkFailureTest,connection dropped mid-response body fails gracefully as IOException,0.01,pass
+com.carecompanion.app.data.NetworkFailureTest,unresolvable host fails gracefully as IOException (offline simulation),0.042,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,5c - flush while server errors retains the item (never silently dropped),2.903,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,5a - enqueue while offline persists the item,0.028,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,5d - flush with server success sends the item and empties the queue,0.037,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,"mixed flush - only the still-failing item remains queued, the recovered one is gone",0.037,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,5b - enqueued item survives a new OutboxStore instance (restart),0.019,pass
+com.carecompanion.app.data.OutboxOfflineDurabilityTest,5e - multiple queued items all flush and no duplicates remain,0.027,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,WheelchairPlaceDto tolerates extra fields and missing optionals,0.009,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,VitalDto tolerates extra fields and missing optionals,0.02,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,AlertDto tolerates extra fields and missing optionals,0.006,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,MedicineScheduleDto tolerates extra fields and missing optionals,0.006,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,GuardianLinkDto tolerates extra fields and missing optionals,0.006,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,ContactDto tolerates extra fields and missing optionals,0.006,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,VitalThresholdDto tolerates extra fields and missing optionals,0.005,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,SosEventDto tolerates extra fields and missing optionals,0.004,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,AdherenceLogDto tolerates extra fields and missing optionals,0.004,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,UserDto tolerates extra fields and missing optionals,0.005,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,MedicineDto tolerates extra fields and missing optionals,0.005,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,coerceInputValues coerces a null explicit-default field instead of throwing,0.003,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,ElderDto tolerates extra fields and missing optionals,0.004,pass
+com.carecompanion.app.data.SchemaDriftToleranceTest,ReminderDto tolerates extra fields and missing optionals,0.004,pass
+com.carecompanion.app.fixes.AuthInterceptorRetryTest,signed-out 401 is not retried (no fresher token exists to fetch),0.178,pass
+com.carecompanion.app.fixes.AuthInterceptorRetryTest,a 200 response makes exactly one request (no needless retry),0.016,pass
+com.carecompanion.app.fixes.AuthInterceptorRetryTest,apikey and Authorization headers are present on every request,0.019,pass
+com.carecompanion.app.fixes.CancelDoseAlarmTest,cancelling an unknown key is a harmless no-op,1.749,pass
+com.carecompanion.app.fixes.CancelDoseAlarmTest,cancelling every dose empties the persisted set,0.018,pass
+com.carecompanion.app.fixes.CancelDoseAlarmTest,cancelling one dose leaves the others armed,0.017,pass
+com.carecompanion.app.fixes.CancelDoseAlarmTest,a cancelled dose is not resurrected by a reboot,0.015,pass
+com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest,calling ensureScheduled twice does not create duplicates (KEEP policy),2.887,pass
+com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest,cancel stops the scheduled work,0.027,pass
+com.carecompanion.app.fixes.DailyArmWorkerSchedulingTest,ensureScheduled enqueues unique periodic work under the expected name,0.019,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,a reminder not scheduled for today is not armed,0.018,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,reminder keys cannot collide with dose keys,0.012,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,doses and reminders armed together both survive - neither wipes the other,0.012,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,a reminder with no id is skipped rather than crashing,0.011,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,an enabled reminder for today produces one alarm per time,0.011,pass
+com.carecompanion.app.fixes.GeneralRemindersArmedTest,a disabled reminder is not armed,0.01,pass
+com.carecompanion.app.fixes.MedicinesUiStateDoneTest,refreshing loaded data with copy preserves an already-signalled done,0.001,pass
+com.carecompanion.app.fixes.MedicinesUiStateDoneTest,a fresh state is not done - which is why rebuilding one ate the save,0.0,pass
+com.carecompanion.app.fixes.MedicinesUiStateDoneTest,a load landing after a save keeps done even while clearing a stale error,0.0,pass
+com.carecompanion.app.fixes.MedicinesUiStateDoneTest,the medicine the schedule builder updates is found by id,0.0,pass
+com.carecompanion.app.fixes.OutboxStoreConcurrencyTest,clear empties the queue,0.026,pass
+com.carecompanion.app.fixes.OutboxStoreConcurrencyTest,a corrupt undecodable entry is dropped rather than retried forever,0.022,pass
+com.carecompanion.app.fixes.OutboxStoreConcurrencyTest,item enqueued while flush is in-flight is not erased,0.024,pass
+com.carecompanion.app.fixes.OutboxStoreConcurrencyTest,flush retains on server failure then fully drains once the server recovers,0.032,pass
+com.carecompanion.app.fixes.OutboxStoreConcurrencyTest,pendingCount reflects exactly the number of queued items,0.018,pass
+com.carecompanion.app.fixes.ReminderDeepLinkTest,the medicine intent carries the destination that routes to the medicine flow,0.021,pass
+com.carecompanion.app.fixes.ReminderDeepLinkTest,a general reminder key is distinguishable from a dose key,0.012,pass
+com.carecompanion.app.fixes.ReminderDeepLinkTest,an intent with no destination extra leaves routing untouched,0.009,pass
+com.carecompanion.app.fixes.ReminderDeepLinkTest,the medicine intent does not collide with the plain open-app intent,0.011,pass
+com.carecompanion.app.fixes.ReminderSchedulerCancelAllTest,cancelAll clears the persisted dose set so a reboot re-arms nothing,0.025,pass
+com.carecompanion.app.fixes.ReminderSchedulerCancelAllTest,cancelAll removes every armed alarm,0.012,pass
+com.carecompanion.app.fixes.ReminderSchedulerCancelAllTest,after cancelAll a subsequent rescheduleAll (boot) arms nothing,0.012,pass
+com.carecompanion.app.fixes.SosResultSemanticsTest,a delivered alert reports success and needs no fallback,0.0,pass
+com.carecompanion.app.fixes.SosResultSemanticsTest,default result represents the not-yet-fired idle state,0.0,pass
+com.carecompanion.app.fixes.SosResultSemanticsTest,nooneReached tracks the server outcome now that SMS is not sent by the app,0.0,pass
+com.carecompanion.app.fixes.SosResultSemanticsTest,a failed alert reports failure and carries the message for the manual fallback,0.0,pass
+com.carecompanion.app.fixes.VoiceDoseTest,"an unconfigured backend is reported, not guessed",0.001,pass
+com.carecompanion.app.fixes.VoiceDoseTest,default response records nothing,0.0,pass
+com.carecompanion.app.fixes.VoiceDoseTest,unavailable hides the affordance and unclear keeps it,0.001,pass
+com.carecompanion.app.fixes.VoiceDoseTest,only taken and not_taken may write a dose,0.0,pass
+com.carecompanion.app.fixes.VoiceDoseTest,a transport failure degrades to unclear rather than throwing,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,31 (Mon-Fri) is due on weekdays only,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,31 is due on Wednesday but not Sunday,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,zero mask is never due,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,day index mapping constants are Monday=0 through Sunday=6,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,single-day mask only matches its own day,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,weekend-only mask (96) is due Sat and Sun but not weekdays,0.0,pass
+com.carecompanion.app.logic.DayBitmaskTest,127 (all bits set) is due every day of the week,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,UserDto round-trips and ignores unknown keys,0.002,pass
+com.carecompanion.app.logic.DtoRoundTripTest,SosEventDto and AlertDto tolerate null optional geolocation and read fields,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,VitalDto round-trips and value2 (diastolic) can be absent,0.001,pass
+com.carecompanion.app.logic.DtoRoundTripTest,ContactDto and OttShortcutDto round-trip with defaults,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,MedicineScheduleDto round-trips days bitmask and defaults,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,VitalThresholdDto round-trips and tolerates missing warn bounds,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,AdherenceLogDto ignores unknown keys and tolerates null responded_at,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,ReminderDto round-trips list-typed times field and interval fields,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,ElderDto tolerates nulls in optional fields and unknown keys,0.0,pass
+com.carecompanion.app.logic.DtoRoundTripTest,MedicineDto round-trips with defaults for absent optional fields,0.001,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,format specifier count is identical across all four languages for every key,0.009,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,no language silently falls back to English (would indicate a missing key),0.0,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,keys with format specifiers actually have at least one in English,0.0,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,unknown key falls back to itself,0.0,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,keys with no format specifiers have zero specifiers in every language,0.0,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,every key is present and non-blank in all four languages,0.0,pass
+com.carecompanion.app.logic.ElderStringsI18nTest,table defines exactly the four expected languages,0.0,pass
+com.carecompanion.app.logic.VitalsSeverityTest,pulse boundaries,0.004,pass
+com.carecompanion.app.logic.VitalsSeverityTest,unknown vital type with no threshold row at all defaults to NORMAL,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,sugar post-meal uses a different (higher) threshold than fasting,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,bp 140 over 90 crosses into warning,0.0,pass
+com.carecompanion.app.logic.VitalsSeverityTest,bp 139 over 89 is normal (both within normal range),0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,sugar with unknown context falls back to any threshold for that type,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,bp severity is worst-of systolic and diastolic,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,temperature boundaries,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,thresholds are cached after first load (network hit only once),0.002,pass
+com.carecompanion.app.logic.VitalsSeverityTest,sugar fasting boundaries,0.001,pass
+com.carecompanion.app.logic.VitalsSeverityTest,bp with null diastolic treats diastolic as normal,0.002,pass
+com.carecompanion.app.logic.VitalsSeverityTest,"bp 159 over 99 is still warning, 160 over 100 is high",0.0,pass
+com.carecompanion.app.notify.BootPersistenceTest,delivering ACTION_BOOT_COMPLETED re-arms the persisted future doses,0.022,pass
+com.carecompanion.app.notify.BootPersistenceTest,boot re-arm does not resurrect doses whose time has already passed,0.018,pass
+com.carecompanion.app.notify.BootPersistenceTest,boot re-arm ignores a non-boot intent,0.018,pass
+com.carecompanion.app.notify.BootPersistenceTest,BootReceiver is declared in the manifest for ACTION_BOOT_COMPLETED,0.012,pass
+com.carecompanion.app.notify.BootPersistenceTest,persisted doses are day-stamped so a stale day is not restored,0.013,pass
+com.carecompanion.app.notify.PushAndAlarmContractTest,the alerts channel the server targets exists and is high importance,0.053,pass
+com.carecompanion.app.notify.PushAndAlarmContractTest,both dose-builders produce the same alarm key for the same dose,0.012,pass
+com.carecompanion.app.notify.PushAndAlarmContractTest,two doses with the same title produce distinct notification ids,0.009,pass
+com.carecompanion.app.notify.PushAndAlarmContractTest,channels are created on demand when an alert arrives before the app is opened,0.04,pass
+com.carecompanion.app.notify.ReminderNotificationTest,reminders channel exists and is IMPORTANCE_HIGH so it actually alerts the elder,0.01,pass
+com.carecompanion.app.notify.ReminderNotificationTest,reminder falls back to a safe default title-body when extras are missing,0.009,pass
+com.carecompanion.app.notify.ReminderNotificationTest,alerts channel (SOS + missed-dose) also exists and is IMPORTANCE_HIGH,0.008,pass
+com.carecompanion.app.notify.ReminderNotificationTest,posting a reminder notification implicitly creates the channels if missing,0.007,pass
+com.carecompanion.app.notify.ReminderNotificationTest,firing the alarm receiver posts a notification with correct title and non-empty body,0.012,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,timeMillisToday maps HH-MM onto today at that local hour and minute,0.014,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,alarms are armed as wakeup alarms so they fire with the screen off,0.025,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,armed doses are persisted so they can be re-armed after a reboot,0.01,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,timeMillisToday falls back to 08-00 for malformed input instead of throwing,0.01,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,arming the same dose set twice does not stack duplicate alarms,0.01,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,each future dose registers one alarm at its exact trigger time,0.012,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,an empty dose list arms nothing and does not crash,0.019,pass
+com.carecompanion.app.notify.ReminderSchedulerTest,a dose whose time has already passed today is not armed,0.011,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,"no videos shows the no-videos message, not the no-contacts message",1.601,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,no medicines due shows the friendly empty message,0.08,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,"contacts render with names and tapping opens a call confirmation, not a dial",0.278,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,high contrast and enlarged font render without crashing and content is displayed,0.062,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,Marathi language renders translated contacts-empty string,0.054,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,Hindi language renders translated strings on the home screen,0.046,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,tapping No dismisses the confirmation without calling,0.104,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,"a pending dose shows medicine name, time, and separately-tappable Taken vs Not-taken",0.117,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,no contacts shows the no-contacts message,0.046,pass
+com.carecompanion.app.ui.elder.ElderExperienceTest,"a contact with no photo still renders its name (silhouette fallback, no crash)",0.045,pass

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.logic.ElderStringsI18nTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:02:04" hostname="Suyash-MacBook-Pro-2.local" time="0.061">
+  <properties/>
+  <testcase name="format specifier count is identical across all four languages for every key" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.059"/>
+  <testcase name="no language silently falls back to English (would indicate a missing key)" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.0"/>
+  <testcase name="keys with format specifiers actually have at least one in English" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.001"/>
+  <testcase name="unknown key falls back to itself" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.0"/>
+  <testcase name="keys with no format specifiers have zero specifiers in every language" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.0"/>
+  <testcase name="every key is present and non-blank in all four languages" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.001"/>
+  <testcase name="table defines exactly the four expected languages" classname="com.carecompanion.app.logic.ElderStringsI18nTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.VoiceDoseTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:43" hostname="Suyash-MacBook-Pro-2.local" time="0.001">
+  <properties/>
+  <testcase name="an unconfigured backend is reported, not guessed" classname="com.carecompanion.app.fixes.VoiceDoseTest" time="0.0"/>
+  <testcase name="default response records nothing" classname="com.carecompanion.app.fixes.VoiceDoseTest" time="0.0"/>
+  <testcase name="unavailable hides the affordance and unclear keeps it" classname="com.carecompanion.app.fixes.VoiceDoseTest" time="0.0"/>
+  <testcase name="only taken and not_taken may write a dose" classname="com.carecompanion.app.fixes.VoiceDoseTest" time="0.0"/>
+  <testcase name="a transport failure degrades to unclear rather than throwing" classname="com.carecompanion.app.fixes.VoiceDoseTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

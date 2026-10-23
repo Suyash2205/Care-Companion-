@@ -56,3 +56,6 @@ paper/.venv/
 # Python bytecode (figure/paper build scripts)
 __pycache__/
 *.pyc
+
+# Advertisement render intermediates (the final MP4 ships on the Desktop)
+video/build/

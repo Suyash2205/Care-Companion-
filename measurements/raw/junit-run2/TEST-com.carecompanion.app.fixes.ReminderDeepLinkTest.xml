@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.ReminderDeepLinkTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:42" hostname="Suyash-MacBook-Pro-2.local" time="0.054">
+  <properties/>
+  <testcase name="the medicine intent carries the destination that routes to the medicine flow" classname="com.carecompanion.app.fixes.ReminderDeepLinkTest" time="0.022"/>
+  <testcase name="a general reminder key is distinguishable from a dose key" classname="com.carecompanion.app.fixes.ReminderDeepLinkTest" time="0.013"/>
+  <testcase name="an intent with no destination extra leaves routing untouched" classname="com.carecompanion.app.fixes.ReminderDeepLinkTest" time="0.01"/>
+  <testcase name="the medicine intent does not collide with the plain open-app intent" classname="com.carecompanion.app.fixes.ReminderDeepLinkTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

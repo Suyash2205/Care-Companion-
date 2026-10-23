@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.GeneralRemindersArmedTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:42" hostname="Suyash-MacBook-Pro-2.local" time="0.112">
+  <properties/>
+  <testcase name="a reminder not scheduled for today is not armed" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.041"/>
+  <testcase name="reminder keys cannot collide with dose keys" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.017"/>
+  <testcase name="doses and reminders armed together both survive - neither wipes the other" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.022"/>
+  <testcase name="a reminder with no id is skipped rather than crashing" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.012"/>
+  <testcase name="an enabled reminder for today produces one alarm per time" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.01"/>
+  <testcase name="a disabled reminder is not armed" classname="com.carecompanion.app.fixes.GeneralRemindersArmedTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

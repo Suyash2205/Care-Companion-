@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.notify.PushAndAlarmContractTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:43" hostname="Suyash-MacBook-Pro-2.local" time="0.13">
+  <properties/>
+  <testcase name="the alerts channel the server targets exists and is high importance" classname="com.carecompanion.app.notify.PushAndAlarmContractTest" time="0.063"/>
+  <testcase name="both dose-builders produce the same alarm key for the same dose" classname="com.carecompanion.app.notify.PushAndAlarmContractTest" time="0.013"/>
+  <testcase name="two doses with the same title produce distinct notification ids" classname="com.carecompanion.app.notify.PushAndAlarmContractTest" time="0.01"/>
+  <testcase name="channels are created on demand when an alert arrives before the app is opened" classname="com.carecompanion.app.notify.PushAndAlarmContractTest" time="0.044"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

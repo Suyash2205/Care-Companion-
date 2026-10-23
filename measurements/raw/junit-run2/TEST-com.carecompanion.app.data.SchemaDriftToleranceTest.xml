@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.data.SchemaDriftToleranceTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:36" hostname="Suyash-MacBook-Pro-2.local" time="0.118">
+  <properties/>
+  <testcase name="WheelchairPlaceDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.011"/>
+  <testcase name="VitalDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.007"/>
+  <testcase name="AlertDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.011"/>
+  <testcase name="MedicineScheduleDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.006"/>
+  <testcase name="GuardianLinkDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.007"/>
+  <testcase name="ContactDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.011"/>
+  <testcase name="VitalThresholdDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.008"/>
+  <testcase name="SosEventDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.011"/>
+  <testcase name="AdherenceLogDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.008"/>
+  <testcase name="UserDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.008"/>
+  <testcase name="MedicineDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.008"/>
+  <testcase name="coerceInputValues coerces a null explicit-default field instead of throwing" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.006"/>
+  <testcase name="ElderDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.01"/>
+  <testcase name="ReminderDto tolerates extra fields and missing optionals" classname="com.carecompanion.app.data.SchemaDriftToleranceTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

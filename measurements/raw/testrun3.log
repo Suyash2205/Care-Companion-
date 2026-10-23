@@ -1,0 +1,87 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResValues
+> Task :app:processDebugGoogleServices
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:processDebugManifestForPackage
+> Task :app:javaPreCompileDebug
+> Task :app:processDebugResources
+> Task :app:packageDebugUnitTestForUnitTest
+> Task :app:generateDebugUnitTestConfig
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ElderHomeScreen.kt:333:36 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Logout
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ElderHomeScreen.kt:664:5 Parameter 'onSosPressed' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ElderHomeScreen.kt:1136:5 Parameter 'onSosPressed' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ElderHomeScreen.kt:1146:5 Parameter 'onSosPressed' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/GuardianDailyScheduleScreen.kt:68:72 'DirectionsWalk: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.DirectionsWalk
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/GuardianManageContactsScreen.kt:92:49 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Logout
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/GuardianWellnessSosScreen.kt:335:92 'DirectionsWalk: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.DirectionsWalk
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/data/repo/AuthRepository.kt:35:81 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/data/repo/OutboxStore.kt:31:81 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/di/NetworkModule.kt:29:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:152:66 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Logout
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:480:27 Parameter 'type' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:578:121 Destructured parameter 'l' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:619:37 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Logout
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:728:41 'Message: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Message
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/elder/ElderExperience.kt:739:96 Unnecessary safe call on a non-null receiver of type ContactDto?
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/guardian/AddEditElderScreen.kt:43:9 Variable 'activity' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/guardian/AddEditElderScreen.kt:44:9 Variable 'otpCode' is never used
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/ui/guardian/GuardianSettingsScreen.kt:138:45 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.Logout
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/voice/Speaker.kt:35:17 'constructor Locale(String!, String!)' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/voice/Speaker.kt:36:17 'constructor Locale(String!, String!)' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/voice/Speaker.kt:37:17 'constructor Locale(String!, String!)' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/main/java/com/carecompanion/app/voice/Speaker.kt:38:17 'constructor Locale(String!, String!)' is deprecated. Deprecated in Java
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:transformDebugClassesWithAsm
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:kspDebugUnitTestKotlin
+
+> Task :app:compileDebugUnitTestKotlin
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/data/TestSupport.kt:23:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/fixes/CancelDoseAlarmTest.kt:46:23 'getter for nextScheduledAlarm: ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/fixes/GeneralRemindersArmedTest.kt:41:39 'getter for nextScheduledAlarm: ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/fixes/GeneralRemindersArmedTest.kt:110:39 'getter for nextScheduledAlarm: ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/fixes/ReminderSchedulerCancelAllTest.kt:38:39 'getNextScheduledAlarm(): ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/BootPersistenceTest.kt:51:39 'getNextScheduledAlarm(): ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/BootPersistenceTest.kt:65:82 Condition 'info != null' is always 'true'
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/BootPersistenceTest.kt:112:29 'triggerAtTime: Long' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/PushAndAlarmContractTest.kt:36:39 'getNextScheduledAlarm(): ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/ReminderSchedulerTest.kt:49:39 'getNextScheduledAlarm(): ShadowAlarmManager.ScheduledAlarm!' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/ReminderSchedulerTest.kt:72:28 'triggerAtTime: Long' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/ReminderSchedulerTest.kt:84:65 'triggerAtTime: Long' is deprecated. Deprecated in Java
+w: file:///Users/suyash/CareCampanion/app/src/test/java/com/carecompanion/app/notify/ReminderSchedulerTest.kt:155:22 'type: Int' is deprecated. Deprecated in Java
+
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:hiltAggregateDepsDebugUnitTest
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:transformDebugUnitTestClassesWithAsm
+> Task :app:testDebugUnitTest
+
+BUILD SUCCESSFUL in 1m 22s
+37 actionable tasks: 37 executed

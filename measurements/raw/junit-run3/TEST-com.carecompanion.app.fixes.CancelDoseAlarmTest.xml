@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.CancelDoseAlarmTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:01:57" hostname="Suyash-MacBook-Pro-2.local" time="2.172">
+  <properties/>
+  <testcase name="cancelling an unknown key is a harmless no-op" classname="com.carecompanion.app.fixes.CancelDoseAlarmTest" time="2.113"/>
+  <testcase name="cancelling every dose empties the persisted set" classname="com.carecompanion.app.fixes.CancelDoseAlarmTest" time="0.023"/>
+  <testcase name="cancelling one dose leaves the others armed" classname="com.carecompanion.app.fixes.CancelDoseAlarmTest" time="0.016"/>
+  <testcase name="a cancelled dose is not resurrected by a reboot" classname="com.carecompanion.app.fixes.CancelDoseAlarmTest" time="0.02"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

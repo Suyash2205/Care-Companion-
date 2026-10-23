@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.AuthInterceptorRetryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:00:36" hostname="Suyash-MacBook-Pro-2.local" time="0.251">
+  <properties/>
+  <testcase name="signed-out 401 is not retried (no fresher token exists to fetch)" classname="com.carecompanion.app.fixes.AuthInterceptorRetryTest" time="0.209"/>
+  <testcase name="a 200 response makes exactly one request (no needless retry)" classname="com.carecompanion.app.fixes.AuthInterceptorRetryTest" time="0.021"/>
+  <testcase name="apikey and Authorization headers are present on every request" classname="com.carecompanion.app.fixes.AuthInterceptorRetryTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

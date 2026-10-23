@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.carecompanion.app.fixes.MedicinesUiStateDoneTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-23T15:02:03" hostname="Suyash-MacBook-Pro-2.local" time="0.003">
+  <properties/>
+  <testcase name="refreshing loaded data with copy preserves an already-signalled done" classname="com.carecompanion.app.fixes.MedicinesUiStateDoneTest" time="0.003"/>
+  <testcase name="a fresh state is not done - which is why rebuilding one ate the save" classname="com.carecompanion.app.fixes.MedicinesUiStateDoneTest" time="0.0"/>
+  <testcase name="a load landing after a save keeps done even while clearing a stale error" classname="com.carecompanion.app.fixes.MedicinesUiStateDoneTest" time="0.0"/>
+  <testcase name="the medicine the schedule builder updates is found by id" classname="com.carecompanion.app.fixes.MedicinesUiStateDoneTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

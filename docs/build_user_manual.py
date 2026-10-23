@@ -22,12 +22,15 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
-    BaseDocTemplate, Frame, KeepTogether, ListFlowable, ListItem, NextPageTemplate,
+    BaseDocTemplate, Frame, Image, KeepTogether, ListFlowable, ListItem, NextPageTemplate,
     PageBreak, PageTemplate, Paragraph, Spacer, Table, TableStyle,
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "CareCompanion-User-Manual.pdf")
+# Labelled pictures come from the real application running on a phone, not from mock-ups.
+SHOTS = os.path.join(os.path.expanduser("~"), "Desktop/CareCompanion-Screenshots/app-screenshots")
+_FIG = [0]
 
 # ---------- Palette (matches the app) ----------
 GREEN       = colors.HexColor("#2E7D32")
@@ -79,6 +82,8 @@ S = {
     "cell": style("cell", fontName="Helvetica", fontSize=9.5, leading=14, textColor=INK),
     "cell_b": style("cell_b", fontName="Helvetica-Bold", fontSize=9.5, leading=14, textColor=INK),
     "toc": style("toc", fontName="Helvetica", fontSize=11, leading=19, textColor=INK),
+    "caption": style("caption", fontName="Helvetica", fontSize=8.8, leading=12.5,
+                     textColor=SUB, alignment=TA_CENTER, spaceAfter=0),
 }
 
 
@@ -152,6 +157,42 @@ def screen(name, what, *following):
     """A section heading plus its intro, kept with whatever follows so a heading never
     strands alone at the foot of a page."""
     return KeepTogether([Paragraph(name, S["h1"]), Paragraph(what, S["body"]), *following])
+
+
+def _img(rel, width_mm):
+    """One screenshot, scaled to the given printed width, aspect ratio preserved."""
+    from PIL import Image as PILImage
+    path = os.path.join(SHOTS, rel)
+    w, h = PILImage.open(path).size
+    disp_w = width_mm * mm
+    return Image(path, width=disp_w, height=disp_w * h / w)
+
+
+def figure(rel, caption, width_mm=46):
+    """A single labelled screenshot."""
+    _FIG[0] += 1
+    t = Table([[_img(rel, width_mm)],
+               [Paragraph(f"<b>Picture {_FIG[0]}.</b> {caption}", S["caption"])]],
+              colWidths=[width_mm * mm + 8 * mm])
+    t.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                           ("TOPPADDING", (0, 1), (-1, 1), 4),
+                           ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
+    return KeepTogether([Spacer(1, 4), t, Spacer(1, 10)])
+
+
+def figures(pairs, width_mm=44):
+    """Two labelled screenshots side by side."""
+    cells, caps = [], []
+    for rel, cap in pairs:
+        _FIG[0] += 1
+        cells.append(_img(rel, width_mm))
+        caps.append(Paragraph(f"<b>Picture {_FIG[0]}.</b> {cap}", S["caption"]))
+    t = Table([cells, caps], colWidths=[(PAGE_W - 2 * MARGIN) / 2] * len(cells))
+    t.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                           ("VALIGN", (0, 1), (-1, 1), "TOP"),
+                           ("TOPPADDING", (0, 1), (-1, 1), 4),
+                           ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
+    return KeepTogether([Spacer(1, 4), t, Spacer(1, 10)])
 
 
 # ---------- Page furniture ----------
@@ -249,6 +290,43 @@ def story():
 
     A(PageBreak())
 
+    # ===================== GETTING THE APP =====================
+    A(para("Before you start — putting the app on both phones", "h1"))
+    A(para("Care Companion is one app. The same file goes on both phones; the app asks who "
+           "you are the first time it opens and shows the right screens from then on.", "body"))
+    A(table([
+        ["What you need", "Why"],
+        ["An Android phone, version 7.0 or newer, on each side",
+         "The app is built for Android 7.0 (2016) and newer, so an older, cheaper handset is "
+         "fine for the elder."],
+        ["About 50 MB of free space on each phone",
+         "The app file is 21 MB; Android needs roughly the same again while it installs."],
+        ["A working internet connection, Wi-Fi or mobile data",
+         "The two phones talk to each other through the internet. Reminders that are already "
+         "set still go off without it."],
+        ["The elder's own mobile number",
+         "This is what links their phone to the profile you create."],
+    ], [55 * mm, 115 * mm]))
+    A(para("Installing it", "h2"))
+    A(steps([
+        "Copy the file <b>CareCompanion.apk</b> to the phone, or open the download link you "
+        "were sent.",
+        "Tap the file. Android will ask whether to allow installing from this source — say "
+        "yes for the app you are using to open it (usually Files or Chrome).",
+        "Tap <b>Install</b>, then <b>Open</b>.",
+        "Choose <b>I look after someone</b> on your phone, and <b>I am the elder</b> on theirs.",
+    ]))
+    A(callout("The permissions it asks for, and why",
+              "<b>Notifications</b> — so reminders and emergency alerts can appear. "
+              "<b>Alarms and reminders</b> — so a dose reminder goes off at the exact minute, "
+              "even if the phone has been idle. "
+              "<b>Location</b> — read once, only at the moment SOS is pressed, so the family "
+              "knows where to go. "
+              "<b>Microphone</b> — only while the elder is answering a spoken reminder. "
+              "<b>Contacts</b> — only when you choose to import one person from the address "
+              "book. Saying no to any of these leaves the rest of the app working.", "tip"))
+    A(Spacer(1, 6))
+
     # ===================== PART 1: GUARDIAN =====================
     A(para("Part 1 — Your phone", "part"))
     A(para("Setting everything up and looking after it day to day.", "part_sub"))
@@ -285,6 +363,10 @@ def story():
            "between them.", "body"))
 
     # 1.3 Connecting the elder's phone
+    A(figure("guardian/01-add-elder-profile.png",
+             "Guardian phone, step 2. The new-elder form. Name, age and the elder's own "
+             "mobile number are the three fields that matter; the number is what links the "
+             "two phones later."))
     A(screen("3. Connecting the elder's phone",
              "This is the one step people find confusing, so here it is slowly. It happens "
              "<b>once</b>, and never again."))
@@ -312,6 +394,10 @@ def story():
               "tip"))
 
     # 1.4 Dashboard tour
+    A(figures([("guardian/02-edit-elder-profile-connect-code.png",
+                "Guardian phone, step 3. The six-digit connect code, with Copy and Share."),
+               ("elder/01-enter-connect-code.png",
+                "Elder phone, step 3. The same code typed in here joins the two phones.")]))
     A(screen("4. The dashboard",
              "Your home screen. The top shows who you are caring for; the coloured tiles below "
              "are everything you can do."))
@@ -352,6 +438,10 @@ def story():
               "to offer them to call. Take a moment to check this.", "warn"))
 
     # 1.6 Medicines
+    A(figure("guardian/04-add-contact-with-photo.png",
+             "Guardian phone, step 5. A contact saved with a photograph and the emergency "
+             "switch turned on. The photograph is what the elder recognises; the switch is "
+             "what puts this person on the SOS list."))
     A(screen("6. Medicines",
              "Each medicine is added once, then given a schedule. They are two separate steps."))
     A(steps([
@@ -449,6 +539,9 @@ def story():
            "show as a coloured letter tile.", "body"))
 
     # 1.12 Family
+    A(figure("guardian/06-video-and-apps-shortcuts.png",
+             "Guardian phone, step 11. Video and app shortcuts. Whatever is switched on "
+             "here is what appears on the elder's Videos screen."))
     A(screen("12. Family members",
              "Let another relative see and help with the same profile."))
     A(steps([
@@ -468,6 +561,9 @@ def story():
               "change your mind between View Only and Can Edit, create a fresh code.", "tip"))
 
     # 1.13 SOS alerts
+    A(figure("guardian/05-family-members-invite.png",
+             "Guardian phone, step 12. Family members. A second relative is invited with a "
+             "code and then sees the same elder."))
     A(screen("13. SOS alerts",
              "What you receive when the elder presses the big red button."))
     A(para("A notification arrives on your phone straight away, with their name, the time, and "
@@ -483,6 +579,10 @@ def story():
            "<b>{name}</b> where their name should appear.", "body"))
 
     A(PageBreak())
+
+    A(figure("guardian/07-sos-alerts.png", width_mm=52, caption=
+             "Guardian phone, step 13. The SOS Alerts screen with an ACTIVE emergency, its "
+             "time and the map link. This is the record the elder's SOS button creates."))
 
     # ===================== PART 2: ELDER =====================
     A(para("Part 2 — Their phone", "part"))
@@ -535,6 +635,12 @@ def story():
     A(para("The confirmation step is deliberate: it makes an accidental call almost impossible.",
            "body"))
 
+    A(figures([("elder/02-contacts-tap-photo-to-call.png",
+                "Elder phone. Contacts are faces, not names in a list. One tap on the "
+                "photograph starts the call."),
+               ("elder/03-videos.png",
+                "Elder phone. The Videos screen shows only the shortcuts the guardian "
+                "switched on.")]))
     A(screen("The SOS button", "The most important button in the app."))
     A(steps([
         "They press the big red <b>SOS</b> button.",
@@ -551,6 +657,9 @@ def story():
               "the emergency message and their location already written, and a button to call. "
               "The app never pretends help is coming when it is not.", "danger"))
 
+    A(figure("elder/04-sos-alert-sent.png",
+             "Elder phone. What the elder sees after pressing SOS. Each line is an outcome "
+             "the app actually observed \u2014 nothing is claimed that did not happen."))
     A(screen("Recording a reading",
              "The elder can record their own blood pressure or sugar."))
     A(steps([
@@ -645,6 +754,70 @@ def story():
          "There is a 5-second countdown with a large Cancel button. Practise it together once, "
          "so they know a mistake is easily undone."],
     ], [50 * mm, 120 * mm]))
+
+    A(para("A worked example, start to finish", "h1"))
+    A(para("One medicine, from what you type to what everyone sees. If your own screens look "
+           "like this, the app is working correctly.", "body"))
+    A(table([
+        ["What you do (input)", "What the app does (output)"],
+        ["On your phone: Medicines &rarr; Add &rarr; name <b>Amlodipine 5 mg</b>, form "
+         "<b>Tablet</b>, with water, after food &rarr; <b>Save</b>",
+         "The medicine appears on your Medicines list with those details. Nothing happens on "
+         "the elder's phone yet — a medicine with no schedule is never shown to them."],
+        ["Under it, tap <b>Schedule</b> &rarr; <b>Every day</b> &rarr; <b>Breakfast</b> &rarr; "
+         "<b>08:00</b> &rarr; <b>Save</b>",
+         "The card now reads <b>Breakfast &middot; 08:00</b>. Save stays greyed out until a "
+         "meal slot is chosen — that is the app checking your entry, not a fault."],
+        ["Nothing. Wait until 08:00 on the elder's phone.",
+         "A reminder appears on the elder's phone and, if the spoken reminder is on, it is "
+         "read aloud in their language. Tapping it opens the medicine straight away."],
+        ["The elder taps <b>Taken</b> (or says so out loud).",
+         "The reminder is removed so the same dose is never asked for twice. If they take it "
+         "early, the 08:00 alarm is cancelled."],
+        ["On your phone: open <b>Adherence</b>.",
+         "That dose is now marked taken, with its time. A dose nobody answers is shown as "
+         "missed rather than quietly ignored."],
+    ], [75 * mm, 95 * mm]))
+    A(callout("How to tell a real problem from a slow connection",
+              "Every screen that saves something tells you what actually happened. If you see "
+              "an error, the app could not reach the internet and your entry was kept to be "
+              "sent again. If you see nothing at all, it saved.", "tip"))
+    A(Spacer(1, 6))
+
+    A(para("Looking after the two phones", "h1"))
+    A(table([
+        ["Looking after it", "What to do"],
+        ["<b>Charging</b>",
+         "Charge the elder's phone at the same time every evening. A reminder cannot go off on "
+         "a phone that is flat, and this is the single most common reason a dose is missed."],
+        ["<b>Battery saving</b>",
+         "If the phone has an aggressive battery saver, allow Care Companion to run in the "
+         "background. Without it Android may delay a reminder by several minutes."],
+        ["<b>Staying connected</b>",
+         "Leave Wi-Fi on at home. Anything you change reaches the elder's phone the next time "
+         "it is online; nothing is lost in the meantime."],
+        ["<b>Sound</b>",
+         "Keep the elder's phone off silent and the volume up. Check it once a week — a muted "
+         "phone looks exactly like a working one."],
+        ["<b>Restarting</b>",
+         "After the phone is switched off and on again, open Care Companion once. Reminders "
+         "are re-set automatically, but opening it confirms that they are."],
+        ["<b>Safe use</b>",
+         "This app organises care. It does not measure anything medical by itself, and it is "
+         "not a monitored alarm service. In a real emergency, call 108 as well as pressing SOS."],
+    ], [45 * mm, 125 * mm]))
+    A(para("Getting back in if something goes wrong", "h2"))
+    A(bullets([
+        "<b>The elder's phone was replaced.</b> Open their profile on your phone and share a "
+        "fresh connect code with the new phone. The old phone stops having access.",
+        "<b>You signed out by mistake.</b> Sign in again with the same Google account or "
+        "mobile number. Everything is on the server, not on the phone, so nothing is lost.",
+        "<b>The app is behaving oddly.</b> Close it fully and open it again. If that does not "
+        "help, install the app file again over the top — your data is untouched.",
+        "<b>You want to stop entirely.</b> Delete the elder's profile. That removes its "
+        "medicines, contacts, readings and alerts for everyone.",
+    ]))
+    A(Spacer(1, 10))
 
     A(para("Your information", "h1"))
     A(para("Care Companion holds health information, and treats it that way.", "body"))
