@@ -78,7 +78,10 @@ def token():
 
 
 def call(method, url, tok, payload=None, raw=None, ctype="application/json"):
-    data = raw if raw is not None else (json.dumps(payload).encode() if payload else None)
+    # An empty dict still has to go on the wire as {}. Sending no body at all makes
+    # Zenodo's deposition endpoint answer HTTP 500 rather than a useful error.
+    data = raw if raw is not None else (
+        json.dumps(payload).encode() if payload is not None else None)
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", f"Bearer {tok}")
     if data is not None:
