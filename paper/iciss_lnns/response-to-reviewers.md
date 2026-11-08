@@ -74,11 +74,21 @@ proportion falls from 8/13 to 5/13. The headline therefore rests on one judgemen
 to three items, and the paper now says so instead of reporting 62% as robust. We also state
 what no re-rating can repair: the defects were *selected* by the developers.
 
-*Fault injection.* Not yet present, and Section 5.5 now says so in those words rather than
-leaving a reader to infer it. On-device tests against the real `AlarmManager` have been
-written covering dose cancellation, reboot re-arming, past-dose skipping and key-collision;
-the protocol for connectivity, permission-denial and Doze injection is defined. We have
-deliberately **not** reported results we do not yet have.
+*Fault injection.* Started, incomplete, and the paper says so in those words. One partial
+run of six instrumented tests against the real `AlarmManager` on an emulator has been
+executed; the revised suite and the scripted Doze, reboot, permission-denial and
+connectivity injections are written but **not run**, and we report no result for any of
+them. No handset has been used, and an emulator runs a stock image, so even a complete run
+would say nothing about the manufacturer power-management layers we identify as the harder
+case.
+
+That one partial run was nonetheless productive, which is itself the argument for your
+comment. It found a defect the line-by-line audit had missed: arming replaced the persisted
+set of the day's doses without cancelling alarms for keys the new set dropped, so a
+medicine deleted or re-timed during the day stayed armed, untracked and unreachable by the
+sign-out path — and still rang. Both production arming paths reach this. An adherence tool
+generating a double-dose prompt is the failure the system exists to prevent, and it was
+silent until the moment it rang. Section 5.4 reports it.
 
 *Target sizes.* Agreed. Section 5.1 now states these are declared heights of a single
 control — a one-dimensional static property that establishes neither effective touch width,
