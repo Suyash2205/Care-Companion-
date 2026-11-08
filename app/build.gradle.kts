@@ -177,4 +177,10 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4:1.6.7")
     testImplementation("androidx.compose.ui:ui-test-manifest:1.6.7")
     testImplementation("androidx.work:work-testing:2.9.0")
+
+    // ── Instrumented fault injection (real device/emulator) ───────────
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test:core-ktx:1.5.0")
 }
