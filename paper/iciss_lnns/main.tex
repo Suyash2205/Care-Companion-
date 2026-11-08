@@ -471,6 +471,17 @@ rather than whether an alarm was live. We record this because a test that report
 it has not observed is the same defect class as an interface that does, and we found it
 only because the run was cross-checked against the platform's own alarm table.
 
+The repair then failed the same way, which is the most instructive part. Both arming paths
+obtain the day's reminders inside a construct that yields an empty list when the request
+fails, and our fix read that emptiness as authoritative --- so a single timed-out request
+would have disarmed every general reminder for the day, silently. Review caught it before
+it shipped, and the same shape turned out to predate the fix on the adherence read, where a
+failed load makes an answered dose look pending and re-arms it. The rule this paper applies
+to interfaces --- never assert an outcome you have not observed --- has an exact analogue
+one layer down: never act on data you did not receive. An empty result and a failed request
+are not the same value, and a language construct that collapses them invites precisely the
+silent failures catalogued here.
+
 \subsection{Deployability}
 The application declares eleven permissions, none restricted; two restricted permissions in
 an earlier revision were removed in favour of the user-mediated path of
