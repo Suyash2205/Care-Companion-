@@ -47,7 +47,12 @@ class DailyArmWorker @AssistedInject constructor(
         val meds = care.medicines(eid).filter { it.isActive }.associateBy { it.id }
         val scheds = care.schedules(eid).filter { it.enabled }
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Calendar.getInstance().time)
-        val logs = runCatching { adherence.forDate(eid, today) }.getOrDefault(emptyList())
+        // A failed adherence read is not "no doses answered". Treating it that way
+        // re-arms a dose the elder already took, which is the double-dose prompt this
+        // app exists to prevent. Retry instead of guessing.
+        val logsResult = runCatching { adherence.forDate(eid, today) }
+        if (logsResult.isFailure) return@runCatching Result.retry()
+        val logs = logsResult.getOrThrow()
 
         // Mon=bit0 .. Sun=bit6, matching ElderHomeViewModel.todayIndexMonday0()
         val dowIdx = ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7)
@@ -74,10 +79,15 @@ class DailyArmWorker @AssistedInject constructor(
 
         // General reminders (water, walk, vitals) ride the same alarm path. Combined
         // into ONE scheduleDoses() call because that call replaces the persisted set.
-        val reminders = runCatching { care.reminders(eid) }.getOrDefault(emptyList())
+        // Likewise: if the reminders read failed we have no idea what is scheduled, so
+        // we arm what we do know and leave the existing reminder alarms alone.
+        val remindersResult = runCatching { care.reminders(eid) }
+        val reminders = remindersResult.getOrDefault(emptyList())
         val all = alarms + ReminderScheduler.remindersToAlarms(reminders, todayBit, today)
 
-        ReminderScheduler.scheduleDoses(applicationContext, all)
+        ReminderScheduler.scheduleDoses(
+            applicationContext, all, disarmDropped = remindersResult.isSuccess,
+        )
         Result.success()
     }.getOrElse { Result.retry() }
 

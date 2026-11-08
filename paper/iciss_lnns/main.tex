@@ -127,7 +127,7 @@ binding screen reached only at set-up and not part of the running surface.
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.52\textwidth]{fig_arch.png}
+\includegraphics[width=0.44\textwidth]{fig_arch.png}
 \caption{System structure. Two clients of deliberately unequal complexity share one care
 record behind a per-row access boundary that derives identity from the caller's token.
 The out-of-band binding step (bottom) establishes which physical device belongs to which
@@ -280,12 +280,13 @@ are database routines with definer rights. Push uses Firebase Cloud Messaging wi
 data-only messages, since notification-payload messages bypass the application's handler
 when backgrounded and would prevent the client applying its own delivery rules.
 
-The suite comprises 142 declared test methods across 24 classes, executing on the JVM with
-a shadowed Android runtime, concentrated where silent failure is most likely: alarm
+The suite comprises 142 declared test methods across 24 classes, which execute as 147 cases
+because one method is parameterised over six HTTP status codes. It runs on the JVM with a
+shadowed Android runtime, concentrated where silent failure is most likely: alarm
 scheduling and cancellation, offline durability, delivery-contract behaviour of the push
 path, translation-table integrity, and a regression test per defect in
-Section~\ref{sec:defects}. It is a unit-level suite containing no device-level or
-network-level fault injection (Section~\ref{sec:threats}).
+Section~\ref{sec:defects}. It is a unit-level suite; device-level fault injection is
+reported separately in Section~\ref{sec:faults}.
 
 Preparing this revision surfaced an instance of our own thesis in our own tooling. The
 Gradle configuration sets \texttt{ignoreFailures} on unit tests, so the build prints
@@ -340,8 +341,8 @@ the implementation. None is a usability result.
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.46\textwidth]{fig_typescale.png}\hfill
-\includegraphics[width=0.46\textwidth]{fig_targets.png}
+\includegraphics[width=0.42\textwidth]{fig_typescale.png}\hfill
+\includegraphics[width=0.42\textwidth]{fig_targets.png}
 \caption{Left: declared text sizes across the two surfaces, parsed from source; medians
 13\,sp (caregiver) and 20\,sp (elder). Right: height of the primary control on each elder
 screen; median 76\,dp, emergency control 130\,dp.}
@@ -440,6 +441,36 @@ loudly. And unit suites do not detect unreachable features --- our 142 tests pas
 throughout the period two features delivered nothing, because each component behaved
 correctly in isolation and the defect lay in the absence of a caller.
 
+\subsection{What Fault Injection Found}
+\label{sec:faults}
+
+The audit above read the source. To test the platform's behaviour rather than the code's,
+we added eight instrumented tests running against the real \texttt{AlarmManager} on an
+emulator, covering dose cancellation, reboot re-arming, past-dose skipping and key
+collision. They assert that an alarm was \emph{accepted} by the platform, not that it
+fired; firing under Doze requires shell authority the test process does not have and is a
+separate procedure.
+
+This immediately found a defect the line-by-line audit had missed, and it is the kind the
+audit was least able to see. Arming replaces a persisted set of the day's doses. It did not
+cancel alarms for keys the new set dropped, so a dose removed from the schedule stayed
+armed with the platform while nothing tracked it any longer: the sign-out path walks the
+persisted set and so could not reach it, and it still rang. Both production arming paths
+--- the older adult opening the application, and a four-hourly worker --- pass the current
+list, so a caregiver deleting or re-timing a medicine during the day left the older adult
+being told to take it at the old time. An adherence tool generating a double-dose prompt is
+the failure this system exists to prevent, and it was silent until the moment it rang.
+
+Two methodological points follow. First, the defect is invisible to source review of any
+one function: each of arming, cancelling and persisting is correct alone, and the fault is
+in the state they jointly leave behind --- the same shape as the unreachable features of
+Section~\ref{sec:defects}, where the defect lay in the absence of a caller. Second, our
+first version of these tests reported two failures against correct behaviour and one pass
+that asserted nothing, because the oracle tested whether a pending-intent token existed
+rather than whether an alarm was live. We record this because a test that reports a result
+it has not observed is the same defect class as an interface that does, and we found it
+only because the run was cross-checked against the platform's own alarm table.
+
 \subsection{Deployability}
 The application declares eleven permissions, none restricted; two restricted permissions in
 an earlier revision were removed in favour of the user-mediated path of
@@ -455,31 +486,29 @@ rater was automated and an independent human re-rating remains outstanding. The 
 window covers the period after feature completion, not the whole development history, so
 the count is not a defect density. Conformance measurements are static properties of the
 source and say nothing about perception or comprehension, and tap counts are analytic.
-Finally, the evaluation contains no systematic fault injection: we have not exercised lost
-connectivity, denied runtime permissions, Doze enforcement, device reboot, or concurrent
-code redemption under controlled conditions. That protocol is defined and is the immediate
-next step; its absence is why this paper's dependability claims are claims about
-\emph{design discipline}, not about measured robustness.
+Device-level fault injection has been started but is not complete
+(Section~\ref{sec:faults}), and it was performed on an emulator running a stock Android
+image, so it says nothing about the manufacturer power-management layers that Section~3.4
+identifies as the harder case.
 
 \section{Discussion}
 
 \subsection{Silence Is the Dominant Risk}
 Most defects in this feature-complete care application were invisible from the interface,
-which has a consequence for elder care it does not have for, say, a photo application. The
-older adult often cannot diagnose a silent failure, and the caregiver --- the person who
-could --- is looking at a different device also reporting success. A missing reminder
-produces no artefact at all: its absence is indistinguishable from a day with no medication
-due, and the adherence record the caregiver trusts will attribute the gap to the older
-adult. We therefore propose an explicit honesty discipline: acknowledge only observed
-outcomes and name in the interface which outcome was observed; give every failure path a
-message a lay reader can act on; and, for any feature whose value is delivery, test the
-delivery rather than the storage.
+which matters more here than it would for, say, a photo application. The older adult often
+cannot diagnose a silent failure, and the caregiver --- the person who could --- is looking
+at a different device also reporting success. A missing reminder produces no artefact at
+all: its absence is indistinguishable from a day with no medication due, and the adherence
+record the caregiver trusts will attribute the gap to the older adult. We therefore propose
+an explicit honesty discipline: acknowledge only observed outcomes and name in the interface
+which outcome was observed; give every failure path a message a lay reader can act on; and,
+for any feature whose value is delivery, test the delivery rather than the storage.
 
 \subsection{Asymmetry as an Accessibility Budget}
 The measured gap between the surfaces results not from applying guidelines harder on one
-screen but from removing work from it. Type and target size compete with information
+screen but from removing work from it: type and target size compete with information
 density. By moving configuration to the caregiver, the elder surface gains an accessibility
-budget to spend on sizing and shallow navigation; we suggest this reframing --- asymmetry
+budget to spend on sizing and shallow navigation. We suggest this reframing --- asymmetry
 as a budget rather than as simplification --- is the transferable idea, and that it is a
 design insight rather than a new algorithm. Relatedly, store permission policy determined
 our emergency path's architecture, and a design that cannot be distributed cannot
@@ -487,22 +516,19 @@ accumulate the longitudinal evidence the field needs.
 
 \section{Scalability and Path to Evaluation}
 
-Care circles are disjoint, queries are scoped to a profile, and no routine operation
-requires a cross-tenant scan, so growth should be horizontal; reminder scheduling happens
-on the device, so the server is not a timing authority. The identified risks are ordinary
-rather than architectural: push-token churn needs re-synchronisation on session restore,
-which we implement; the scheduled scan for unanswered doses is a single point of failure
-needing partitioning; and per-row policy evaluation grows with policy count. Large-scale
-performance has not been benchmarked; this is architectural analysis, not measurement.
+Care circles are disjoint and queries are scoped to a profile, so growth should be
+horizontal; reminder scheduling happens on the device, so the server is not a timing
+authority. The identified risks are ordinary rather than architectural: push-token churn
+needs re-synchronisation on session restore, which we implement; the scheduled scan for
+unanswered doses is a single point of failure needing partitioning; and per-row policy
+evaluation grows with policy count. Large-scale performance has not been benchmarked.
 
-The next step is measurement, in two stages. First, a fault-injection suite on a device
-covering lost connectivity, denied permissions, Doze enforcement, reboot, and concurrent
-and repeated code redemption, with the honesty invariant checked automatically in each
-case. Second, a small formative study with older adult--caregiver dyads --- as a reviewer
-suggested --- measuring delivery-level outcomes the literature usually assumes: the
-proportion of scheduled reminders actually presented by the device, time from alarm
-activation to caregiver acknowledgement, and frequency of the degraded emergency path.
-These are precisely the quantities our instrumentation can record truthfully.
+The next step is measurement. The fault-injection suite of Section~\ref{sec:faults} must be
+completed on physical handsets across manufacturer power-management regimes, which the
+emulator cannot represent. Beyond that, a formative study with older adult--caregiver dyads
+--- as a reviewer suggested --- measuring the delivery-level outcomes the literature usually
+assumes: the proportion of scheduled reminders actually presented by the device, time from
+alarm activation to caregiver acknowledgement, and frequency of the degraded emergency path.
 
 \section{Limitations}
 \label{sec:limits}

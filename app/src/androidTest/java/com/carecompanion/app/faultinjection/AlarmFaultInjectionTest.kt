@@ -136,13 +136,14 @@ class AlarmFaultInjectionTest {
     }
 
     /**
-     * Key namespacing, using production's real key shapes: doses are "<scheduleId>-<date>"
-     * and general reminders are "rem-<id>-<time>-<date>". The hash of the key is both the
-     * PendingIntent request code and the notification id, so a collision means one
-     * silently replacing the other.
+     * Key namespacing. Production doses are "<scheduleId>-<date>" and general reminders
+     * are "rem-<id>-<time>-<date>", so the shapes below match production. Note what this
+     * does and does not show: it shows these two particular keys hash apart, not that the
+     * scheme is collision-free. The hash is both the PendingIntent request code and the
+     * notification id, so a collision would mean one silently replacing the other.
      */
     @Test fun a_dose_and_a_general_reminder_at_the_same_time_do_not_collide() {
-        val doseKey = "sched-4821-2026-11-09"
+        val doseKey = "4821-2026-11-09"
         val reminderKey = "rem-4821-09:00-2026-11-09"
         ReminderScheduler.scheduleDoses(ctx, listOf(dose(doseKey, 30), dose(reminderKey, 30)))
         assertNotNull(armed(doseKey))

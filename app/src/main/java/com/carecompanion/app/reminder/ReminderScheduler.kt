@@ -41,16 +41,32 @@ object ReminderScheduler {
      *
      * Found by on-device fault injection, not by reading the code: the orphaned alarm
      * survived every later cancelAll() in the test run and showed up in `dumpsys alarm`.
+     *
+     * [disarmDropped] MUST be false when any read feeding [doses] failed. An empty list
+     * from a failed fetch is not evidence that nothing is scheduled, and disarming on it
+     * would let one timed-out request silently switch off a day of reminders.
      */
-    fun scheduleDoses(context: Context, doses: List<DoseAlarm>) {
+    fun scheduleDoses(
+        context: Context,
+        doses: List<DoseAlarm>,
+        disarmDropped: Boolean = true,
+    ) {
         val now = System.currentTimeMillis()
         val future = doses.filter { it.timeMillis > now }
-        val keeping = future.map { it.key }.toSet()
+
+        // Keep every key the caller supplied, not just the future ones. A dose whose
+        // time has passed may still be waiting to ring: setExactAndAllowWhileIdle can be
+        // held back under Doze, and retiring it here would turn "late" into "never"
+        // without telling anyone.
+        val keeping = doses.map { it.key }.toSet()
+
         val am = context.getSystemService(AlarmManager::class.java)
-        load(context).filterNot { it.key in keeping }.forEach { stale ->
-            cancelArmed(context, am, stale.key)
+        if (disarmDropped) {
+            load(context).filterNot { it.key in keeping }.forEach { stale ->
+                cancelArmed(context, am, stale.key)
+            }
         }
-        persist(context, future)
+        persist(context, if (disarmDropped) future else (load(context) + future).distinctBy { it.key })
         if (am == null) return
         future.forEach { arm(context, am, it) }
     }

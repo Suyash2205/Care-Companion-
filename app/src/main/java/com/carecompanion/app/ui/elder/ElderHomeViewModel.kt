@@ -72,13 +72,18 @@ class ElderHomeViewModel @Inject constructor(
                 val contacts = care.contacts(eid)
                 val ott = care.ott(eid)
                 val today = todayDate()
-                val logs = runCatching { adherence.forDate(eid, today) }.getOrDefault(emptyList())
+                val logsResult = runCatching { adherence.forDate(eid, today) }
+                val logs = logsResult.getOrDefault(emptyList())
                 val doses = buildDoses(meds, scheds, today, logs)
                 // The guardian's general reminders (water, walk, vitals) are armed here
                 // too - nothing else in the app or on the server delivered them.
-                val reminders = runCatching { care.reminders(eid) }.getOrDefault(emptyList())
+                val remindersResult = runCatching { care.reminders(eid) }
+                val reminders = remindersResult.getOrDefault(emptyList())
                 _ui.value = ElderUiState(false, elder, doses, contacts, ott)
-                armAlarms(doses, reminders)
+                // Only retire alarms when we actually know what should be armed. A failed
+                // read returns an empty list, which is absence of evidence, not evidence
+                // of absence — acting on it switches off real reminders silently.
+                armAlarms(doses, reminders, readsComplete = logsResult.isSuccess && remindersResult.isSuccess)
                 // Keep reminders working on days the elder never opens the app.
                 com.carecompanion.app.reminder.DailyArmWorker.ensureScheduled(appContext)
             } catch (e: Exception) {
@@ -110,7 +115,11 @@ class ElderHomeViewModel @Inject constructor(
      * persisted set wholesale, so arming them in two calls would leave only the second
      * batch surviving a reboot.
      */
-    private fun armAlarms(doses: List<Dose>, reminders: List<com.carecompanion.app.data.model.ReminderDto>) {
+    private fun armAlarms(
+        doses: List<Dose>,
+        reminders: List<com.carecompanion.app.data.model.ReminderDto>,
+        readsComplete: Boolean,
+    ) {
         val alarms = doses.filter { it.status == "pending" }.map { d ->
             val chips = listOfNotNull(
                 d.medicine.dosage.ifBlank { null }, d.schedule.label,
@@ -128,7 +137,7 @@ class ElderHomeViewModel @Inject constructor(
         }
         val todayBit = 1 shl todayIndexMonday0()
         val all = alarms + ReminderScheduler.remindersToAlarms(reminders, todayBit, todayDate())
-        runCatching { ReminderScheduler.scheduleDoses(appContext, all) }
+        runCatching { ReminderScheduler.scheduleDoses(appContext, all, disarmDropped = readsComplete) }
     }
 
     /**
