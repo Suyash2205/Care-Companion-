@@ -29,13 +29,49 @@ object ReminderScheduler {
     private const val PREFS = "cc_reminders"
     private const val KEY_DOSES = "today_doses"
 
-    /** Arm alarms for the future doses in [doses] (past times are skipped). */
+    /**
+     * Arm alarms for the future doses in [doses] (past times are skipped).
+     *
+     * Any key that was armed before but is absent from [doses] is cancelled first.
+     * Without that, replacing the persisted set orphaned the old alarm: it stayed armed
+     * with AlarmManager while no longer being tracked, so [cancelAll] could not reach it
+     * and it still fired. A guardian deleting or re-timing a medicine during the day left
+     * the elder being told to take it anyway — a double-dose prompt from the tool meant
+     * to prevent one, and invisible until the moment it rang.
+     *
+     * Found by on-device fault injection, not by reading the code: the orphaned alarm
+     * survived every later cancelAll() in the test run and showed up in `dumpsys alarm`.
+     */
     fun scheduleDoses(context: Context, doses: List<DoseAlarm>) {
         val now = System.currentTimeMillis()
         val future = doses.filter { it.timeMillis > now }
+        val keeping = future.map { it.key }.toSet()
+        val am = context.getSystemService(AlarmManager::class.java)
+        load(context).filterNot { it.key in keeping }.forEach { stale ->
+            cancelArmed(context, am, stale.key)
+        }
         persist(context, future)
-        val am = context.getSystemService(AlarmManager::class.java) ?: return
+        if (am == null) return
         future.forEach { arm(context, am, it) }
+    }
+
+    /**
+     * Drop one armed alarm, token and all.
+     *
+     * `AlarmManager.cancel(pi)` retires the alarm but leaves the PendingIntent token
+     * alive, so a FLAG_NO_CREATE lookup still finds it. Cancelling the token too keeps
+     * "is this armed?" answerable, which is what makes the on-device tests meaningful.
+     */
+    private fun cancelArmed(context: Context, am: AlarmManager?, key: String) {
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            action = "com.carecompanion.app.DOSE.$key"
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, key.hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        runCatching { am?.cancel(pi) }
+        runCatching { pi.cancel() }
     }
 
     private fun arm(context: Context, am: AlarmManager, d: DoseAlarm) {
@@ -84,18 +120,7 @@ object ReminderScheduler {
      */
     fun cancelAll(context: Context) {
         val am = context.getSystemService(AlarmManager::class.java)
-        if (am != null) {
-            load(context).forEach { d ->
-                val intent = Intent(context, ReminderReceiver::class.java).apply {
-                    action = "com.carecompanion.app.DOSE." + d.key
-                }
-                val pi = PendingIntent.getBroadcast(
-                    context, d.key.hashCode(), intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                )
-                runCatching { am.cancel(pi) }
-            }
-        }
+        load(context).forEach { d -> cancelArmed(context, am, d.key) }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
     }
 
@@ -139,16 +164,7 @@ object ReminderScheduler {
      * Removing it from the persisted set matters too, or a reboot would re-arm it.
      */
     fun cancelDose(context: Context, key: String) {
-        context.getSystemService(AlarmManager::class.java)?.let { am ->
-            val intent = Intent(context, ReminderReceiver::class.java).apply {
-                action = "com.carecompanion.app.DOSE.$key"
-            }
-            val pi = PendingIntent.getBroadcast(
-                context, key.hashCode(), intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            runCatching { am.cancel(pi) }
-        }
+        cancelArmed(context, context.getSystemService(AlarmManager::class.java), key)
         persist(context, load(context).filterNot { it.key == key })
     }
 

@@ -1,5 +1,6 @@
 package com.carecompanion.app.faultinjection
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -17,28 +18,41 @@ import org.junit.runner.RunWith
 /**
  * On-device fault injection for the reminder path, written for the ICISS camera-ready.
  *
- * These run on a real Android runtime against the real AlarmManager — not Robolectric —
- * because the claim under test is that a dose armed on this device survives the platform
- * doing what the platform does: deferring work, and restarting.
+ * These run on a real Android runtime against the real AlarmManager, because the claim
+ * under test is that a dose armed on this device survives the platform doing what the
+ * platform does: deferring work, and restarting.
  *
- * What these assert, and what they do NOT: a registered PendingIntent proves the alarm was
- * ACCEPTED by AlarmManager. It does not prove the alarm FIRED. Firing under Doze is
- * measured by the adb procedure in docs/fault-injection.md, not here, because forcing Doze
- * requires shell authority this process does not have. Keeping the two separate is
- * deliberate: this file must not be read as evidence of delivery.
+ * WHAT THE ORACLE MEANS. [armed] asks whether a PendingIntent token exists. That is only
+ * a valid proxy for "an alarm is live" because production now cancels the token alongside
+ * the alarm; `AlarmManager.cancel(pi)` on its own retires the alarm and leaves the token,
+ * so an earlier version of this file reported two false failures. If that production
+ * behaviour changes, this oracle silently stops meaning anything.
+ *
+ * WHAT THESE DO NOT SHOW. A live token proves the alarm was ACCEPTED by AlarmManager. It
+ * does not prove the alarm FIRED. Firing under Doze requires shell authority this process
+ * does not have and is measured by the adb procedure, not here. Do not cite this file as
+ * evidence of delivery.
  */
 @RunWith(AndroidJUnit4::class)
 class AlarmFaultInjectionTest {
 
     private lateinit var ctx: Context
 
-    private fun armed(key: String): PendingIntent? {
+    private fun pendingIntentFor(key: String, create: Boolean): PendingIntent? {
         val intent = Intent(ctx, Class.forName("com.carecompanion.app.reminder.ReminderReceiver"))
             .apply { action = "com.carecompanion.app.DOSE.$key" }
-        return PendingIntent.getBroadcast(
-            ctx, key.hashCode(), intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
+        val flags = (if (create) PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_NO_CREATE) or
+            PendingIntent.FLAG_IMMUTABLE
+        return PendingIntent.getBroadcast(ctx, key.hashCode(), intent, flags)
+    }
+
+    private fun armed(key: String): PendingIntent? = pendingIntentFor(key, create = false)
+
+    /** Clear the live alarm WITHOUT touching persistence — the state a device is in after a reboot. */
+    private fun simulateRebootLosingAlarms(key: String) {
+        val pi = pendingIntentFor(key, create = true)!!
+        ctx.getSystemService(AlarmManager::class.java)?.cancel(pi)
+        pi.cancel()
     }
 
     private fun dose(key: String, inMinutes: Long) = DoseAlarm(
@@ -73,31 +87,65 @@ class AlarmFaultInjectionTest {
     }
 
     /**
-     * Reboot: alarms do not survive a restart, so BootReceiver must re-arm from the
-     * persisted set. We cancel the live alarms without clearing persistence, which is the
-     * state a device is in immediately after booting, then deliver BOOT_COMPLETED.
+     * The orphaned-alarm defect, found by fault injection on an emulator.
+     *
+     * scheduleDoses() replaces the persisted set. It used not to cancel alarms for keys
+     * dropped from the new list, so a medicine deleted or re-timed during the day stayed
+     * armed while no longer being tracked: cancelAll() could not see it, and it still
+     * rang. That is a double-dose prompt, delivered silently.
      */
+    @Test fun a_dose_dropped_from_a_later_schedule_is_disarmed() {
+        ReminderScheduler.scheduleDoses(ctx, listOf(dose("fi-drop-a", 30), dose("fi-drop-b", 40)))
+        assertNotNull(armed("fi-drop-a"))
+        assertNotNull(armed("fi-drop-b"))
+
+        // The guardian deletes the first medicine; the next arming pass carries only the second.
+        ReminderScheduler.scheduleDoses(ctx, listOf(dose("fi-drop-b", 40)))
+
+        assertNull("a dose dropped from the schedule must not stay armed", armed("fi-drop-a"))
+        assertNotNull("the surviving dose must stay armed", armed("fi-drop-b"))
+    }
+
+    /** And the orphan must not outlive a sign-out either. */
+    @Test fun cancel_all_reaches_every_armed_dose() {
+        ReminderScheduler.scheduleDoses(ctx, listOf(dose("fi-all-a", 30), dose("fi-all-b", 40)))
+        ReminderScheduler.cancelAll(ctx)
+        assertNull(armed("fi-all-a"))
+        assertNull(armed("fi-all-b"))
+    }
+
+    /** Reboot: alarms do not survive a restart, so BootReceiver must re-arm from persistence. */
     @Test fun boot_completed_rearms_the_persisted_set() {
         ReminderScheduler.scheduleDoses(ctx, listOf(dose("fi-boot", 45)))
-        assertNotNull(armed("fi-boot"))
+        simulateRebootLosingAlarms("fi-boot")
+        assertNull("precondition: the alarm must be gone before the boot broadcast", armed("fi-boot"))
 
-        ReminderScheduler.cancelDose(ctx, "fi-boot-nonexistent")
         BootReceiver().onReceive(ctx, Intent(Intent.ACTION_BOOT_COMPLETED))
 
         assertNotNull("BootReceiver must re-arm the persisted dose", armed("fi-boot"))
     }
 
-    /** A boot broadcast that is not BOOT_COMPLETED must not be acted on. */
+    /** A broadcast that is not BOOT_COMPLETED must not re-arm anything. */
     @Test fun an_unrelated_broadcast_does_not_rearm() {
-        ReminderScheduler.cancelAll(ctx)
+        ReminderScheduler.scheduleDoses(ctx, listOf(dose("fi-unrelated", 45)))
+        simulateRebootLosingAlarms("fi-unrelated")
+
         BootReceiver().onReceive(ctx, Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED))
-        assertNull(armed("fi-boot"))
+
+        assertNull("only BOOT_COMPLETED may re-arm", armed("fi-unrelated"))
     }
 
-    /** Alarm keys are namespaced by source, so two sources must not collide. */
-    @Test fun distinct_sources_do_not_replace_one_another() {
-        ReminderScheduler.scheduleDoses(ctx, listOf(dose("med-0900", 30), dose("gen-0900", 30)))
-        assertNotNull(armed("med-0900"))
-        assertNotNull(armed("gen-0900"))
+    /**
+     * Key namespacing, using production's real key shapes: doses are "<scheduleId>-<date>"
+     * and general reminders are "rem-<id>-<time>-<date>". The hash of the key is both the
+     * PendingIntent request code and the notification id, so a collision means one
+     * silently replacing the other.
+     */
+    @Test fun a_dose_and_a_general_reminder_at_the_same_time_do_not_collide() {
+        val doseKey = "sched-4821-2026-11-09"
+        val reminderKey = "rem-4821-09:00-2026-11-09"
+        ReminderScheduler.scheduleDoses(ctx, listOf(dose(doseKey, 30), dose(reminderKey, 30)))
+        assertNotNull(armed(doseKey))
+        assertNotNull(armed(reminderKey))
     }
 }
