@@ -77,16 +77,15 @@ in the one situation the system exists for, it is actively harmful.
 
 \subsubsection{Contributions.} We contribute (i) an \emph{asymmetric dual-surface
 architecture} in which configuration authority and interface complexity are deliberately
-unequal across two clients over one care record, with the asymmetry measured from the
-implementation rather than asserted; (ii) \emph{out-of-band device binding}, a single-use
-code repairing an identity gap federated sign-in introduces, with an explicit threat model
-including the properties it does \emph{not} yet have; (iii) \emph{fail-honest alerting}, a
-discipline under which the interface never asserts an unobserved outcome, for which we name
-the exact event each confirmation reflects and report that our own implementation violated
-the rule; and (iv) an \emph{empirical defect taxonomy} from a structured audit, presented
-throughout as a single-system case study. This is a systems and design paper: we report
-conformance, interaction cost and defect data measured from the artefact, have run no user
-study, and make no usability, adherence or clinical claim (Section~\ref{sec:limits}).
+unequal across two clients over one care record, measured from the implementation rather
+than asserted; (ii) \emph{out-of-band device binding}, a single-use code repairing an
+identity gap federated sign-in introduces, with an explicit threat model; (iii)
+\emph{fail-honest alerting}, under which the interface never asserts an unobserved outcome,
+for which we name the exact event each confirmation reflects and report that our own
+implementation violated the rule; and (iv) an \emph{empirical defect taxonomy} presented
+throughout as a single-system case study. We report conformance, interaction cost and
+defect data measured from the artefact, have run no user study, and make no usability,
+adherence or clinical claim (Section~\ref{sec:limits}).
 
 \section{Related Work}
 
@@ -173,28 +172,34 @@ the code travels is deliberately unspecified --- spoken aloud, sent over any mes
 application, or typed by the caregiver on the older adult's device --- because the
 caregiver is present in the overwhelming majority of set-ups~\cite{quinn}.
 
-\subsubsection{Threat model, stated precisely.}
-We state what the primitive does and does not guarantee, because an earlier draft described
-the code as ``short-lived'', which a seven-day lifetime does not justify.
+\subsubsection{Threat model, and what review changed.}
+We state what the primitive guarantees, because an earlier draft described the code as
+``short-lived'', which a seven-day lifetime does not justify, and claimed security
+properties the implementation did not have.
 
-\emph{What holds.} Redemption is authenticated: the endpoint rejects any caller without a
-verified federated token and a provisioned account, so an anonymous attacker cannot reach
-the code-checking path. The code is single-use, a bound profile cannot be silently
-rebound, and unknown and expired codes return an identical message.
+\emph{What held already.} Redemption is authenticated: the endpoint rejects any caller
+without a verified federated token and a provisioned account. We verified this against the
+deployed service, which refuses guessed codes from an unauthenticated client before
+examining them. The code is single-use, a bound profile cannot be silently rebound, and
+unknown and expired codes return an identical message.
 
-\emph{What does not hold.} The code space is $10^6$. Over a seven-day window an
-authenticated attacker issuing requests without restriction would face an expected
-$5\times10^5$ attempts to hit a specific live code, and far fewer to hit \emph{any} live
-code once many are outstanding --- a birthday-style exposure growing with deployment size.
-The system implements \emph{no attempt limit, no lockout and no rate limiting}; we verified
-this by inspecting all fifteen database migrations. Redemption is also not atomic: the
-routine reads the code row and updates it later without row-level locking, so two
-concurrent redemptions can both observe it as unredeemed. An already-redeemed code returns
-a message distinct from the unknown-code message, which is a narrow enumeration oracle.
-None of these has been adversarially tested. The mitigations are standard and inexpensive
---- a per-account counter with back-off, \texttt{SELECT \ldots{} FOR UPDATE} on the code
-row, a shorter lifetime, a larger code space, and a uniform failure message --- and we
-report their absence rather than describing the primitive as secure.
+\emph{What review exposed, and what we then fixed.} Inspection of all fifteen database
+migrations found no attempt limit, no lockout and no rate limiting anywhere, against a code
+space of $10^6$ and a seven-day window; and redemption was not atomic, since both routines
+read the code row and updated it later without locking, so two concurrent redemptions could
+each observe it as unredeemed. We have since added a per-account failure counter that
+refuses further attempts after five failures in fifteen minutes and is cleared by a
+successful redemption, and taken a row lock on the code for the remainder of the
+transaction so a concurrent redemption blocks and then observes the row as spent.
+
+\emph{What remains.} An already-redeemed code still returns a message distinct from the
+unknown-code message, which is in principle an enumeration oracle. We retain it
+deliberately: collapsing it would tell an older adult holding a spent code only that the
+code is invalid, removing the hint that lets them recover without assistance, and attempt
+limiting makes enumerating $10^6$ through that oracle infeasible. The seven-day lifetime
+and the $10^6$ space are unchanged. The rate limiter has been deployed and the
+unauthenticated path tested, but the limiter itself has not been exercised end-to-end under
+an authenticated session, so we claim it as implemented and not as measured.
 
 \subsection{Fail-Honest Alerting}
 \label{sec:honest}
@@ -506,14 +511,14 @@ We state these plainly because the paper's credibility depends on it. \textbf{No
 has been conducted}: nobody outside the development team has used the system under
 observation, and every conformance number is a static property of the implementation.
 \textbf{No field measurement of delivery}: we have no distribution of delivery latency
-across manufacturers and power-management regimes. \textbf{No independent human rating and
-no fault injection}: the taxonomy comes from one application audited by its developers,
-checked only by the automated re-rating of Section~\ref{sec:defects}, and the binding
-primitive has not been adversarially tested. \textbf{Scope is ageing, not disability in
-general}: we have not evaluated the system with users whose motor, visual, cognitive or
-hearing impairments arise independently of ageing, and make no claim of general
-accessibility. \textbf{Localisation is untested with native speakers}. \textbf{Not a
-medical device}: the system gives no diagnostic or dosing advice.
+across manufacturers and power-management regimes. \textbf{No independent human rating}:
+the taxonomy comes from one application audited by its developers, checked only by the
+automated re-rating of Section~\ref{sec:defects}. \textbf{Limited adversarial testing}: the
+binding primitive's rate limiter is implemented but not exercised end-to-end under an
+authenticated session. \textbf{Scope is ageing, not disability in general}: we have not
+evaluated the system with users whose impairments arise independently of ageing, and make
+no claim of general accessibility. \textbf{Localisation is untested with native speakers}.
+\textbf{Not a medical device}: the system gives no diagnostic or dosing advice.
 
 \section{Conclusion}
 
@@ -529,10 +534,9 @@ judgements. That the discipline's own reference implementation still overstated 
 observed, until review caught it, is the sharpest evidence we can offer that naming the
 observed event must be a design requirement rather than an aspiration.
 
-\subsubsection{Artifact availability.}
-The manuscript, the measurement scripts that generate every figure in
-Section~\ref{sec:conf}, and the raw observation files are archived on Zenodo under the
-concept DOI \texttt{10.5281/zenodo.23601398}, which always resolves to the latest version.
+\subsubsection{Artifact availability.} The manuscript, the measurement scripts generating
+every figure, and the raw observation files are archived on Zenodo under the concept DOI
+\texttt{10.5281/zenodo.23601398}, which resolves to the latest version.
 
 \subsubsection{\ackname} We thank the anonymous reviewers, whose comments materially
 changed Sections~\ref{sec:binding}, \ref{sec:honest} and~\ref{sec:threats}.
@@ -544,8 +548,7 @@ United Nations Population Fund: India Ageing Report 2023: Caring for Our Elders 
 Institutional Responses. UNFPA India, New Delhi (2023)
 
 \bibitem{dfi}
-Data for India: Access to phones and the internet (2025).
-\url{https://www.dataforindia.com/comm-tech/}
+Data for India: Access to phones and the internet (2025)
 
 \bibitem{chakraborty}
 Chakraborty, D., Garg, C.: Navigating technology: mobile media usage and reticence among
@@ -602,8 +605,7 @@ K.G.M., Lohani, R., Xiong, T.: Design of a dyadic digital health module for chro
 shared care: development study. JMIR Human Factors \textbf{10}, e45035 (2023)
 
 \bibitem{doze}
-Android Developers: Optimize for Doze and App Standby.
-\url{https://developer.android.com/training/monitoring-device-state/}
+Android Developers: Optimize for Doze and App Standby (2024)
 
 \bibitem{wiecek}
 Wiecek, E., Taylor, S., Rourke, H., Hammond, F., Amador-Fernandez, N.: Mobile health apps
@@ -621,20 +623,17 @@ recognition interface for personal emergency response systems. Journal of NeuroE
 and Rehabilitation \textbf{6}, 26 (2009)
 
 \bibitem{playsms}
-Google Play Console Help: Use of SMS or Call Log permission groups.
-\url{https://support.google.com/googleplay/android-developer}
+Google Play Console Help: Use of SMS or Call Log permission groups (2024)
 
 \bibitem{playblog}
 Android Developers Blog: Reminder: SMS/Call Log policy changes (2019).
 Android Developers Blog (2019)
 
 \bibitem{m3}
-Material Design 3: Accessibility and touch target size.
-\url{https://m3.material.io/foundations/accessible-design}
+Material Design 3: Accessibility and touch target size (2024)
 
 \bibitem{wcag}
-W3C: Web Content Accessibility Guidelines (WCAG) 2.2. W3C Recommendation (2023).
-\url{https://www.w3.org/TR/WCAG22/}
+W3C: Web Content Accessibility Guidelines (WCAG) 2.2. W3C Recommendation (2023)
 
 \end{thebibliography}
 \end{document}

@@ -66,9 +66,13 @@ private val STRINGS: Map<String, Map<ElderLang, String>> = mapOf(
     "sending" to m("Sending alert…", "भेजा जा रहा है…", "पाठवत आहे…", "મોકલી રહ્યું છે…"),
     "cancel_im_ok" to m("CANCEL — I'm OK", "रद्द करें — मैं ठीक हूँ", "रद्द करा — मी ठीक आहे", "રદ કરો — હું બરાબર છું"),
     "location_shared_note" to m("Your location will be shared with your family", "आपका स्थान परिवार को भेजा जाएगा", "तुमचे स्थान कुटुंबाला पाठवले जाईल", "તમારું સ્થાન પરિવારને મોકલાશે"),
-    "alert_sent" to m("Alert Sent!", "अलर्ट भेजा गया!", "इशारा पाठवला!", "ચેતવણી મોકલાઈ!"),
-    "family_notified" to m("Your family has been notified", "आपके परिवार को सूचित किया गया", "तुमच्या कुटुंबाला कळवले", "તમારા પરિવારને જાણ કરાઈ"),
-    "guardians_pushed" to m("Sent to your family's phones", "परिवार के फ़ोन पर भेजा गया", "कुटुंबाच्या फोनवर पाठवले", "પરિવારના ફોન પર મોકલાયું"),
+    // These three name only what the app has OBSERVED: the server acknowledged storing
+    // the alert. They must not claim the family received, saw, or was notified of it —
+    // the app cannot see any of that. Changing them back to a completed-delivery claim
+    // reintroduces the defect this screen exists to prevent.
+    "alert_sent" to m("Alert received", "अलर्ट मिल गया", "इशारा मिळाला", "ચેતવણી મળી"),
+    "family_notified" to m("We are telling your family now", "हम आपके परिवार को बता रहे हैं", "आम्ही तुमच्या कुटुंबाला कळवत आहोत", "અમે તમારા પરિવારને જણાવી રહ્યા છીએ"),
+    "guardians_pushed" to m("Your family is being alerted", "आपके परिवार को अलर्ट भेजा जा रहा है", "तुमच्या कुटुंबाला इशारा पाठवला जात आहे", "તમારા પરિવારને ચેતવણી મોકલાઈ રહી છે"),
     // Manual fallback, shown only when the alert could not be delivered online.
     "send_text_to" to m("Send text to %s", "%s को मैसेज भेजें", "%s ला मेसेज पाठवा", "%s ને મેસેજ મોકલો"),
     "fallback_help" to m("Tap below — then press send in the message app", "नीचे दबाएँ — फिर मैसेज ऐप में भेजें दबाएँ", "खाली दाबा — मग मेसेज अ‍ॅपमध्ये पाठवा दाबा", "નીચે દબાવો — પછી મેસેજ એપમાં મોકલો દબાવો"),
