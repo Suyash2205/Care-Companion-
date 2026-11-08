@@ -66,7 +66,10 @@ object ReminderScheduler {
                 cancelArmed(context, am, stale.key)
             }
         }
-        persist(context, if (disarmDropped) future else (load(context) + future).distinctBy { it.key })
+        // distinctBy keeps the FIRST occurrence, so `future` must come first: a re-timed
+        // dose keeps its key, and persisting the stale entry would make a reboot re-arm
+        // the old time and lose the new one.
+        persist(context, if (disarmDropped) future else (future + load(context)).distinctBy { it.key })
         if (am == null) return
         future.forEach { arm(context, am, it) }
     }

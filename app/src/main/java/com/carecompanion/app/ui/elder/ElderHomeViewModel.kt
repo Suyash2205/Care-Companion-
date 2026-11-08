@@ -79,11 +79,24 @@ class ElderHomeViewModel @Inject constructor(
                 // too - nothing else in the app or on the server delivered them.
                 val remindersResult = runCatching { care.reminders(eid) }
                 val reminders = remindersResult.getOrDefault(emptyList())
-                _ui.value = ElderUiState(false, elder, doses, contacts, ott)
-                // Only retire alarms when we actually know what should be armed. A failed
-                // read returns an empty list, which is absence of evidence, not evidence
-                // of absence — acting on it switches off real reminders silently.
-                armAlarms(doses, reminders, readsComplete = logsResult.isSuccess && remindersResult.isSuccess)
+                if (logsResult.isFailure) {
+                    // We could not read which doses were answered, so every dose looks
+                    // pending. Arming on that re-arms a dose the elder already took —
+                    // the double-dose prompt this app exists to prevent — and showing it
+                    // as pending claims a state we never observed. Do neither: leave the
+                    // existing alarms alone and say plainly that we could not check.
+                    _ui.value = ElderUiState(
+                        false, elder, doses, contacts, ott,
+                        error = "Couldn't check which medicines you have already taken today. " +
+                            "The list below may show medicines you have had.",
+                    )
+                } else {
+                    _ui.value = ElderUiState(false, elder, doses, contacts, ott)
+                    // Only retire alarms when we know what should be armed. A failed read
+                    // returns an empty list, which is absence of evidence, not evidence of
+                    // absence — acting on it switches off real reminders silently.
+                    armAlarms(doses, reminders, readsComplete = remindersResult.isSuccess)
+                }
                 // Keep reminders working on days the elder never opens the app.
                 com.carecompanion.app.reminder.DailyArmWorker.ensureScheduled(appContext)
             } catch (e: Exception) {
