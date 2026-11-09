@@ -1,5 +1,5 @@
 % CareCompanion — ICISS 2027 camera-ready, Springer LNNS (llncs.cls v2.21)
-\documentclass[runningheads]{llncs}
+\documentclass[runningheads,a4paper]{llncs}
 
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
@@ -35,11 +35,11 @@ text size of 20\,sp against 13\,sp on the caregiver surface, and every primary c
 equals or exceeds 64\,dp against a 48\,dp platform minimum. Out-of-band device binding
 resolves an identity gap federated sign-in creates: a single-use numeric code binds the
 older adult's device to a care profile, replacing phone-number matching. Fail-honest
-alerting requires the interface never to assert an outcome it has not observed; we state
-precisely which event each confirmation reflects, and show our own first implementation
-violated this rule. As a single-system case study, an audit of the feature-complete system
-found 13 defects, of which 8 would have failed with no user-visible signal, including two
-features written, stored and never delivered; a blind re-rating supported that figure while
+alerting requires the interface never to assert an outcome it has not observed; we name
+the event each confirmation reflects, and show our own first implementation violated the
+rule. As a single-system case study, an audit found 13 defects, of which 8
+would have failed with no user-visible signal, including two features written, stored and
+never delivered; a blind re-rating supported that figure while
 showing it turns on three borderline judgements. We report the taxonomy, the mechanisms
 addressing each class, and what remains unevaluated: no user study, and no rate limiting on
 the binding code.
@@ -53,8 +53,8 @@ Accessibility \and Dependability \and Android \and Case study.}
 India is experiencing rapid population ageing: the United Nations Population Fund projects
 its population aged 60 and over will grow by 134\% between 2022 and 2050, and that aged 80
 and over by 279\%~\cite{unfpa}. Digital access remains uneven, since internet use declines
-substantially with age~\cite{dfi}, and among older adults in rural India --- particularly
-women --- shared handsets and limited digital literacy are the norm~\cite{chakraborty,khare}.
+substantially with age~\cite{dfi}, and among older adults in rural India, particularly
+women, shared handsets and limited digital literacy are the norm~\cite{chakraborty,khare}.
 Randomised evidence suggests mobile reminder tools help with medication non-adherence but do
 not solve it~\cite{poor,salmensuu}.
 
@@ -69,7 +69,7 @@ application. It can be a different application altogether.
 
 A second assumption is more consequential and under-examined: that when the system reports
 success, it has succeeded. Emergency and reminder paths are unreliable in ways the
-application can observe but frequently does not check --- Doze and App Standby defer alarms
+application can observe but frequently does not check. Doze and App Standby defer alarms
 and network access during idle~\cite{doze}, manufacturer power management is more aggressive
 still, and push depends on connectivity an older adult at home may not have. An interface
 that renders a green tick on an emergency alert it never delivered is not merely unhelpful;
@@ -108,8 +108,8 @@ Nimmanterdwong et al.\ review human-centred design practice~\cite{nimman}. This 
 establishes the dyad as the unit of design; we extend it architecturally, building two
 surfaces of deliberately unequal complexity over one access-controlled record rather than
 one application used by two people. Personal emergency response systems have a documented
-failure mode --- Hamill et al.\ report estimates attributing as much as 85\% of call-centre
-traffic to false alarms~\cite{hamill} --- motivating our cancellable grace period. The
+failure mode. Hamill et al.\ report estimates attributing as much as 85\% of call-centre
+traffic to false alarms~\cite{hamill}, which motivates our cancellable grace period. The
 complementary failure, an alarm believed raised that reached nobody, is less discussed.
 Across these strands, legibility and efficacy are well covered; delivery honesty and
 deployability under platform policy are not.
@@ -143,7 +143,7 @@ Contacts there are photo-first, so recognition does not depend on reading a name
 
 The asymmetry is the design. Because no configuration occurs on the elder surface, it has
 no forms to validate, no destructive actions to guard, no navigation deeper than two levels
-and no state the older adult can corrupt --- which is what makes generous type and target
+and no state the older adult can corrupt, which is what makes generous type and target
 sizing affordable, since a screen accommodating a scheduling form cannot also give every
 control 96\,dp of height. Both surfaces authenticate with a federated identity provider and
 address the same record through a per-row access boundary: thirty-three row-level policies
@@ -168,8 +168,8 @@ Section~\ref{sec:defects} returns to this as an instance of a general hazard.
 The repair is an out-of-band binding primitive. The caregiver requests a six-digit code
 bound to the profile; it is single-use and expires after seven days. On the older adult's
 device, after federated sign-in, entering the code claims the profile. The channel by which
-the code travels is deliberately unspecified --- spoken aloud, sent over any messaging
-application, or typed by the caregiver on the older adult's device --- because the
+the code travels is deliberately unspecified: spoken aloud, sent over any messaging
+application, or typed by the caregiver on the older adult's device. The reason is that the
 caregiver is present in the overwhelming majority of set-ups~\cite{quinn}.
 
 \subsubsection{Threat model, and what review changed.}
@@ -246,7 +246,7 @@ for the paper's thesis.
 Reminders must fire on a device the application may not be running on, under an operating
 system suppressing background work~\cite{doze}. An early revision armed the day's alarms
 only when the older adult opened the application, so an older adult who did not open it
-received no reminders that day --- precisely the user for whom they exist. We now arm
+received no reminders that day, precisely the user for whom they exist. We now arm
 through three independent paths: on application open; from a periodic worker re-arming the
 current day every four hours, skipping answered doses; and from a boot-completed receiver
 re-arming from a persisted set, since alarms do not survive a restart. Two correctness
@@ -254,7 +254,7 @@ properties proved necessary. Alarm keys must be namespaced by source, because th
 hash serves as both pending-intent request code and notification identifier, so an
 un-namespaced key let a general reminder and a medication dose replace one another. And
 answering a dose must cancel its pending alarm, or an older adult who takes a tablet early
-is told to take it again at the scheduled time --- a prompt toward double-dosing generated
+is told to take it again at the scheduled time: a prompt toward double-dosing generated
 by an adherence tool.
 
 \subsection{Permission-Minimal Degradation and Localisation}
@@ -419,7 +419,7 @@ no message, which seventeen call sites rendered as an empty error.
 Because the classification was made by the system's developers, we obtained a blind
 re-rating: each defect was reduced to a mechanism-only description with the label removed
 and classified against a written rubric by a rater with no access to the repository, the
-paper, or the original labels. We report this precisely --- the rater was a large language
+paper, or the original labels. We report this precisely. The rater was a large language
 model, not an independent human expert, and does not substitute for one. On the twelve
 items comparable between the sheets the raters agreed on eleven ($\kappa = 0.82$),
 differing only on whether an empty error message is a visible failure signal; the rater
@@ -437,7 +437,7 @@ never recorded.
 Two observations are candidates for transfer, offered as hypotheses rather than findings.
 Identity-model migration produces latent dead features: moving to federated sign-in
 silently invalidated every path using a telephone number as a join key, and nothing failed
-loudly. And unit suites do not detect unreachable features --- our 142 tests passed
+loudly. And unit suites do not detect unreachable features: our 142 tests passed
 throughout the period two features delivered nothing, because each component behaved
 correctly in isolation and the defect lay in the absence of a caller.
 
@@ -464,7 +464,7 @@ the failure this system exists to prevent, and it was silent until the moment it
 
 Two methodological points follow. First, the defect is invisible to source review of any
 one function: each of arming, cancelling and persisting is correct alone, and the fault is
-in the state they jointly leave behind --- the same shape as the unreachable features of
+in the state they jointly leave behind, the same shape as the unreachable features of
 Section~\ref{sec:defects}, where the defect lay in the absence of a caller. Second, our
 first version of these tests reported two failures against correct behaviour and one pass
 that asserted nothing, because the oracle tested whether a pending-intent token existed
@@ -474,7 +474,7 @@ only because the run was cross-checked against the platform's own alarm table.
 
 The repair then failed the same way, which is the most instructive part. Both arming paths
 obtain the day's reminders inside a construct that yields an empty list when the request
-fails, and our fix read that emptiness as authoritative --- so a single timed-out request
+fails, and our fix read that emptiness as authoritative, so a single timed-out request
 would have disarmed every general reminder for the day, silently. Review caught it before
 it shipped, and the same shape turned out to predate the fix on the adherence read, where a
 failed load makes an answered dose look pending and re-arms it. The rule this paper applies
@@ -522,8 +522,8 @@ for any feature whose value is delivery, test the delivery rather than the stora
 The measured gap between the surfaces results not from applying guidelines harder on one
 screen but from removing work from it: type and target size compete with information
 density. By moving configuration to the caregiver, the elder surface gains an accessibility
-budget to spend on sizing and shallow navigation. We suggest this reframing --- asymmetry
-as a budget rather than as simplification --- is the transferable idea, and that it is a
+budget to spend on sizing and shallow navigation. We suggest this reframing, asymmetry
+as a budget rather than as simplification, is the transferable idea, and that it is a
 design insight rather than a new algorithm. Relatedly, store permission policy determined
 our emergency path's architecture, and a design that cannot be distributed cannot
 accumulate the longitudinal evidence the field needs.
@@ -540,7 +540,7 @@ evaluation grows with policy count. Large-scale performance has not been benchma
 The next step is measurement. The fault-injection suite of Section~\ref{sec:faults} must be
 completed on physical handsets across manufacturer power-management regimes, which the
 emulator cannot represent. Beyond that, a formative study with older adult--caregiver dyads
---- as a reviewer suggested --- measuring the delivery-level outcomes the literature usually
+(as a reviewer suggested) measuring the delivery-level outcomes the literature usually
 assumes: the proportion of scheduled reminders actually presented by the device, time from
 alarm activation to caregiver acknowledgement, and frequency of the degraded emergency path.
 
@@ -566,8 +566,8 @@ CareCompanion rests on three commitments: an asymmetric dual-surface architectur
 the older adult an accessibility budget by removing configuration from their device;
 out-of-band binding that repairs an identity gap federated sign-in introduces; and
 fail-honest alerting, under which the interface never asserts an outcome it has not
-observed. The asymmetry is measurable --- a median 20\,sp against 13\,sp, every primary
-control at or above 64\,dp --- and the case study shows why the honesty discipline matters:
+observed. The asymmetry is measurable: a median 20\,sp against 13\,sp, every primary
+control at or above 64\,dp. The case study shows why the honesty discipline matters:
 on the authors' classification 8 of 13 defects would have failed without any user-visible
 signal, a figure a blind re-rating supported while showing it rests on three borderline
 judgements. That the discipline's own reference implementation still overstated what it had
