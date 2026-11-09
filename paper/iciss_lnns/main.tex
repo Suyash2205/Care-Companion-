@@ -64,8 +64,6 @@ its population aged 60 and over will grow by 134\% between 2022 and 2050, and th
 and over by 279\%~\cite{unfpa}. Digital access remains uneven, since internet use declines
 substantially with age~\cite{dfi}, and among older adults in rural India, particularly
 women, shared handsets and limited digital literacy are the norm~\cite{chakraborty,khare}.
-Randomised evidence suggests mobile reminder tools help with medication non-adherence
-without solving it~\cite{poor,salmensuu}.
 
 The usability literature is clear about what makes an interface hard for an older adult:
 small text is repeatedly the most-cited barrier, touch targets are too small for reduced
@@ -103,14 +101,14 @@ Systematic reviews of mobile design for older adults consistently identify text 
 target size, icon interpretability and navigation complexity as the dominant
 barriers~\cite{awan,elguera,liu}, and guideline syntheses converge on enlarged type and
 targets, shallow navigation and error tolerance~\cite{gomez,amouzadeh}. Our elder surface
-implements this consensus; the contribution is not the guidelines but the demonstration
-that offloading configuration to a second surface is what makes conformance affordable. On
+implements this consensus; the contribution is not the guidelines but the demonstration that
+offloading configuration to a second surface is what makes conformance affordable. On
 adherence, Poorcheraghi et al.\ report a randomised trial finding improved adherence and
 reduced readmission~\cite{poor}, Salmensuu et al.\ review reminder technologies for
 home-dwelling older citizens~\cite{salmensuu}, and Wiecek et al.\ report real-world
-engagement evidence~\cite{wiecek}. These evaluate outcomes; they do not generally report
-whether reminders were delivered by the operating system as scheduled, which
-Section~\ref{sec:arming} treats as a first-class engineering problem.
+engagement evidence~\cite{wiecek}. These evaluate outcomes, not whether the operating system
+delivered the reminders as scheduled, which Section~\ref{sec:arming} treats as a first-class
+engineering problem.
 
 Quinn et al.\ observed interaction was predominantly caregiver-mediated~\cite{quinn},
 Benmessaoud et al.\ designed a dyadic module for shared care~\cite{benmessaoud}, and
@@ -134,16 +132,6 @@ counting rule and use it throughout: a \emph{navigation destination} is one entr
 in the client's navigation graph, counted from the source. By that rule the caregiver
 surface has 20 destinations and the elder surface 7, plus a one-time binding screen reached
 only at set-up and not part of the running surface.
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=0.40\textwidth]{fig_arch.png}
-\caption{System structure. Two clients of deliberately unequal complexity share one care
-record behind a per-row access boundary that derives identity from the caller's token.
-The out-of-band binding step (bottom) establishes which physical device belongs to which
-older adult, a link federated sign-in does not provide.}
-\label{fig:arch}
-\end{figure}
 
 The caregiver surface carries the system's full management vocabulary: profiles,
 medicines, schedules, reminders, contacts, vitals, adherence history, shortcuts, shared
@@ -171,14 +159,13 @@ federated sign-in, which returns an email address and a provider subject identif
 telephone number. After migrating, the stored number for every account was the empty string
 and the predicate could never be satisfied. The failure was silent: links sat pending while
 the resolution routine compared an empty string against a real number indefinitely.
-Section~\ref{sec:defects} returns to this as an instance of a general hazard.
 
 The repair is an out-of-band binding primitive. The caregiver requests a six-digit code
 bound to the profile; it is single-use and expires after seven days. On the older adult's
-device, after federated sign-in, entering the code claims the profile. The channel by which
-the code travels is deliberately unspecified: spoken aloud, sent over any messaging
-application, or typed by the caregiver on the older adult's device. The reason is that the
-caregiver is present in the overwhelming majority of set-ups~\cite{quinn}.
+device, after federated sign-in, entering the code claims the profile. The channel is
+deliberately unspecified --- spoken aloud, sent over any messaging application, or typed by
+the caregiver on the older adult's device --- because the caregiver is present in the
+overwhelming majority of set-ups~\cite{quinn}.
 
 \subsubsection{Threat model, and what review changed.}
 We state what the primitive guarantees, because an earlier draft described the code as
@@ -186,9 +173,8 @@ We state what the primitive guarantees, because an earlier draft described the c
 properties the implementation did not have.
 
 \emph{What held already.} Redemption is authenticated: the endpoint rejects any caller
-without a verified federated token and a provisioned account. We verified this against the
-deployed service, which refuses guessed codes from an unauthenticated client before
-examining them. The code is single-use, a bound profile cannot be silently rebound, and
+without a verified federated token and a provisioned account, which we verified against the
+deployed service. The code is single-use, a bound profile cannot be silently rebound, and
 unknown and expired codes return an identical message.
 
 \emph{What review exposed, and what we then fixed.} Inspection of all fifteen database
@@ -226,9 +212,9 @@ confirmation shown to the older adult is permitted by exactly one event: \textbf
 acknowledged persistence of the alert record}. It is not push acceptance by the provider,
 delivery to a caregiver device, display of a notification, or acknowledgement by a human
 caregiver. The failure state is entered when that write is unacknowledged after the final
-attempt; it states plainly that the alarm was not delivered and offers two large controls,
-one handing the device's messaging application a pre-composed message with a location link,
-the other dialling the primary contact.
+attempt; it says plainly that the alarm was not delivered and offers two large controls,
+one handing the messaging application a pre-composed message with a location link, the
+other dialling the primary contact.
 
 The distinction is not pedantic. Caregiver acknowledgement exists in the data model and
 appears on the caregiver's monitor, but is not propagated back to the older adult's device.
@@ -238,8 +224,8 @@ and is planned work. The shipped build's string reads ``Sent to your family's ph
 which overstates what the rule above observes; the current source names server receipt.
 
 An earlier revision displayed this confirmation unconditionally, so an older adult could be
-shown a green tick for an emergency event that never reached the server. The class is the
-most serious a care system can contain, because it converts a recoverable failure into an
+shown a green tick for an emergency event that never reached the server --- the most
+serious class a care system can contain, because it converts a recoverable failure into an
 unrecoverable one: a user who believes help is coming stops seeking it.
 
 \subsection{Redundant Reminder Arming}
@@ -285,46 +271,34 @@ because one method is parameterised over six HTTP status codes. It runs on the J
 shadowed Android runtime, concentrated where silent failure is most likely: alarm
 scheduling and cancellation, offline durability, delivery-contract behaviour of the push
 path, translation-table integrity, and a regression test per defect in
-Section~\ref{sec:defects}. Static analysis reports no errors at release configuration.
-It is a unit-level suite on a shadowed runtime with no device-level or network-level fault
-injection; that is reported separately in Section~\ref{sec:faults}.
+Section~\ref{sec:defects}. Static analysis reports no errors at release configuration. It
+is a unit-level suite on a shadowed runtime with no device-level or network-level fault
+injection; that is reported separately in Section~\ref{sec:faults}. The application declares
+eleven permissions, none restricted --- two in an earlier revision were removed in favour of
+the user-mediated path of Section~\ref{sec:perm} --- and the release artefact is 20\,MB,
+not published to the store.
 
 Preparing this revision surfaced an instance of our own thesis in our own tooling. The
 Gradle configuration sets \texttt{ignoreFailures} on unit tests, so the build prints
 \textsc{build successful} irrespective of results; an independent run found all tests
 passing in the debug variant but ten Compose interface tests failing in the release
 variant, a test-configuration defect invisible from the build's own exit status. We had
-read that exit status as evidence the suite was green. A build that reports success it has
-not observed is the same defect class as an interface that does, and we report it rather
-than quietly correcting it.
+read that exit status as evidence the suite was green. A build reporting success it has not
+observed is the same defect class as an interface that does.
 
-\begin{table}[!htb]
-\caption{Implementation size from the repository. Counts are of \emph{source files}, not
-navigation destinations.}
-\label{tab:size}
-\centering\small
-\begin{tabular}{lrr}
-\toprule
-Component & Files & Lines\\
-\midrule
-Caregiver surface & 27 & 3,942\\
-Elder surface & 6 & 1,271\\
-Data access and models & 12 & 1,082\\
-Reminder, alarm, push and auth & 7 & 555\\
-\midrule
-Application total (Kotlin) & 83 & 13,473\\
-Automated tests (Kotlin) & 26 & 3,010\\
-Database migrations (SQL) & 15 & 1,121\\
-\bottomrule
-\end{tabular}
-\end{table}
+Measured from the repository, the application is 83 Kotlin files and 13,473 lines, with 26
+test files (3,010 lines) and 15 SQL migrations (1,121 lines). The asymmetry shows in the
+source as well as the interface: the caregiver surface is 27 files and 3,942 lines against
+the elder surface's 6 and 1,271, with 12 files (1,082 lines) of data access and models and
+7 (555 lines) of reminder, alarm, push and authentication code. These are counts of
+\emph{source files}, not navigation destinations.
 
 \section{Evaluation}
 
 We evaluate three properties measurable from the artefact: conformance of the elder surface
 to age-friendly sizing guidance, interaction cost, and the defect profile. All figures are
 generated by a script parsing the source directly, so they cannot drift from the
-implementation. None is a usability result.
+implementation.
 
 \subsection{Conformance of the Elder Surface}
 \label{sec:conf}
@@ -341,9 +315,9 @@ screen; median 76\,dp, emergency control 130\,dp.}
 
 The elder surface has a median declared text size of 20\,sp against 13\,sp for the
 caregiver surface, and 16.4\% of its declarations fall below 16\,sp against 79.7\% on the
-caregiver surface; the residual small sizes are supporting captions rather than primary
-content. Because the elder surface composes a user-selected scale of 1.0, 1.15 or 1.3 with
-the operating system's own font scaling, the effective floor rises further when either is
+caregiver surface; the residual small sizes are supporting captions, not primary content.
+Because the elder surface composes a user-selected scale of 1.0, 1.15 or 1.3 with the
+operating system's own font scaling, the effective floor rises further when either is
 increased. The smallest primary control is 64\,dp, one third above the 48\,dp platform
 minimum~\cite{m3} and above the $44\times44$ recommendation associated with WCAG~2.2
 AAA~\cite{wcag} --- indicatively, since WCAG is specified in CSS rather than
@@ -359,8 +333,7 @@ a dose from its reminder costs three, down from four, after routing the notifica
 directly to the medication screen rather than the home screen. The saving sounds trivial
 and is not: each intermediate screen is an opportunity to lose the thread, and an
 unconfirmed dose is recorded as missed and shown to the caregiver as possible
-non-adherence. Interaction cost here is coupled to data quality, not only convenience.
-These counts are analytic, not observed task times.
+non-adherence, so interaction cost here is coupled to data quality, not only convenience.
 
 \subsection{Defect Profile: A Single-System Case Study}
 \label{sec:defects}
@@ -372,28 +345,11 @@ recording every defect and classifying each by whether a user could have detecte
 the interface alone. Every defect was corrected, each correction traceable to a commit and
 to the regression test added for it.
 
-\begin{table}[!htb]
-\caption{Defects in the audit window, with the authors' classification of detectability
-from the interface alone.}
-\label{fig:defects}
-\centering\small
-\begin{tabular}{lcl}
-\toprule
-Class & $n$ & Detectable from the interface?\\
-\midrule
-Unreachable feature & 3 & No\\
-Lost state / race & 3 & No\\
-Silent failure & 2 & No\\
-Perception / contrast & 2 & Yes\\
-Scheduling correctness & 1 & Yes\\
-Interaction cost & 1 & Yes\\
-Visual consistency & 1 & Yes\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Thirteen defects were found. On the authors' classification, 8 of 13 were silent: the
-operation failed or never occurred while the interface reported success or reported
+Thirteen defects were found, in seven classes. On the authors' classification eight were
+undetectable from the interface --- unreachable features (3), lost state or races (3) and
+silent failures (2) --- and five were detectable: perception or contrast (2), and
+scheduling correctness, interaction cost and visual consistency (1 each). Silent here means
+the operation failed or never occurred while the interface reported success or reported
 nothing. Three classes deserve comment. \textbf{Unreachable features (3):} two complete
 features --- general reminders for hydration and activity, and the caregiver invitation
 path --- were written, exercised by the caregiver, stored correctly and delivered to
@@ -421,12 +377,12 @@ reclassified, the silent proportion would fall to 5/13. The headline therefore r
 judgement applied to three items, and we state it that way rather than reporting 62\% as
 though it were robust.
 
-Two observations are candidates for transfer, offered as hypotheses rather than findings.
+Two observations are candidates for transfer, as hypotheses rather than findings.
 Identity-model migration produces latent dead features: moving to federated sign-in
 silently invalidated every path using a telephone number as a join key, and nothing failed
-loudly. And unit suites do not detect unreachable features: our 142 tests passed
-throughout the period two features delivered nothing, because each component behaved
-correctly in isolation and the defect lay in the absence of a caller.
+loudly. And unit suites do not detect unreachable features: our 142 tests passed throughout
+the period two features delivered nothing, because each component behaved correctly in
+isolation and the defect lay in the absence of a caller.
 
 \subsection{What Fault Injection Found}
 \label{sec:faults}
@@ -456,28 +412,21 @@ failures against correct behaviour and one pass that asserted nothing, because t
 tested whether a pending-intent token existed rather than whether an alarm was live; we
 found it only by cross-checking the run against the platform's own alarm table.
 
-The repair failed the same way, which is the most instructive part. Both arming paths
-obtain the day's reminders inside a construct yielding an empty list when the request
-fails, and our fix read that emptiness as authoritative, so one timed-out request would
-have silently disarmed every general reminder for the day. Review caught it before it
-shipped, and the shape predated the fix on the adherence read, where a failed load makes an
-answered dose look pending and re-arms it. The rule this paper applies to interfaces has an
-exact analogue one layer down: never act on data you did not receive. An empty result and a
-failed request are not the same value, and a construct collapsing them invites precisely
-the silent failures catalogued here.
-
-\subsection{Deployability}
-The application declares eleven permissions, none restricted --- two in an earlier revision
-were removed in favour of the user-mediated path of Section~\ref{sec:perm}. The release
-artefact is 20\,MB and has not been published to the store.
+The repair failed the same way, which is the most instructive part. Both arming paths obtain
+the day's reminders inside a construct yielding an empty list when the request fails, and
+our fix read that emptiness as authoritative, so one timed-out request would have silently
+disarmed every general reminder for the day. Review caught it before it shipped, and the
+shape predated the fix on the adherence read, where a failed load makes an answered dose
+look pending and re-arms it. The rule this paper applies to interfaces has an exact analogue
+one layer down: never act on data you did not receive. An empty result and a failed request
+are not the same value.
 
 \section{Discussion}
 
 \subsection{Silence Is the Dominant Risk}
-Most defects in this feature-complete care application were invisible from the interface,
-which matters more here than it would for, say, a photo application. The older adult often
-cannot diagnose a silent failure, and the caregiver --- the person who could --- is looking
-at a different device also reporting success. A missing reminder produces no artefact at
+Most defects in this feature-complete care application were invisible from the interface.
+The older adult often cannot diagnose a silent failure, and the caregiver --- the person who
+could --- is looking at a different device also reporting success. A missing reminder produces no artefact at
 all: its absence is indistinguishable from a day with no medication due, and the adherence
 record the caregiver trusts attributes the gap to the older adult. We therefore propose an
 explicit honesty discipline: acknowledge only observed outcomes and name which outcome was
@@ -489,19 +438,19 @@ The measured gap between the surfaces results not from applying guidelines harde
 screen but from removing work from it: type and target size compete with information
 density. By moving configuration to the caregiver, the elder surface gains an accessibility
 budget to spend on sizing and shallow navigation. This reframing --- asymmetry as a budget
-rather than as simplification --- is the transferable idea, and a design insight rather
-than a new algorithm. Relatedly, store permission policy determined our emergency path's
+rather than as simplification --- is the transferable idea, and a design insight rather than
+a new algorithm. Store permission policy likewise determined our emergency path's
 architecture, and a design that cannot be distributed cannot accumulate the longitudinal
 evidence the field needs.
 
 \subsection{Scalability and Path to Evaluation}
 
 Care circles are disjoint and queries are scoped to a profile, so growth should be
-horizontal, and reminder scheduling happens on the device, so the server is not a timing
-authority. The identified risks are ordinary rather than architectural: push-token churn
-needs re-synchronisation on session restore, which we implement; the scheduled scan for
-unanswered doses is a single point of failure needing partitioning; and per-row policy
-evaluation grows with policy count. Large-scale performance is not benchmarked.
+horizontal, and scheduling happens on the device, so the server is not a timing authority.
+The identified risks are ordinary rather than architectural: push-token churn needs
+re-synchronisation on session restore, which we implement; the scan for unanswered doses is
+a single point of failure needing partitioning; and per-row policy evaluation grows with
+policy count. Large-scale performance is not benchmarked.
 
 The next step is measurement. The suite of Section~\ref{sec:faults} must be completed on
 physical handsets across manufacturer power-management regimes, which an emulator cannot
@@ -514,8 +463,8 @@ caregiver acknowledgement, and frequency of the degraded emergency path.
 \label{sec:limits}
 \label{sec:threats}
 
-We state these plainly because the paper's credibility depends on it. \textbf{No user
-study}: nobody outside the development team has used the system under observation. Every
+\textbf{No user study}: nobody outside the development team has used the system under
+observation. Every
 conformance number is a static property of the source, saying nothing about perception or
 comprehension, and the tap counts are analytic. \textbf{No field measurement of delivery}:
 we have no distribution of delivery latency across manufacturers and power-management
@@ -537,14 +486,13 @@ medical device}: the system gives no diagnostic or dosing advice.
 
 \section{Conclusion}
 
-CareCompanion rests on three commitments: an asymmetric dual-surface architecture buying
-the older adult an accessibility budget by removing configuration from their device;
-out-of-band binding repairing an identity gap federated sign-in introduces; and fail-honest
-alerting, under which the interface never asserts an outcome it has not observed. The
-asymmetry is measurable: a median 20\,sp against 13\,sp, every primary control at or above
-64\,dp. The case study shows why the honesty discipline matters: on the authors'
-classification 8 of 13 defects would have failed with no user-visible signal, a figure the
-blind re-rating supported while showing it rests on three borderline judgements. That the
+CareCompanion rests on three commitments: an asymmetric dual-surface architecture buying the
+older adult an accessibility budget by removing configuration from their device; out-of-band
+binding repairing an identity gap federated sign-in introduces; and fail-honest alerting,
+under which the interface never asserts an outcome it has not observed. The asymmetry is
+measurable at a median 20\,sp against 13\,sp; the case study shows why the honesty
+discipline matters, with 8 of 13 defects failing silently on a classification the blind
+re-rating supported while showing it rests on three borderline judgements. That the
 discipline's own reference implementation still overstated what it had observed, until
 review caught it, is the sharpest evidence we can offer that naming the observed event must
 be a design requirement rather than an aspiration.

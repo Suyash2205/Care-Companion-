@@ -108,17 +108,22 @@ a new algorithm.
 
 ### R2.1 — "Fig. 1 states 11 caregiver / 6 elder screens, while the text states 17 navigation destinations and 7 elder screens. Please reconcile."
 
-**The figure does not say 11/6 — but checking this found a real error of ours, so thank
-you.** Figure 1 in the submitted PDF reads *"17 destinations"* and *"7 screens"*, matching
-the text. We believe the confusion arose from Table 1, which lists the elder surface as
-**6** — that is a count of *source files*, not screens, and sat two pages from a figure
-saying 7.
+**The figure did not say 11/6 — but checking this found a real error of ours, so thank
+you.** The architecture figure in the submitted PDF read *"17 destinations"* and *"7
+screens"*, matching the text. We believe the confusion arose from the implementation-size
+table, which listed the elder surface as **6** — a count of *source files*, not screens,
+sitting two pages from a figure saying 7.
 
 Counting from the navigation graph, the caregiver surface registers **20** destinations,
-not 17. Our number was wrong; the figure was not. The paper now fixes a counting rule
-("one entry registered in the client's navigation graph"), states 20 and 7 plus a one-time
-binding screen, and Table 1's caption says explicitly that its counts are of source files
-and should not be conflated with destinations.
+not 17. Our number was wrong; the figure was not.
+
+The camera-ready removes the ambiguity at its source. Section 3.1 now fixes a counting rule
+("one entry registered in the client's navigation graph") and states 20 and 7 plus a
+one-time binding screen. The architecture schematic and the size table are both gone — the
+page budget required cuts, and these were the two items whose content the surrounding prose
+already carried — so the two conflicting counts no longer appear side by side. The
+source-file figures are retained in the text of Section 4 and labelled there as counts of
+source files, not navigation destinations.
 
 ### R2.2 — "A 6-digit code valid for seven days is not 'short-lived'. Describe the rate limiting or lockout that prevents brute-forcing the 10^6 code space."
 
@@ -142,8 +147,8 @@ to. Limitations now states this scope boundary explicitly.
 
 ### R2.5 — "Reformat to the Springer LNNS template."
 
-**Done.** The camera-ready uses `llncs.cls` v2.21, within the 12-page allowance plus one
-chargeable page.
+**Done.** The camera-ready uses `llncs.cls` v2.21, A4, and fits the 12-page allowance
+with no chargeable pages.
 
 ### R2.6 — "A small formative study with older adult–caregiver dyads would be a valuable next step."
 
