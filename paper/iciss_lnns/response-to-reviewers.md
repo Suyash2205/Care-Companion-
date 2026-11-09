@@ -1,6 +1,6 @@
 # Response to reviewers — ICISS 2027, Paper 31
 
-**CareCompanion: Assistive Companion Mobile Application for Elderly and Disabled Users**
+**CareCompanion: An Assistive Companion Mobile Application for Older Adults**
 
 We thank both reviewers. Three comments identified claims our implementation did not
 support, and checking them against the source changed the paper rather than only its
@@ -139,14 +139,13 @@ than findings.
 
 ### R2.4 — "The title mentions 'Disabled Users', but the design and evaluation address only ageing. Adjust the title or add content."
 
-**Addressed in the text rather than the title.** We have retained the accepted title so
-that the camera-ready, the CMT record and the indexed proceedings entry all agree. We
-agree with the substance of the comment, and have answered it where the claim is actually
-made: Section 7 now states explicitly that the scope is ageing, not disability in general,
-that we have not evaluated the system with users whose impairments arise independently of
-ageing, and that we claim no general accessibility. We considered adding disability
-content instead, but doing so without such an evaluation would be precisely the
-unsupported claim Reviewer 1 objects to.
+**Accepted; we narrowed the title.** It is now *CareCompanion: An Assistive Companion
+Mobile Application for Older Adults*. We kept the form of the accepted title so the paper
+stays recognisable in the CMT record and the proceedings index, and removed the claim the
+comment objected to. We considered adding disability content instead, but doing so without
+having evaluated the system with users whose impairments arise independently of ageing
+would be precisely the unsupported claim Reviewer 1 objects to. Section 7 now states that
+scope boundary explicitly.
 
 ### R2.5 — "Reformat to the Springer LNNS template."
 
