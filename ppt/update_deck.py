@@ -270,11 +270,11 @@ def slide_paper(prs):
             "• Figures generated from the application source",
         ]),
         ("Submission", [
-            "Submitted to ICISS 2027",
+            "Accepted at ICISS 2027 — paper 31",
             "www.iciss2027.in",
             "",
             "• Peer review managed through Microsoft CMT",
-            "• Status: under review",
+            "• Status: accepted, camera-ready due 15 Nov 2026",
             "• All references verified against Crossref",
         ]), size=11)
     return s
