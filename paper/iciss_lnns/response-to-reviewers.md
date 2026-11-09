@@ -147,7 +147,7 @@ chargeable page.
 
 ### R2.6 — "A small formative study with older adult–caregiver dyads would be a valuable next step."
 
-**Agreed, and adopted as the stated plan.** Section 7 now sets out a two-stage path:
+**Agreed, and adopted as the stated plan.** Section 6.3 now sets out a two-stage path:
 fault-injection on device first, then a formative dyad study measuring delivery-level
 outcomes the literature usually assumes — proportion of scheduled reminders actually
 presented, time from alarm to caregiver acknowledgement, and frequency of the degraded
